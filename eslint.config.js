@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
+import reactHooks from 'eslint-plugin-react-hooks';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
@@ -15,6 +16,10 @@ export default defineConfig(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+  },
+  {
+    files: ['apps/web/**/*.ts', 'apps/web/**/*.tsx'],
+    extends: [reactHooks.configs.flat.recommended],
   },
   prettier,
 );
