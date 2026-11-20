@@ -4,7 +4,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 
 ## 1. Workspace
 
-- [ ] Root `package.json` with npm workspaces, shared `tsconfig.base.json`, scripts for `test`, `typecheck`, `lint`
+- [x] Root `package.json` with npm workspaces, shared `tsconfig.base.json`, scripts for `test`, `typecheck`, `lint`
 - [ ] ESLint and Prettier
 - [ ] `packages/shared`: `Mode`, `DelayStatus`, `ServiceDelay`, `ModeSummary`, `Summary`, `RouteDetail`, `Health`
 
