@@ -28,7 +28,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | `feed` | `FeedSource` interface, the AT HTTP source, the fixture source, the feed schema, parsing into `TripDelay` | `config` types only |
 | `gtfs` | Loads `routes.txt` and `stops.txt`, answers lookups by id | `shared` types |
 | `delays` | Status from seconds, join with route and stop, summary per mode | `shared` types |
-| `store` | Holds the latest snapshot and says whether it is stale | `shared` types |
+| `store` | Holds the latest snapshot and says whether it is stale: no successful fetch for more than three poll intervals | `shared` types |
 | `poller` | Runs fetch, parse, join, store on a timer. Checks the weekly call budget | `feed`, `gtfs`, `delays`, `store` |
 | `http` | Express app and routes | `store` |
 

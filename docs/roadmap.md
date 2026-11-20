@@ -23,7 +23,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `delays`: join `TripDelay` with route and stop into `ServiceDelay`
 - [x] `delays`: summary per mode
 - [x] `delays`: filter and sort (mode, status, limit, worst first)
-- [ ] `store`: hold the latest snapshot, report `stale` after three missed polls
+- [x] `store`: hold the latest snapshot, report `stale` after three missed polls
 - [ ] `poller`: weekly call count from the interval, refuse an interval over the limit
 - [ ] `poller`: poll loop with an injected timer; a failed poll keeps the last snapshot
 - [ ] `http`: Express app and `GET /api/health`
