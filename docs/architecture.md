@@ -32,7 +32,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | `poller` | Runs fetch, parse, join, store on a timer. Checks the weekly call budget | `feed`, `gtfs`, `delays`, `store` |
 | `http` | Express app and routes | `store`, `delays` |
 
-`main.ts` builds the pieces and passes them to each other. No module creates its own dependencies, so tests pass in fakes: a fake `fetch`, a fake clock, a fake timer.
+`compose.ts` builds the pieces from the config and passes them to each other. `main.ts` reads the env vars, calls it with the real `fetch`, clock, timer and file reads, then listens and starts the poller. No module creates its own dependencies, so tests pass in fakes: a fake `fetch`, a fake clock, a fake timer.
 
 ## Two feed sources
 
