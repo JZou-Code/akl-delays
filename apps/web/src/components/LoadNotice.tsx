@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { isNoDataYet } from '../api/index.ts';
+import { failureReason, isNoDataYet } from '../api/index.ts';
 
 export interface LoadNoticeProps {
   loading: boolean;
@@ -8,7 +8,7 @@ export interface LoadNoticeProps {
 
 function noticeText({ loading, error }: LoadNoticeProps): string | null {
   if (isNoDataYet(error)) return 'Waiting for the first data from the feed.';
-  if (error !== undefined) return `Could not load the data: ${error.message}.`;
+  if (error !== undefined) return `Could not load the data (${failureReason(error)}).`;
   if (loading) return 'Loading.';
   return null;
 }

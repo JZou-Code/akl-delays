@@ -1,7 +1,7 @@
 import type { ServiceDelay, Summary } from '@akl-delays/shared';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FetchProvider, type Fetch } from '../../api/index.ts';
 import { BoardPage } from './BoardPage.tsx';
 
@@ -31,10 +31,13 @@ function Search() {
   return <output aria-label="search">{useLocation().search}</output>;
 }
 
-function renderPage(url: string) {
-  const fetch = vi.fn<Fetch>((input) =>
-    Promise.resolve(Response.json(input === '/api/summary' ? summary : [service])),
+function answering(summaryBody: Summary = summary) {
+  return vi.fn<Fetch>((input) =>
+    Promise.resolve(Response.json(input === '/api/summary' ? summaryBody : [service])),
   );
+}
+
+function renderPage(url: string, fetch = answering()) {
   render(
     <FetchProvider fetch={fetch}>
       <MemoryRouter initialEntries={[url]}>
@@ -47,6 +50,10 @@ function renderPage(url: string) {
     fetch.mock.calls.map(([input]) => input).filter((input) => input !== '/api/summary');
   return { delaysPaths };
 }
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('BoardPage', () => {
   it('shows the summary and the services', async () => {
@@ -84,5 +91,52 @@ describe('BoardPage', () => {
     expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent(
       '?mode=bus&status=very_late',
     );
+  });
+
+  it('says when the data is out of date and still shows it', async () => {
+    renderPage('/', answering({ ...summary, stale: true }));
+
+    expect(await screen.findByText(/^The data is out of date/)).toBeInTheDocument();
+    expect(await screen.findByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
+  });
+
+  it('says when a later request fails and keeps the last good data', async () => {
+    vi.useFakeTimers();
+    const fetch = answering();
+    renderPage('/', fetch);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(screen.queryByText(/^The last update failed/)).not.toBeInTheDocument();
+
+    fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(30_000);
+    });
+
+    expect(screen.getByText(/^The last update failed/)).toHaveTextContent(
+      'The last update failed (could not reach the API).',
+    );
+    expect(screen.getByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Services by status and mode' })).toBeInTheDocument();
+  });
+
+  it('says nothing went wrong again once a request works', async () => {
+    vi.useFakeTimers();
+    const fetch = answering();
+    renderPage('/', fetch);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    fetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(30_000);
+    });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(30_000);
+    });
+
+    expect(screen.queryByText(/^The last update failed/)).not.toBeInTheDocument();
   });
 });

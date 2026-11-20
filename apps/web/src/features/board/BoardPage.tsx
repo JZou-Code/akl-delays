@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { bannerState, StatusBanner } from '../../components/index.ts';
 import { SummarySection, useSummary } from '../summary/index.ts';
 import { BoardSection } from './BoardSection.tsx';
 import { useDelays } from './useDelays.ts';
@@ -10,6 +11,7 @@ export function BoardPage(): ReactElement {
   const delays = useDelays(filters);
   return (
     <>
+      <StatusBanner {...bannerState(summary, delays)} />
       <SummarySection summary={summary} />
       <BoardSection delays={delays} filters={filters} onFilterChange={setFilter} />
     </>

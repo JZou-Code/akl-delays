@@ -41,7 +41,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `features/board`: table of services, worst first
 - [x] `features/board`: filter by mode and status
 - [x] `features/route`: one route and its services
-- [ ] Stale and error banner
+- [x] Stale and error banner
 - [ ] Vite dev proxy to the API and a root `npm run dev` that starts both
 
 ## 4. Live feed

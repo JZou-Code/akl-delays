@@ -2,6 +2,7 @@ import type { Health, RouteDetail, ServiceDelay, Summary } from '@akl-delays/sha
 import { describe, expect, it, vi } from 'vitest';
 import {
   ApiRequestError,
+  failureReason,
   getDelays,
   getHealth,
   getRoute,
@@ -171,5 +172,17 @@ describe('isNotFound', () => {
   it('is false for other errors', () => {
     expect(isNotFound(new ApiRequestError(503, 'no feed data yet'))).toBe(false);
     expect(isNotFound(new TypeError('Failed to fetch'))).toBe(false);
+  });
+});
+
+describe('failureReason', () => {
+  it('gives the message of an API error', () => {
+    expect(failureReason(new ApiRequestError(502, 'the API answered HTTP 502'))).toBe(
+      'the API answered HTTP 502',
+    );
+  });
+
+  it('says the API could not be reached for any other error', () => {
+    expect(failureReason(new TypeError('Failed to fetch'))).toBe('could not reach the API');
   });
 });

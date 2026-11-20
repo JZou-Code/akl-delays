@@ -225,3 +225,26 @@ select {
 .page-header nav a[aria-current='page'] {
   font-weight: 600;
 }
+
+.banner {
+  --banner-bg: #fef3c7;
+  --banner-fg: #422006;
+  --banner-edge: #b45309;
+  margin: 1rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 0.25rem solid var(--banner-edge);
+  background: var(--banner-bg);
+  color: var(--banner-fg);
+}
+
+.banner p {
+  margin: 0.25rem 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .banner {
+    --banner-bg: #422006;
+    --banner-fg: #fef3c7;
+    --banner-edge: #f59e0b;
+  }
+}

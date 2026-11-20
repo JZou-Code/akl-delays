@@ -24,7 +24,15 @@ describe('LoadNotice', () => {
     );
 
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Could not load the data: the API answered HTTP 502.',
+      'Could not load the data (the API answered HTTP 502).',
+    );
+  });
+
+  it('says the API could not be reached when the request itself failed', () => {
+    render(<LoadNotice loading={false} error={new TypeError('Failed to fetch')} />);
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Could not load the data (could not reach the API).',
     );
   });
 

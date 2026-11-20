@@ -88,6 +88,8 @@ The page has two views: the board at `/` and one route at `/routes/:routeId`. Ea
 
 The board keeps its filters in the page URL, as `?mode=` and `?status=` with the same values as the API query.
 
+Each view asks the API again every 30 seconds and keeps the last good data when a request fails. A banner says so when that happens, and when the summary's `stale` flag is set. The 503 the API gives before its first poll is shown as waiting for the first data, not as an error.
+
 ## Not built
 
 - History. The snapshot is replaced on every poll and nothing is kept.

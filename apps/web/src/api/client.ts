@@ -39,6 +39,10 @@ export function isNotFound(error: unknown): boolean {
   return error instanceof ApiRequestError && error.status === 404;
 }
 
+export function failureReason(error: Error): string {
+  return error instanceof ApiRequestError ? error.message : 'could not reach the API';
+}
+
 function isApiError(body: unknown): body is ApiError {
   return (
     typeof body === 'object' && body !== null && 'error' in body && typeof body.error === 'string'

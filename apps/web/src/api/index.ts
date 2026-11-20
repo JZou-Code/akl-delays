@@ -1,5 +1,6 @@
 export {
   ApiRequestError,
+  failureReason,
   getDelays,
   getHealth,
   getRoute,
