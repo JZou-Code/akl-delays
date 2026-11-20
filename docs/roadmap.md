@@ -36,7 +36,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 
 - [x] `apps/web` workspace: Vite, React, Vitest with Testing Library, one passing test
 - [x] `api`: typed client for the four routes
-- [ ] `hooks`: `usePolling`, with loading, error and last-good data
+- [x] `hooks`: `usePolling`, with loading, error and last-good data
 - [ ] `features/summary`: counts per mode
 - [ ] `features/board`: table of services, worst first
 - [ ] `features/board`: filter by mode and status
