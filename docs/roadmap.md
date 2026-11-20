@@ -14,7 +14,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `config`: read and check `PORT`, `FEED_SOURCE`, `AT_API_KEY`, `POLL_INTERVAL_SECONDS`, `GTFS_DIR`; `.env.example`
 - [x] `delays`: status from delay seconds
 - [x] `feed`: schema for the feed wrapper and header
-- [ ] `feed`: schema for trip updates, with `stop_time_update` as object or array
+- [x] `feed`: schema for trip updates, with `stop_time_update` as object or array
 - [ ] `feed`: turn trip updates into `TripDelay`
 - [ ] `feed`: fixture files and `FixtureFeedSource`
 - [ ] `feed`: `AtFeedSource` with an injected `fetch`; errors for 401, 429 and bad JSON
