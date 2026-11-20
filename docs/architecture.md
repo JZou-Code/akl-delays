@@ -38,7 +38,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 
 `FeedSource` has one method, `fetchFeed()`.
 
-- `FixtureFeedSource` reads recorded JSON from `apps/api/fixtures`. It is the default, so the project runs without a key.
+- `FixtureFeedSource` reads hand-written JSON from `apps/api/fixtures`. It is the default, so the project runs without a key.
 - `AtFeedSource` calls the AT API. It is used when `FEED_SOURCE=at`.
 
 ## Status rules

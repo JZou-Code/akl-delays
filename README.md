@@ -6,7 +6,7 @@ Auckland Transport publishes a realtime feed of its vehicles. This project polls
 
 ## Status
 
-Early. The API and the page run on recorded sample data. The live feed is not connected yet. See [the roadmap](docs/roadmap.md).
+Early. The API runs on hand-written sample data. The page is not built yet, and the live feed is not connected. See [the roadmap](docs/roadmap.md).
 
 ## Run it
 
