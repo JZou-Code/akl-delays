@@ -10,7 +10,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 
 ## 2. API
 
-- [ ] `apps/api` workspace with Vitest and one passing test
+- [x] `apps/api` workspace with Vitest and one passing test
 - [ ] `config`: read and check `PORT`, `FEED_SOURCE`, `AT_API_KEY`, `POLL_INTERVAL_SECONDS`, `GTFS_DIR`; `.env.example`
 - [ ] `delays`: status from delay seconds
 - [ ] `feed`: schema for the feed wrapper and header
