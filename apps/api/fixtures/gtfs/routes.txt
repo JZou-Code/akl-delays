@@ -1,0 +1,11 @@
+route_id,agency_id,route_short_name,route_long_name,route_type
+NX1-901,AT,NX1,"Hibiscus Coast to Britomart, via Northern Busway",3
+70-901,AT,70,Botany to Britomart via Panmure,3
+27H-901,AT,27H,Waikowhai to Britomart via Hillsborough Rd,3
+25B-901,AT,25B,Blockhouse Bay to City Centre via Dominion Rd,3
+OUT-901,AT,OUT,Outer Link,3
+EAST-901,AT,EAST,Eastern Line,2
+STH-901,AT,STH,Southern Line,2
+WEST-901,AT,WEST,Western Line,2
+DEV-901,AT,DEV,"Downtown to Devonport, Victoria Wharf",4
+HMB-901,AT,HMB,Downtown to Half Moon Bay,4

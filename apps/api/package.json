@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@akl-delays/shared": "^0.0.0",
+    "csv-parse": "^7.0.3",
     "zod": "^4.6.7"
   }
 }
