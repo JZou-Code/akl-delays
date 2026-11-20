@@ -1,0 +1,63 @@
+# Roadmap
+
+One line is one commit. Tick the line in the commit that finishes it. Work top to bottom: later items depend on earlier ones.
+
+## 1. Workspace
+
+- [ ] Root `package.json` with npm workspaces, shared `tsconfig.base.json`, scripts for `test`, `typecheck`, `lint`
+- [ ] ESLint and Prettier
+- [ ] `packages/shared`: `Mode`, `DelayStatus`, `ServiceDelay`, `ModeSummary`, `Summary`, `RouteDetail`, `Health`
+
+## 2. API
+
+- [ ] `apps/api` workspace with Vitest and one passing test
+- [ ] `config`: read and check `PORT`, `FEED_SOURCE`, `AT_API_KEY`, `POLL_INTERVAL_SECONDS`, `GTFS_DIR`; `.env.example`
+- [ ] `delays`: status from delay seconds
+- [ ] `feed`: schema for the feed wrapper and header
+- [ ] `feed`: schema for trip updates, with `stop_time_update` as object or array
+- [ ] `feed`: turn trip updates into `TripDelay`
+- [ ] `feed`: fixture files and `FixtureFeedSource`
+- [ ] `feed`: `AtFeedSource` with an injected `fetch`; errors for 401, 429 and bad JSON
+- [ ] `gtfs`: load `routes.txt`, look up a route, map `route_type` to a mode
+- [ ] `gtfs`: load `stops.txt`, look up a stop
+- [ ] `delays`: join `TripDelay` with route and stop into `ServiceDelay`
+- [ ] `delays`: summary per mode
+- [ ] `delays`: filter and sort (mode, status, limit, worst first)
+- [ ] `store`: hold the latest snapshot, report `stale` after three missed polls
+- [ ] `poller`: weekly call count from the interval, refuse an interval over the limit
+- [ ] `poller`: poll loop with an injected timer; a failed poll keeps the last snapshot
+- [ ] `http`: Express app and `GET /api/health`
+- [ ] `http`: `GET /api/summary`, 503 before the first poll
+- [ ] `http`: `GET /api/delays` with query checks
+- [ ] `http`: `GET /api/routes/:routeId`
+- [ ] `main.ts`: build the pieces and start; `npm run dev -w apps/api`
+
+## 3. Web
+
+- [ ] `apps/web` workspace: Vite, React, Vitest with Testing Library, one passing test
+- [ ] `api`: typed client for the four routes
+- [ ] `hooks`: `usePolling`, with loading, error and last-good data
+- [ ] `features/summary`: counts per mode
+- [ ] `features/board`: table of services, worst first
+- [ ] `features/board`: filter by mode and status
+- [ ] `features/route`: one route and its services
+- [ ] Stale and error banner
+- [ ] Vite dev proxy to the API and a root `npm run dev` that starts both
+
+## 4. Live feed
+
+Blocked until the AT account works. Follow the `connect-live-feed` skill.
+
+- [ ] Record real responses and replace the hand-written fixtures
+- [ ] Fix the schema where the real feed differs
+- [ ] Script to download the GTFS zip and unpack `routes.txt` and `stops.txt`
+- [ ] Read AT's terms of use and write down what they allow
+
+## Later
+
+Not planned in detail.
+
+- Keep history in PostgreSQL and show punctuality by route and hour
+- Vehicle positions on a map
+- Service alerts next to the routes they affect
+- Deployment
