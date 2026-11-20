@@ -28,7 +28,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `poller`: poll loop with an injected timer; a failed poll keeps the last snapshot
 - [x] `http`: Express app and `GET /api/health`
 - [x] `http`: `GET /api/summary`, 503 before the first poll
-- [ ] `http`: `GET /api/delays` with query checks
+- [x] `http`: `GET /api/delays` with query checks
 - [ ] `http`: `GET /api/routes/:routeId`
 - [ ] `main.ts`: build the pieces and start; `npm run dev -w apps/api`
 

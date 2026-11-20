@@ -112,6 +112,98 @@ describe('GET /api/summary', () => {
   });
 });
 
+describe('GET /api/delays', () => {
+  const services = [
+    service('bus-on-time', 'bus', 'on_time', 30),
+    service('train-very-late', 'train', 'very_late', 1080),
+    service('bus-cancelled', 'bus', 'cancelled', null),
+    service('ferry-late', 'ferry', 'late', 540),
+    service('bus-late', 'bus', 'late', 600),
+  ];
+  const app = createApp({ store: storeWith(snapshotOf(services)), feedSource: 'fixture' });
+
+  async function tripIds(path: string): Promise<string[]> {
+    const response = await request(app).get(path);
+    expect(response.status).toBe(200);
+    return (response.body as ServiceDelay[]).map((item) => item.tripId);
+  }
+
+  it('answers 503 before the first poll', async () => {
+    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+
+    const response = await request(empty).get('/api/delays');
+
+    expect(response.status).toBe(503);
+    expect(response.body).toEqual({ error: 'no feed data yet' });
+  });
+
+  it('lists every service, worst delay first', async () => {
+    expect(await tripIds('/api/delays')).toEqual([
+      'train-very-late',
+      'bus-late',
+      'ferry-late',
+      'bus-on-time',
+      'bus-cancelled',
+    ]);
+  });
+
+  it('gives each service in full', async () => {
+    const response = await request(app).get('/api/delays?limit=1');
+
+    expect(response.body).toEqual([service('train-very-late', 'train', 'very_late', 1080)]);
+  });
+
+  it('filters by mode and status and cuts the list at the limit', async () => {
+    expect(await tripIds('/api/delays?mode=bus')).toEqual([
+      'bus-late',
+      'bus-on-time',
+      'bus-cancelled',
+    ]);
+    expect(await tripIds('/api/delays?status=late')).toEqual(['bus-late', 'ferry-late']);
+    expect(await tripIds('/api/delays?mode=bus&status=late')).toEqual(['bus-late']);
+    expect(await tripIds('/api/delays?limit=2')).toEqual(['train-very-late', 'bus-late']);
+  });
+
+  it('treats an empty value as not set', async () => {
+    expect(await tripIds('/api/delays?mode=&status=&limit=')).toHaveLength(5);
+  });
+
+  it('ignores query names it does not know', async () => {
+    expect(await tripIds('/api/delays?colour=red')).toHaveLength(5);
+  });
+
+  it.each([
+    ['mode=plane', 'mode must be one of bus, train, ferry'],
+    ['mode=bus&mode=train', 'mode must be one of bus, train, ferry'],
+    ['status=lost', 'status must be one of early, on_time, late, very_late, cancelled, unknown'],
+    ['limit=0', 'limit must be a whole number above 0'],
+    ['limit=-1', 'limit must be a whole number above 0'],
+    ['limit=1.5', 'limit must be a whole number above 0'],
+    ['limit=ten', 'limit must be a whole number above 0'],
+  ])('answers 400 for %s', async (query, error) => {
+    const response = await request(app).get(`/api/delays?${query}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error });
+  });
+
+  it('names every bad value in one error', async () => {
+    const response = await request(app).get('/api/delays?mode=plane&limit=0');
+
+    expect(response.body).toEqual({
+      error: 'mode must be one of bus, train, ferry; limit must be a whole number above 0',
+    });
+  });
+
+  it('checks the query before it checks for data', async () => {
+    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+
+    const response = await request(empty).get('/api/delays?mode=plane');
+
+    expect(response.status).toBe(400);
+  });
+});
+
 describe('unknown paths', () => {
   it('answer 404 with an error body', async () => {
     const app = createApp({ store: storeWith(null), feedSource: 'fixture' });
