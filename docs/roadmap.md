@@ -26,7 +26,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `store`: hold the latest snapshot, report `stale` after three missed polls
 - [x] `poller`: weekly call count from the interval, refuse an interval over the limit
 - [x] `poller`: poll loop with an injected timer; a failed poll keeps the last snapshot
-- [ ] `http`: Express app and `GET /api/health`
+- [x] `http`: Express app and `GET /api/health`
 - [ ] `http`: `GET /api/summary`, 503 before the first poll
 - [ ] `http`: `GET /api/delays` with query checks
 - [ ] `http`: `GET /api/routes/:routeId`

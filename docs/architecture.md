@@ -67,6 +67,8 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 | `GET /api/delays?mode=&status=&limit=` | services, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
 
+`ok` in the health response is true when a snapshot exists and is not stale. The health route answers 200 even before the first poll.
+
 Worst delay first means the highest `delaySeconds` first. Services with no delay value, such as most cancelled trips, come last.
 
 `mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. Before the first successful poll, data routes return 503.

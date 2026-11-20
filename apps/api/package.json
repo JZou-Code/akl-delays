@@ -8,13 +8,17 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
+    "supertest": "^7.3.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
   },
   "dependencies": {
     "@akl-delays/shared": "^0.0.0",
     "csv-parse": "^7.0.3",
+    "express": "^5.3.0",
     "zod": "^4.6.7"
   }
 }
