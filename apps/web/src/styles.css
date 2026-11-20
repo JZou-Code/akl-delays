@@ -172,3 +172,19 @@ thead th {
     color: #f3f4f6;
   }
 }
+
+.services .stop {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 32rem) {
+  th,
+  td {
+    padding: 0.25rem 0.3rem;
+    font-size: 0.875rem;
+  }
+
+  .status {
+    font-size: 0.8125rem;
+  }
+}

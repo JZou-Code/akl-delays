@@ -38,7 +38,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `api`: typed client for the four routes
 - [x] `hooks`: `usePolling`, with loading, error and last-good data
 - [x] `features/summary`: counts per mode
-- [ ] `features/board`: table of services, worst first
+- [x] `features/board`: table of services, worst first
 - [ ] `features/board`: filter by mode and status
 - [ ] `features/route`: one route and its services
 - [ ] Stale and error banner

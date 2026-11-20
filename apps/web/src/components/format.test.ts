@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatAge, formatClock, modeLabel, statusLabel } from './format.ts';
+import { formatAge, formatClock, formatDelay, modeLabel, statusLabel } from './format.ts';
 
 describe('modeLabel', () => {
   it.each([
@@ -22,6 +22,24 @@ describe('statusLabel', () => {
     ['unknown', 'No data'],
   ] as const)('names %s as %s', (status, label) => {
     expect(statusLabel(status)).toBe(label);
+  });
+});
+
+describe('formatDelay', () => {
+  it.each([
+    [720, 'late', '12 min late'],
+    [1080, 'very_late', '18 min late'],
+    [-120, 'early', '2 min early'],
+    [0, 'on_time', 'on time'],
+    [29, 'on_time', 'on time'],
+    [-29, 'on_time', 'on time'],
+    [240, 'on_time', '4 min late'],
+    [90, 'on_time', '2 min late'],
+    [null, 'unknown', 'no data'],
+    [null, 'cancelled', 'cancelled'],
+    [600, 'cancelled', 'cancelled'],
+  ] as const)('says %s seconds with status %s as %s', (seconds, status, text) => {
+    expect(formatDelay(seconds, status)).toBe(text);
   });
 });
 

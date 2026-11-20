@@ -19,6 +19,14 @@ export function statusLabel(status: DelayStatus): string {
   return STATUS_LABELS[status];
 }
 
+export function formatDelay(delaySeconds: number | null, status: DelayStatus): string {
+  if (status === 'cancelled') return 'cancelled';
+  if (delaySeconds === null) return 'no data';
+  const minutes = Math.round(delaySeconds / 60);
+  if (minutes === 0) return 'on time';
+  return minutes > 0 ? `${minutes} min late` : `${-minutes} min early`;
+}
+
 export function formatClock(iso: string, locale?: string, timeZone?: string): string {
   return new Intl.DateTimeFormat(locale, { timeStyle: 'medium', timeZone }).format(new Date(iso));
 }

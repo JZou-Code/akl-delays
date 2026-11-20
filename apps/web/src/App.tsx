@@ -1,8 +1,10 @@
 import type { ReactElement } from 'react';
+import { BoardSection, useDelays } from './features/board/index.ts';
 import { SummarySection, useSummary } from './features/summary/index.ts';
 
 export function App(): ReactElement {
   const summary = useSummary();
+  const delays = useDelays({});
   return (
     <>
       <header className="page-header">
@@ -11,6 +13,7 @@ export function App(): ReactElement {
       </header>
       <main className="page">
         <SummarySection summary={summary} />
+        <BoardSection delays={delays} />
       </main>
     </>
   );

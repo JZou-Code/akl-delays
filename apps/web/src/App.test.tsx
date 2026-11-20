@@ -1,4 +1,4 @@
-import type { Summary } from '@akl-delays/shared';
+import type { ServiceDelay, Summary } from '@akl-delays/shared';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './App.tsx';
@@ -13,8 +13,26 @@ const summary: Summary = {
   modes: { bus: { ...zero, late: 1, total: 1 }, train: zero, ferry: zero },
 };
 
+const services: ServiceDelay[] = [
+  {
+    tripId: 'nx1-0715-1',
+    routeId: 'NX1-901',
+    routeName: 'NX1',
+    mode: 'bus',
+    delaySeconds: 480,
+    status: 'late',
+    stopId: '4002-901',
+    stopName: 'Constellation Station',
+    vehicleId: '51101',
+    updatedAt: '2026-11-19T18:59:48.000Z',
+  },
+];
+
+const fetch = vi.fn<Fetch>((input) =>
+  Promise.resolve(Response.json(input === '/api/summary' ? summary : services)),
+);
+
 function renderApp() {
-  const fetch = vi.fn<Fetch>(() => Promise.resolve(Response.json(summary)));
   render(
     <FetchProvider fetch={fetch}>
       <App />
@@ -35,5 +53,11 @@ describe('App', () => {
     expect(
       await screen.findByRole('table', { name: 'Services by status and mode' }),
     ).toBeInTheDocument();
+  });
+
+  it('shows the services from the API', async () => {
+    renderApp();
+
+    expect(await screen.findByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
   });
 });
