@@ -31,6 +31,10 @@ export class ApiRequestError extends Error {
   }
 }
 
+export function isNoDataYet(error: unknown): boolean {
+  return error instanceof ApiRequestError && error.status === 503;
+}
+
 function isApiError(body: unknown): body is ApiError {
   return (
     typeof body === 'object' && body !== null && 'error' in body && typeof body.error === 'string'

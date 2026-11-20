@@ -54,3 +54,121 @@ a {
   margin: 0 0 1rem;
   color: var(--muted);
 }
+
+h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.notice,
+.feed-time {
+  margin: 0.5rem 0;
+}
+
+.feed-time {
+  color: var(--muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+caption {
+  padding: 0.25rem 0;
+  font-weight: 600;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  border-bottom-width: 2px;
+}
+
+.counts td,
+.counts thead th:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.counts tfoot th,
+.counts tfoot td {
+  font-weight: 600;
+}
+
+.status {
+  display: inline-block;
+  padding: 0 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.status[data-status='early'] {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.status[data-status='on_time'] {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.status[data-status='late'] {
+  background: #fef3c7;
+  color: #78350f;
+}
+
+.status[data-status='very_late'] {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+.status[data-status='cancelled'] {
+  background: #374151;
+  color: #ffffff;
+}
+
+.status[data-status='unknown'] {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status[data-status='early'] {
+    background: #1e3a8a;
+    color: #dbeafe;
+  }
+
+  .status[data-status='on_time'] {
+    background: #14532d;
+    color: #dcfce7;
+  }
+
+  .status[data-status='late'] {
+    background: #78350f;
+    color: #fef3c7;
+  }
+
+  .status[data-status='very_late'] {
+    background: #7f1d1d;
+    color: #fee2e2;
+  }
+
+  .status[data-status='cancelled'] {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  .status[data-status='unknown'] {
+    background: #374151;
+    color: #f3f4f6;
+  }
+}

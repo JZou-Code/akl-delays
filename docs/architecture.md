@@ -76,13 +76,13 @@ Worst delay first means the highest `delaySeconds` first. Services with no delay
 ## Web app
 
 ```
-src/api         one function per API route
-src/hooks       usePolling
+src/api         one function per API route, and the context that holds fetch
+src/hooks       usePolling, useNow
 src/features    summary, board, route
-src/components  small shared pieces
+src/components  small shared pieces and the text formatting
 ```
 
-Components get data through hooks. They do not call `fetch` directly.
+Components get data through hooks. They do not call `fetch` directly. The hooks take `fetch` from a React context, so tests pass in a fake one.
 
 ## Not built
 

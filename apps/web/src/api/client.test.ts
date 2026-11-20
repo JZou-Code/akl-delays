@@ -6,6 +6,7 @@ import {
   getHealth,
   getRoute,
   getSummary,
+  isNoDataYet,
   type Fetch,
 } from './client.ts';
 
@@ -146,5 +147,17 @@ describe('errors', () => {
     const fetch = vi.fn<Fetch>(() => Promise.reject(failure));
 
     await expect(getSummary({ fetch })).rejects.toBe(failure);
+  });
+});
+
+describe('isNoDataYet', () => {
+  it('is true for the 503 the API gives before its first poll', () => {
+    expect(isNoDataYet(new ApiRequestError(503, 'no feed data yet'))).toBe(true);
+  });
+
+  it('is false for other errors', () => {
+    expect(isNoDataYet(new ApiRequestError(502, 'the API answered HTTP 502'))).toBe(false);
+    expect(isNoDataYet(new TypeError('Failed to fetch'))).toBe(false);
+    expect(isNoDataYet(undefined)).toBe(false);
   });
 });
