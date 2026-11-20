@@ -11,7 +11,7 @@ GTFS routes and stops ─> gtfs ─┘
 
 1. The poller asks a feed source for the current feed.
 2. `feed` checks the response against a schema and turns it into trip delays.
-3. `delays` joins each trip with its route and stop from `gtfs`, gives it a status, and builds a summary per mode.
+3. `delays` joins each trip with its route and stop from `gtfs`, gives it a status, and builds a summary per mode. A trip whose route is not in `routes.txt` has no mode, so the summary does not count it.
 4. `store` keeps that snapshot in memory.
 5. `http` serves the snapshot. It never calls AT itself.
 6. The web app asks the API every 30 seconds.
