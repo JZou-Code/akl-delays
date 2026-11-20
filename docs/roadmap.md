@@ -15,7 +15,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `delays`: status from delay seconds
 - [x] `feed`: schema for the feed wrapper and header
 - [x] `feed`: schema for trip updates, with `stop_time_update` as object or array
-- [ ] `feed`: turn trip updates into `TripDelay`
+- [x] `feed`: turn trip updates into `TripDelay`
 - [ ] `feed`: fixture files and `FixtureFeedSource`
 - [ ] `feed`: `AtFeedSource` with an injected `fetch`; errors for 401, 429 and bad JSON
 - [ ] `gtfs`: load `routes.txt`, look up a route, map `route_type` to a mode
