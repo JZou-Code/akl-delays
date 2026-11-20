@@ -84,6 +84,8 @@ src/components  small shared pieces and the text formatting
 
 Components get data through hooks. They do not call `fetch` directly. The hooks take `fetch` from a React context, so tests pass in a fake one.
 
+The page has two views: the board at `/` and one route at `/routes/:routeId`. Each route name on the board links to its route view. When the API answers 404 for a route, the route view says nothing is running on it and links back to the board.
+
 The board keeps its filters in the page URL, as `?mode=` and `?status=` with the same values as the API query.
 
 ## Not built

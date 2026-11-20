@@ -216,3 +216,12 @@ select {
   color: var(--fg);
   font: inherit;
 }
+
+.page-header nav {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header nav a[aria-current='page'] {
+  font-weight: 600;
+}

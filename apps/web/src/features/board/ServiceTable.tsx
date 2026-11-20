@@ -1,6 +1,8 @@
 import type { ServiceDelay } from '@akl-delays/shared';
 import type { ReactElement } from 'react';
+import { Link } from 'react-router';
 import { formatDelay, modeLabel, StatusBadge } from '../../components/index.ts';
+import { routePath } from '../route/index.ts';
 
 export function ServiceTable({ services }: { services: readonly ServiceDelay[] }): ReactElement {
   return (
@@ -18,7 +20,9 @@ export function ServiceTable({ services }: { services: readonly ServiceDelay[] }
       <tbody>
         {services.map((service) => (
           <tr key={service.tripId}>
-            <th scope="row">{service.routeName ?? service.routeId}</th>
+            <th scope="row">
+              <Link to={routePath(service.routeId)}>{service.routeName ?? service.routeId}</Link>
+            </th>
             <td>{modeLabel(service.mode)}</td>
             <td>
               <StatusBadge status={service.status} />

@@ -1,5 +1,6 @@
 import type { ServiceDelay } from '@akl-delays/shared';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import { ApiRequestError } from '../../api/index.ts';
 import type { Polling } from '../../hooks/index.ts';
@@ -26,7 +27,9 @@ function polling(state: Partial<Polling<ServiceDelay[]>>): Polling<ServiceDelay[
 
 function renderSection(state: Partial<Polling<ServiceDelay[]>>, filters: Filters = {}) {
   render(
-    <BoardSection delays={polling(state)} filters={filters} onFilterChange={vi.fn<SetFilter>()} />,
+    <MemoryRouter>
+      <BoardSection delays={polling(state)} filters={filters} onFilterChange={vi.fn<SetFilter>()} />
+    </MemoryRouter>,
   );
 }
 

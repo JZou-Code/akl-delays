@@ -40,7 +40,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `features/summary`: counts per mode
 - [x] `features/board`: table of services, worst first
 - [x] `features/board`: filter by mode and status
-- [ ] `features/route`: one route and its services
+- [x] `features/route`: one route and its services
 - [ ] Stale and error banner
 - [ ] Vite dev proxy to the API and a root `npm run dev` that starts both
 

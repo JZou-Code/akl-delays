@@ -5,6 +5,7 @@ export {
   getRoute,
   getSummary,
   isNoDataYet,
+  isNotFound,
 } from './client.ts';
 export type { CallOptions, DelaysQuery, Fetch } from './client.ts';
 export { FetchProvider, useFetch } from './fetch-context.tsx';

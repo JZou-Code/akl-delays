@@ -7,6 +7,7 @@ import {
   getRoute,
   getSummary,
   isNoDataYet,
+  isNotFound,
   type Fetch,
 } from './client.ts';
 
@@ -159,5 +160,16 @@ describe('isNoDataYet', () => {
     expect(isNoDataYet(new ApiRequestError(502, 'the API answered HTTP 502'))).toBe(false);
     expect(isNoDataYet(new TypeError('Failed to fetch'))).toBe(false);
     expect(isNoDataYet(undefined)).toBe(false);
+  });
+});
+
+describe('isNotFound', () => {
+  it('is true for the 404 the API gives for a route with nothing running', () => {
+    expect(isNotFound(new ApiRequestError(404, 'no running services on this route'))).toBe(true);
+  });
+
+  it('is false for other errors', () => {
+    expect(isNotFound(new ApiRequestError(503, 'no feed data yet'))).toBe(false);
+    expect(isNotFound(new TypeError('Failed to fetch'))).toBe(false);
   });
 });
