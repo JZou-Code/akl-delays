@@ -1,5 +1,8 @@
 export { FeedError } from './errors.ts';
+export { FIXTURE_FEED_PATH, FixtureFeedSource } from './fixture-source.ts';
+export type { FixtureFeedSourceOptions } from './fixture-source.ts';
 export { parseFeed } from './schema.ts';
 export type { Feed } from './schema.ts';
+export type { FeedSource, ReadText } from './source.ts';
 export { feedTimestamp, toTripDelays } from './trip-delay.ts';
 export type { TripDelay } from './trip-delay.ts';

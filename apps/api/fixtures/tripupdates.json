@@ -1,0 +1,410 @@
+{
+  "status": "OK",
+  "response": {
+    "header": {
+      "timestamp": 1795114800,
+      "gtfs_realtime_version": "2.0",
+      "incrementality": 0
+    },
+    "entity": [
+      {
+        "id": "e01",
+        "trip_update": {
+          "trip": {
+            "trip_id": "nx1-0715-1",
+            "route_id": "NX1-901",
+            "direction_id": 1,
+            "start_time": "07:15:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 6,
+            "stop_id": "4002-901",
+            "arrival": { "delay": 480, "time": 1795114860 },
+            "schedule_relationship": 0
+          },
+          "vehicle": { "id": "51101" },
+          "timestamp": 1795114788,
+          "delay": 480
+        }
+      },
+      {
+        "id": "e02",
+        "trip_update": {
+          "trip": {
+            "trip_id": "nx1-0730-1",
+            "route_id": "NX1-901",
+            "direction_id": 1,
+            "start_time": "07:30:00",
+            "start_date": "20261120",
+            "schedule_relationship": "SCHEDULED"
+          },
+          "stop_time_update": {
+            "stop_sequence": 9,
+            "stop_id": "4003-901",
+            "arrival": { "delay": 30, "time": 1795114830 }
+          },
+          "vehicle": { "id": "51102" },
+          "timestamp": 1795114792
+        }
+      },
+      {
+        "id": "e03",
+        "trip_update": {
+          "trip": {
+            "trip_id": "70-0650-1",
+            "route_id": "70-901",
+            "direction_id": 0,
+            "start_time": "06:50:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 21,
+            "stop_id": "4005-901",
+            "arrival": { "delay": 1260, "time": 1795114920 }
+          },
+          "vehicle": { "id": "52201" },
+          "timestamp": 1795114770
+        }
+      },
+      {
+        "id": "e04",
+        "trip_update": {
+          "trip": {
+            "trip_id": "70-0745-1",
+            "route_id": "70-901",
+            "direction_id": 0,
+            "start_time": "07:45:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 3,
+            "stop_id": "4004-901",
+            "departure": { "delay": -20, "time": 1795114820 }
+          },
+          "vehicle": { "id": "52202" },
+          "timestamp": 1795114795
+        }
+      },
+      {
+        "id": "e05",
+        "trip_update": {
+          "trip": {
+            "trip_id": "27h-0740-1",
+            "route_id": "27H-901",
+            "direction_id": 1,
+            "start_time": "07:40:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 8,
+            "stop_id": "4006-901",
+            "arrival": { "delay": -150, "time": 1795114850 }
+          },
+          "vehicle": { "id": "53301" },
+          "timestamp": 1795114790
+        }
+      },
+      {
+        "id": "e06",
+        "trip_update": {
+          "trip": {
+            "trip_id": "27h-0755-1",
+            "route_id": "27H-901",
+            "direction_id": 1,
+            "start_time": "07:55:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 2,
+            "stop_id": "4006-901",
+            "arrival": { "delay": 0, "time": 1795114980 }
+          },
+          "vehicle": { "id": "53302" },
+          "timestamp": 1795114797
+        }
+      },
+      {
+        "id": "e07",
+        "trip_update": {
+          "trip": {
+            "trip_id": "25b-0710-1",
+            "route_id": "25B-901",
+            "direction_id": 1,
+            "start_time": "07:10:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": [
+            {
+              "stop_sequence": 12,
+              "stop_id": "4007-901",
+              "arrival": { "delay": 600, "time": 1795114890 }
+            },
+            {
+              "stop_sequence": 13,
+              "stop_id": "4008-901",
+              "arrival": { "delay": 660, "time": 1795115070 }
+            }
+          ],
+          "vehicle": { "id": "54401" },
+          "timestamp": 1795114785
+        }
+      },
+      {
+        "id": "e08",
+        "trip_update": {
+          "trip": {
+            "trip_id": "25b-0750-1",
+            "route_id": "25B-901",
+            "direction_id": 1,
+            "start_time": "07:50:00",
+            "start_date": "20261120",
+            "schedule_relationship": "CANCELED"
+          },
+          "timestamp": 1795114700
+        }
+      },
+      {
+        "id": "e09",
+        "trip_update": {
+          "trip": {
+            "trip_id": "out-0735-1",
+            "route_id": "OUT-901",
+            "direction_id": 0,
+            "start_time": "07:35:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 15,
+            "stop_id": "4008-901",
+            "schedule_relationship": "NO_DATA"
+          },
+          "vehicle": { "id": "55501" },
+          "timestamp": 1795114760
+        }
+      },
+      {
+        "id": "e10",
+        "trip_update": {
+          "trip": {
+            "trip_id": "out-0750-1",
+            "route_id": "OUT-901",
+            "direction_id": 0,
+            "start_time": "07:50:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 5,
+            "stop_id": "4008-901",
+            "arrival": { "delay": 120, "time": 1795114940 }
+          },
+          "vehicle": { "id": "55502" },
+          "timestamp": 1795114791
+        }
+      },
+      {
+        "id": "e11",
+        "trip_update": {
+          "trip": {
+            "trip_id": "east-0722-1",
+            "route_id": "EAST-901",
+            "direction_id": 0,
+            "start_time": "07:22:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 7,
+            "stop_id": "4011-901",
+            "arrival": { "delay": 420, "time": 1795114870 },
+            "departure": { "delay": 450, "time": 1795114900 }
+          },
+          "vehicle": { "id": "59214", "label": "AMP 214" },
+          "timestamp": 1795114794
+        }
+      },
+      {
+        "id": "e12",
+        "trip_update": {
+          "trip": {
+            "trip_id": "east-0742-1",
+            "route_id": "EAST-901",
+            "direction_id": 0,
+            "start_time": "07:42:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 3,
+            "stop_id": "4009-901",
+            "arrival": { "delay": 45, "time": 1795114905 }
+          },
+          "vehicle": { "id": "59230", "label": "AMP 230" },
+          "timestamp": 1795114796
+        }
+      },
+      {
+        "id": "e13",
+        "trip_update": {
+          "trip": {
+            "trip_id": "sth-0705-1",
+            "route_id": "STH-901",
+            "direction_id": 1,
+            "start_time": "07:05:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 11,
+            "stop_id": "4013-901",
+            "arrival": { "delay": 1080, "time": 1795114860 }
+          },
+          "vehicle": { "id": "59241", "label": "AMP 241" },
+          "timestamp": 1795114782
+        }
+      },
+      {
+        "id": "e14",
+        "trip_update": {
+          "trip": {
+            "trip_id": "sth-0735-1",
+            "route_id": "STH-901",
+            "direction_id": 1,
+            "start_time": "07:35:00",
+            "start_date": "20261120",
+            "schedule_relationship": 3
+          },
+          "timestamp": 1795114650
+        }
+      },
+      {
+        "id": "e15",
+        "trip_update": {
+          "trip": {
+            "trip_id": "west-0738-1",
+            "route_id": "WEST-901",
+            "direction_id": 0,
+            "start_time": "07:38:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 6,
+            "stop_id": "4017-901",
+            "arrival": { "delay": -90, "time": 1795114830 }
+          },
+          "vehicle": { "id": "59252", "label": "AMP 252" },
+          "timestamp": 1795114793
+        }
+      },
+      {
+        "id": "e16",
+        "trip_update": {
+          "trip": {
+            "trip_id": "west-0748-1",
+            "route_id": "WEST-901",
+            "direction_id": 0,
+            "start_time": "07:48:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 4,
+            "stop_id": "4012-901",
+            "arrival": { "delay": 200, "time": 1795114990 }
+          },
+          "vehicle": { "id": "59266", "label": "AMP 266" },
+          "timestamp": 1795114789
+        }
+      },
+      {
+        "id": "e17",
+        "trip_update": {
+          "trip": {
+            "trip_id": "dev-0745-1",
+            "route_id": "DEV-901",
+            "direction_id": 1,
+            "start_time": "07:45:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 2,
+            "stop_id": "4015-901",
+            "arrival": { "delay": 60, "time": 1795114860 }
+          },
+          "vehicle": { "id": "58101" },
+          "timestamp": 1795114780
+        }
+      },
+      {
+        "id": "e18",
+        "trip_update": {
+          "trip": {
+            "trip_id": "hmb-0720-1",
+            "route_id": "HMB-901",
+            "direction_id": 1,
+            "start_time": "07:20:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 2,
+            "stop_id": "4015-901",
+            "arrival": { "delay": 540, "time": 1795114920 }
+          },
+          "vehicle": { "id": "58201" },
+          "timestamp": 1795114775
+        }
+      },
+      {
+        "id": "e19",
+        "trip_update": {
+          "trip": {
+            "trip_id": "66-0732-1",
+            "route_id": "66-901",
+            "direction_id": 0,
+            "start_time": "07:32:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 10,
+            "stop_id": "4099-901",
+            "arrival": { "delay": 300, "time": 1795114950 }
+          },
+          "vehicle": { "id": "56601" },
+          "timestamp": 1795114787
+        }
+      },
+      {
+        "id": "e20",
+        "trip_update": {
+          "trip": {
+            "trip_id": "dev-0800-1",
+            "route_id": "DEV-901",
+            "direction_id": 0,
+            "start_time": "08:00:00",
+            "start_date": "20261120",
+            "schedule_relationship": 0
+          },
+          "stop_time_update": {
+            "stop_sequence": 1,
+            "stop_id": "4014-901",
+            "departure": { "delay": 90, "time": 1795114890 }
+          },
+          "vehicle": { "id": "58102" },
+          "timestamp": 1795114798
+        }
+      }
+    ]
+  }
+}
