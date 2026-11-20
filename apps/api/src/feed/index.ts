@@ -1,3 +1,5 @@
+export { AT_TRIP_UPDATES_URL, AtFeedSource } from './at-source.ts';
+export type { AtFeedSourceOptions, Fetch } from './at-source.ts';
 export { FeedError } from './errors.ts';
 export { FIXTURE_FEED_PATH, FixtureFeedSource } from './fixture-source.ts';
 export type { FixtureFeedSourceOptions } from './fixture-source.ts';
