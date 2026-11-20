@@ -2,6 +2,10 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-20: react-router for the two views
+
+The page has two views: the board and one route. react-router gives the route parameter, the query string and links without hand-written history code. The board keeps its mode and status filters in the query, so a filtered view can be shared and reloaded.
+
 ## 2026-11-20: fixtures first, live feed later
 
 The AT account could not sign in on the day the project started. The feed source sits behind an interface, and a fixture source is the default. Everything except the HTTP call to AT can be built and tested now.

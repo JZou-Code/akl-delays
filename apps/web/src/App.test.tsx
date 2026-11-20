@@ -1,5 +1,6 @@
 import type { ServiceDelay, Summary } from '@akl-delays/shared';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import { App } from './App.tsx';
 import { FetchProvider, type Fetch } from './api/index.ts';
@@ -32,10 +33,12 @@ const fetch = vi.fn<Fetch>((input) =>
   Promise.resolve(Response.json(input === '/api/summary' ? summary : services)),
 );
 
-function renderApp() {
+function renderApp(url = '/') {
   render(
     <FetchProvider fetch={fetch}>
-      <App />
+      <MemoryRouter initialEntries={[url]}>
+        <App />
+      </MemoryRouter>
     </FetchProvider>,
   );
 }
@@ -47,17 +50,10 @@ describe('App', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Auckland delays' })).toBeInTheDocument();
   });
 
-  it('shows the summary from the API', async () => {
-    renderApp();
-
-    expect(
-      await screen.findByRole('table', { name: 'Services by status and mode' }),
-    ).toBeInTheDocument();
-  });
-
-  it('shows the services from the API', async () => {
+  it('shows the board', async () => {
     renderApp();
 
     expect(await screen.findByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Services by status and mode' })).toBeInTheDocument();
   });
 });

@@ -1,3 +1,11 @@
+export { BoardPage } from './BoardPage.tsx';
 export { BoardSection } from './BoardSection.tsx';
+export type { BoardSectionProps } from './BoardSection.tsx';
+export { FilterForm } from './FilterForm.tsx';
+export type { FilterFormProps } from './FilterForm.tsx';
+export { filtersFromSearch, hasFilters, searchWithFilter } from './filters.ts';
+export type { FilterName, Filters } from './filters.ts';
 export { ServiceTable } from './ServiceTable.tsx';
 export { useDelays } from './useDelays.ts';
+export { useFilters } from './useFilters.ts';
+export type { SetFilter } from './useFilters.ts';

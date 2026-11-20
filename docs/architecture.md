@@ -84,6 +84,8 @@ src/components  small shared pieces and the text formatting
 
 Components get data through hooks. They do not call `fetch` directly. The hooks take `fetch` from a React context, so tests pass in a fake one.
 
+The board keeps its filters in the page URL, as `?mode=` and `?status=` with the same values as the API query.
+
 ## Not built
 
 - History. The snapshot is replaced on every poll and nothing is kept.
