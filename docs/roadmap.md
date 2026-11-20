@@ -42,7 +42,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `features/board`: filter by mode and status
 - [x] `features/route`: one route and its services
 - [x] Stale and error banner
-- [ ] Vite dev proxy to the API and a root `npm run dev` that starts both
+- [x] Vite dev proxy to the API and a root `npm run dev` that starts both
 
 ## 4. Live feed
 

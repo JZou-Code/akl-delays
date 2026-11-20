@@ -6,7 +6,9 @@ Auckland Transport publishes a realtime feed of its vehicles. This project polls
 
 ## Status
 
-Early. The API runs on hand-written sample data. The page is not built yet, and the live feed is not connected. See [the roadmap](docs/roadmap.md).
+Early. The API and the page run on hand-written sample data. The live feed is not connected. See [the roadmap](docs/roadmap.md).
+
+The page shows the number of services per mode and status, a board of services with the worst delay first, and one route with its services. The board filters by mode and status. The page asks the API again every 30 seconds and says so when the data is out of date or a request fails.
 
 ## Run it
 
@@ -17,7 +19,7 @@ npm install
 npm run dev
 ```
 
-The page is at http://localhost:5173 and the API at http://localhost:3000.
+The page is at http://localhost:5173 and the API at http://localhost:3000. The page's dev server sends `/api` requests to the API. To move the API, set `PORT` in `.env`; the dev server follows it.
 
 ## Tests
 

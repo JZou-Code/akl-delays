@@ -90,6 +90,8 @@ The board keeps its filters in the page URL, as `?mode=` and `?status=` with the
 
 Each view asks the API again every 30 seconds and keeps the last good data when a request fails. A banner says so when that happens, and when the summary's `stale` flag is set. The 503 the API gives before its first poll is shown as waiting for the first data, not as an error.
 
+In development the Vite server serves the page on port 5173 and sends `/api` requests to the API on `PORT`, read from the environment or the root `.env` like the API does. The page has no production build or server yet.
+
 ## Not built
 
 - History. The snapshot is replaced on every poll and nothing is kept.
