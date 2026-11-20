@@ -71,7 +71,7 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 
 Worst delay first means the highest `delaySeconds` first. Services with no delay value, such as most cancelled trips, come last.
 
-`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `limit` is a whole number above 0; without it every matching service is returned. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. Before the first successful poll, data routes return 503.
+`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `limit` is a whole number above 0; without it every matching service is returned. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
 
 ## Web app
 

@@ -29,7 +29,7 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 - [x] `http`: Express app and `GET /api/health`
 - [x] `http`: `GET /api/summary`, 503 before the first poll
 - [x] `http`: `GET /api/delays` with query checks
-- [ ] `http`: `GET /api/routes/:routeId`
+- [x] `http`: `GET /api/routes/:routeId`
 - [ ] `main.ts`: build the pieces and start; `npm run dev -w apps/api`
 
 ## 3. Web

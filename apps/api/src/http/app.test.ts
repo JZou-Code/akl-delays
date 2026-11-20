@@ -204,6 +204,47 @@ describe('GET /api/delays', () => {
   });
 });
 
+describe('GET /api/routes/:routeId', () => {
+  function onRoute(tripId: string, routeId: string, delaySeconds: number): ServiceDelay {
+    return { ...service(tripId, 'bus', 'on_time', delaySeconds), routeId, routeName: 'NX1' };
+  }
+
+  const services = [
+    onRoute('nx1-a', 'NX1-901', 30),
+    onRoute('70-a', '70-901', 600),
+    onRoute('nx1-b', 'NX1-901', 240),
+  ];
+  const app = createApp({ store: storeWith(snapshotOf(services)), feedSource: 'fixture' });
+
+  it('answers 503 before the first poll', async () => {
+    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+
+    const response = await request(empty).get('/api/routes/NX1-901');
+
+    expect(response.status).toBe(503);
+    expect(response.body).toEqual({ error: 'no feed data yet' });
+  });
+
+  it('gives the route and its running services, worst delay first', async () => {
+    const response = await request(app).get('/api/routes/NX1-901');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      routeId: 'NX1-901',
+      routeName: 'NX1',
+      mode: 'bus',
+      services: [onRoute('nx1-b', 'NX1-901', 240), onRoute('nx1-a', 'NX1-901', 30)],
+    });
+  });
+
+  it('answers 404 for a route with no running service', async () => {
+    const response = await request(app).get('/api/routes/WEST-901');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'no running services on this route' });
+  });
+});
+
 describe('unknown paths', () => {
   it('answer 404 with an error body', async () => {
     const app = createApp({ store: storeWith(null), feedSource: 'fixture' });

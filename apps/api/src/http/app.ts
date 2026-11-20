@@ -1,6 +1,13 @@
-import type { ApiError, FeedSourceName, Health, ServiceDelay, Summary } from '@akl-delays/shared';
+import type {
+  ApiError,
+  FeedSourceName,
+  Health,
+  RouteDetail,
+  ServiceDelay,
+  Summary,
+} from '@akl-delays/shared';
 import express, { type Express, type Response } from 'express';
-import { selectServices, summariseModes } from '../delays/index.ts';
+import { routeDetail, selectServices, summariseModes } from '../delays/index.ts';
 import type { Store } from '../store/index.ts';
 import { parseDelaysQuery } from './query.ts';
 
@@ -8,6 +15,8 @@ export interface AppOptions {
   store: Store;
   feedSource: FeedSourceName;
 }
+
+const NO_DATA = 'no feed data yet';
 
 function sendError(response: Response, status: number, error: string): void {
   const body: ApiError = { error };
@@ -31,7 +40,7 @@ export function createApp({ store, feedSource }: AppOptions): Express {
   app.get('/api/summary', (_request, response) => {
     const snapshot = store.get();
     if (snapshot === null) {
-      sendError(response, 503, 'no feed data yet');
+      sendError(response, 503, NO_DATA);
       return;
     }
     const body: Summary = {
@@ -51,10 +60,24 @@ export function createApp({ store, feedSource }: AppOptions): Express {
     }
     const snapshot = store.get();
     if (snapshot === null) {
-      sendError(response, 503, 'no feed data yet');
+      sendError(response, 503, NO_DATA);
       return;
     }
     const body: ServiceDelay[] = selectServices(snapshot.services, parsed.query);
+    response.json(body);
+  });
+
+  app.get('/api/routes/:routeId', (request, response) => {
+    const snapshot = store.get();
+    if (snapshot === null) {
+      sendError(response, 503, NO_DATA);
+      return;
+    }
+    const body: RouteDetail | null = routeDetail(snapshot.services, request.params.routeId);
+    if (body === null) {
+      sendError(response, 404, 'no running services on this route');
+      return;
+    }
     response.json(body);
   });
 
