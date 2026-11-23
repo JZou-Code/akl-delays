@@ -31,10 +31,10 @@ function Search() {
   return <output aria-label="search">{useLocation().search}</output>;
 }
 
-function answering(summaryBody: Summary = summary) {
+function answering(summaryBody: Summary = summary, total = 1) {
   return vi.fn<Fetch>((input) =>
     Promise.resolve(
-      Response.json(input === '/api/summary' ? summaryBody : { total: 1, services: [service] }),
+      Response.json(input === '/api/summary' ? summaryBody : { total, services: [service] }),
     ),
   );
 }
@@ -71,7 +71,7 @@ describe('BoardPage', () => {
     const { delaysPaths } = renderPage('/?mode=bus&status=late');
 
     expect(await screen.findByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
-    expect(delaysPaths()).toEqual(['/api/delays?mode=bus&status=late']);
+    expect(delaysPaths()).toEqual(['/api/delays?mode=bus&status=late&limit=50']);
     expect(screen.getByRole('combobox', { name: 'Mode' })).toHaveValue('bus');
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveValue('late');
   });
@@ -86,8 +86,8 @@ describe('BoardPage', () => {
 
     await waitFor(() => {
       expect(delaysPaths()).toEqual([
-        '/api/delays?mode=bus',
-        '/api/delays?mode=bus&status=very_late',
+        '/api/delays?mode=bus&limit=50',
+        '/api/delays?mode=bus&status=very_late&limit=50',
       ]);
     });
     expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent(
@@ -104,7 +104,10 @@ describe('BoardPage', () => {
     });
 
     await waitFor(() => {
-      expect(delaysPaths()).toEqual(['/api/delays?mode=bus', '/api/delays?mode=bus&q=nx']);
+      expect(delaysPaths()).toEqual([
+        '/api/delays?mode=bus&limit=50',
+        '/api/delays?mode=bus&q=nx&limit=50',
+      ]);
     });
     expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent('?mode=bus&q=nx');
     expect(screen.getByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
@@ -118,8 +121,8 @@ describe('BoardPage', () => {
 
     await waitFor(() => {
       expect(delaysPaths()).toEqual([
-        '/api/delays?mode=bus',
-        '/api/delays?mode=bus&sort=route&order=asc',
+        '/api/delays?mode=bus&limit=50',
+        '/api/delays?mode=bus&sort=route&order=asc&limit=50',
       ]);
     });
     expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent(
@@ -129,6 +132,21 @@ describe('BoardPage', () => {
       'aria-sort',
       'ascending',
     );
+  });
+
+  it('asks for one more page of rows when more is pressed, and for one page after a new filter', async () => {
+    const { delaysPaths } = renderPage('/', answering(summary, 120));
+    await screen.findByRole('rowheader', { name: 'NX1' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show 50 more' }));
+    await waitFor(() => {
+      expect(delaysPaths()).toEqual(['/api/delays?limit=50', '/api/delays?limit=100']);
+    });
+
+    fireEvent.change(screen.getByRole('combobox', { name: 'Mode' }), { target: { value: 'bus' } });
+    await waitFor(() => {
+      expect(delaysPaths().at(-1)).toBe('/api/delays?mode=bus&limit=50');
+    });
   });
 
   it('says when the data is out of date and still shows it', async () => {

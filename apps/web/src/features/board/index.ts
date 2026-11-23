@@ -13,6 +13,7 @@ export { DEFAULT_SORT, nextSort, searchWithSort, sortFromSearch, sortQuery } fro
 export type { Sort } from './sort.ts';
 export { useDelays } from './useDelays.ts';
 export { useFilters } from './useFilters.ts';
+export { PAGE_ROWS, useRows } from './useRows.ts';
 export { useSort } from './useSort.ts';
 export type { SortBy } from './useSort.ts';
 export type { SetFilter } from './useFilters.ts';

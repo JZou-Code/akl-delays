@@ -1,5 +1,5 @@
 import type { DelaysPage, ServiceDelay } from '@akl-delays/shared';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import { ApiRequestError } from '../../api/index.ts';
@@ -28,6 +28,7 @@ function polling(state: Partial<Polling<DelaysPage>>): Polling<DelaysPage> {
 }
 
 function renderSection(state: Partial<Polling<DelaysPage>>, filters: Filters = {}) {
+  const onShowMore = vi.fn<() => void>();
   render(
     <MemoryRouter>
       <BoardSection
@@ -36,9 +37,11 @@ function renderSection(state: Partial<Polling<DelaysPage>>, filters: Filters = {
         onFilterChange={vi.fn<SetFilter>()}
         sort={DEFAULT_SORT}
         onSort={vi.fn<SortBy>()}
+        onShowMore={onShowMore}
       />
     </MemoryRouter>,
   );
+  return { onShowMore };
 }
 
 describe('BoardSection', () => {
@@ -84,5 +87,27 @@ describe('BoardSection', () => {
     });
 
     expect(screen.getByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
+  });
+
+  it('says how many services it shows and has no button when that is all of them', () => {
+    renderSection({ data: { total: 1, services: [service] } });
+
+    expect(screen.getByText('Showing 1 of 1 services.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Show \d+ more$/ })).not.toBeInTheDocument();
+  });
+
+  it('offers the next page when the limit left services out', () => {
+    const { onShowMore } = renderSection({ data: { total: 887, services: [service] } });
+
+    expect(screen.getByText('Showing 1 of 887 services.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Show 50 more' }));
+
+    expect(onShowMore).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers only what is left when that is less than a page', () => {
+    renderSection({ data: { total: 4, services: [service] } });
+
+    expect(screen.getByRole('button', { name: 'Show 3 more' })).toBeInTheDocument();
   });
 });
