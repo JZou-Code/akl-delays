@@ -10,7 +10,7 @@ GTFS routes and stops ─> gtfs ─┘
 ```
 
 1. The poller asks a feed source for the current feed.
-2. `feed` checks the response against a schema and turns it into trip delays.
+2. `feed` checks the response against a schema and turns it into trip delays. It leaves out a trip whose last update is more than `MAX_UPDATE_AGE_SECONDS` older than the feed's own time. The default is 1200.
 3. `delays` joins each trip with its route and stop from `gtfs`, gives it a status, and builds a summary per mode. A trip whose route is not in `routes.txt` has no mode, so the summary does not count it.
 4. `store` keeps that snapshot in memory.
 5. `http` serves the snapshot. It never calls AT itself.
@@ -25,7 +25,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | Module | Does | Depends on |
 |--------|------|------------|
 | `config` | Reads env vars once and checks them | nothing |
-| `feed` | `FeedSource` interface, the AT HTTP source, the fixture source, the feed schema, parsing into `TripDelay` | `config` types only |
+| `feed` | `FeedSource` interface, the AT HTTP source, the fixture source, the feed schema, parsing into `TripDelay`, dropping stale trips | `config` types only |
 | `gtfs` | Loads `routes.txt` and `stops.txt`, answers lookups by id | `shared` types |
 | `delays` | Status from seconds, join with route and stop, summary per mode | `shared` types |
 | `store` | Holds the latest snapshot and says whether it is stale: no successful fetch for more than three poll intervals | `shared` types |

@@ -9,6 +9,7 @@ describe('loadConfig', () => {
     expect(config.port).toBe(3000);
     expect(config.feed).toEqual({ source: 'fixture' });
     expect(config.pollIntervalSeconds).toBe(60);
+    expect(config.maxUpdateAgeSeconds).toBe(1200);
     expect(config.gtfsDir.endsWith(join('apps', 'api', 'fixtures', 'gtfs'))).toBe(true);
   });
 
@@ -18,6 +19,7 @@ describe('loadConfig', () => {
       FEED_SOURCE: 'at',
       AT_API_KEY: 'test-key',
       POLL_INTERVAL_SECONDS: '120',
+      MAX_UPDATE_AGE_SECONDS: '600',
       GTFS_DIR: '/data/gtfs',
     });
 
@@ -25,6 +27,7 @@ describe('loadConfig', () => {
       port: 8080,
       feed: { source: 'at', apiKey: 'test-key' },
       pollIntervalSeconds: 120,
+      maxUpdateAgeSeconds: 600,
       gtfsDir: '/data/gtfs',
     });
   });
@@ -59,6 +62,12 @@ describe('loadConfig', () => {
   it.each(['0', 'fast', '86401'])('rejects POLL_INTERVAL_SECONDS=%s', (interval) => {
     expect(() => loadConfig({ POLL_INTERVAL_SECONDS: interval })).toThrow(
       'POLL_INTERVAL_SECONDS must be a whole number from 1 to 86400',
+    );
+  });
+
+  it.each(['0', 'old', '86401'])('rejects MAX_UPDATE_AGE_SECONDS=%s', (age) => {
+    expect(() => loadConfig({ MAX_UPDATE_AGE_SECONDS: age })).toThrow(
+      'MAX_UPDATE_AGE_SECONDS must be a whole number from 1 to 86400',
     );
   });
 

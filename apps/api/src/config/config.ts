@@ -9,6 +9,7 @@ export interface Config {
   port: number;
   feed: FeedConfig;
   pollIntervalSeconds: number;
+  maxUpdateAgeSeconds: number;
   gtfsDir: string;
 }
 
@@ -34,6 +35,7 @@ const envSchema = z.object({
     .default('fixture'),
   AT_API_KEY: z.string().optional(),
   POLL_INTERVAL_SECONDS: wholeNumber('POLL_INTERVAL_SECONDS', 1, 86400).default(60),
+  MAX_UPDATE_AGE_SECONDS: wholeNumber('MAX_UPDATE_AGE_SECONDS', 1, 86400).default(1200),
   GTFS_DIR: z.string().default(DEFAULT_GTFS_DIR),
 });
 
@@ -49,11 +51,13 @@ export function loadConfig(env: Env): Config {
   if (!result.success) {
     throw new ConfigError(result.error.issues.map((issue) => issue.message).join('; '));
   }
-  const { PORT, FEED_SOURCE, AT_API_KEY, POLL_INTERVAL_SECONDS, GTFS_DIR } = result.data;
+  const { PORT, FEED_SOURCE, AT_API_KEY, POLL_INTERVAL_SECONDS, MAX_UPDATE_AGE_SECONDS, GTFS_DIR } =
+    result.data;
   return {
     port: PORT,
     feed: toFeedConfig(FEED_SOURCE, AT_API_KEY),
     pollIntervalSeconds: POLL_INTERVAL_SECONDS,
+    maxUpdateAgeSeconds: MAX_UPDATE_AGE_SECONDS,
     gtfsDir: GTFS_DIR,
   };
 }

@@ -1,5 +1,5 @@
 import { toServiceDelay } from '../delays/index.ts';
-import { feedTimestamp, toTripDelays, type FeedSource } from '../feed/index.ts';
+import { dropStale, feedTimestamp, toTripDelays, type FeedSource } from '../feed/index.ts';
 import type { Gtfs } from '../gtfs/index.ts';
 import type { Store } from '../store/index.ts';
 import { checkCallBudget } from './budget.ts';
@@ -11,6 +11,7 @@ export interface PollerOptions {
   gtfs: Gtfs;
   store: Store;
   intervalSeconds: number;
+  maxUpdateAgeSeconds: number;
   now: () => Date;
   schedule: Schedule;
   log: (line: string) => void;
@@ -27,7 +28,7 @@ function oneLine(error: unknown): string {
 }
 
 export function createPoller(options: PollerOptions): Poller {
-  const { source, gtfs, store, intervalSeconds, now, schedule, log } = options;
+  const { source, gtfs, store, intervalSeconds, maxUpdateAgeSeconds, now, schedule, log } = options;
   checkCallBudget(intervalSeconds);
   let running = false;
   let cancelNext: (() => void) | null = null;
@@ -35,10 +36,13 @@ export function createPoller(options: PollerOptions): Poller {
   async function pollOnce(): Promise<void> {
     try {
       const feed = await source.fetchFeed();
-      const services = toTripDelays(feed).map((trip) => toServiceDelay(trip, gtfs));
-      const snapshot = { feedTimestamp: feedTimestamp(feed), fetchedAt: now().toISOString() };
-      store.set({ ...snapshot, services });
-      log(`poll ok: ${services.length} services, feed time ${snapshot.feedTimestamp}`);
+      const feedTime = feedTimestamp(feed);
+      const trips = toTripDelays(feed);
+      const fresh = dropStale(trips, feedTime, maxUpdateAgeSeconds);
+      const services = fresh.map((trip) => toServiceDelay(trip, gtfs));
+      store.set({ feedTimestamp: feedTime, fetchedAt: now().toISOString(), services });
+      const stale = trips.length - fresh.length;
+      log(`poll ok: ${services.length} services, ${stale} stale dropped, feed time ${feedTime}`);
     } catch (error) {
       log(`poll failed: ${oneLine(error)}`);
     }

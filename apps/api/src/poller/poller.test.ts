@@ -7,7 +7,7 @@ import { createPoller, type Schedule } from './poller.ts';
 
 const NOW = new Date('2026-11-19T19:00:05.000Z');
 
-function feedWith(timestamp: number, delays: number[]): Feed {
+function feedWith(timestamp: number, delays: number[], updatedAt?: number[]): Feed {
   return parseFeed({
     status: 'OK',
     response: {
@@ -18,6 +18,7 @@ function feedWith(timestamp: number, delays: number[]): Feed {
           trip: { trip_id: `trip-${index}`, route_id: 'NX1-901' },
           stop_time_update: { stop_id: '4002-901' },
           delay,
+          timestamp: updatedAt?.[index],
         },
       })),
     },
@@ -56,6 +57,7 @@ function setup(fetchFeed: FeedSource['fetchFeed'], intervalSeconds = 60) {
     gtfs,
     store,
     intervalSeconds,
+    maxUpdateAgeSeconds: 1200,
     now: () => NOW,
     schedule: timer.schedule,
     log,
@@ -94,7 +96,23 @@ describe('createPoller', () => {
 
     await poller.start();
 
-    expect(log).toHaveBeenCalledWith('poll ok: 2 services, feed time 2026-11-19T19:00:00.000Z');
+    expect(log).toHaveBeenCalledWith(
+      'poll ok: 2 services, 0 stale dropped, feed time 2026-11-19T19:00:00.000Z',
+    );
+  });
+
+  it('leaves out trips last updated before the age limit and counts them in the log', async () => {
+    const updatedAt = [1795114790, 1795114800 - 1201];
+    const { poller, store, log } = setup(() =>
+      Promise.resolve(feedWith(1795114800, [480, -27023], updatedAt)),
+    );
+
+    await poller.start();
+
+    expect(store.get()?.services.map((service) => service.tripId)).toEqual(['trip-0']);
+    expect(log).toHaveBeenCalledWith(
+      'poll ok: 1 services, 1 stale dropped, feed time 2026-11-19T19:00:00.000Z',
+    );
   });
 
   it('schedules the next poll one interval after the last one ends', async () => {

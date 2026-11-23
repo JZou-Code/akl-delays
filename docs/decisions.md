@@ -2,6 +2,18 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-24: leave out trip updates older than 20 minutes
+
+The AT feed keeps a trip long after its last update. One response, recorded on 24 November 2026 at 10:51 NZDT, had 1817 trip updates. 1108 of them were more than ten minutes old and the oldest was almost six hours old. The old ones carry the last delay AT worked out, and some are wrong by hours: the lowest was 27023 seconds early. Sorted worst first, they would fill the top of the board.
+
+A trip is left out when its last update is more than 20 minutes older than the feed's header time. In that response this kept 890 trips, with delays from 1119 seconds early to 1165 seconds late. A limit of 30 minutes let in a delay of 4910 seconds.
+
+The cost: AT sends an update when a vehicle reaches a stop, so a trip with a long gap between stops looks old while it is still running. At 20 minutes, 58 of the dropped trips still had a vehicle in the vehicle positions feed taken a few seconds later. At 10 minutes it was 99.
+
+Age is measured against the feed's header time and not the clock. A recorded feed then gives the same result on any day, and the fixture feed keeps working.
+
+These numbers come from one off-peak response. The limit is the `MAX_UPDATE_AGE_SECONDS` variable so it can change when there is more data. A better rule would drop a trip once it has passed its last stop. That needs `stop_times.txt`, which the project does not read yet.
+
 ## 2026-11-20: react-router for the two views
 
 The page has two views: the board and one route. react-router gives the route parameter, the query string and links without hand-written history code. The board keeps its mode and status filters in the query, so a filtered view can be shared and reloaded.

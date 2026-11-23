@@ -44,6 +44,7 @@ export async function composeApi(config: Config, deps: Deps): Promise<Api> {
     gtfs,
     store,
     intervalSeconds: config.pollIntervalSeconds,
+    maxUpdateAgeSeconds: config.maxUpdateAgeSeconds,
     now: deps.now,
     schedule: deps.schedule,
     log: deps.log,
