@@ -1,7 +1,8 @@
 import { DELAY_STATUSES, MODES } from '@akl-delays/shared';
-import { useId, type ReactElement } from 'react';
+import { useCallback, useId, type ReactElement } from 'react';
 import { modeLabel, statusLabel } from '../../components/index.ts';
 import type { Filters } from './filters.ts';
+import { SearchBox } from './SearchBox.tsx';
 import type { SetFilter } from './useFilters.ts';
 
 export interface FilterFormProps {
@@ -12,6 +13,13 @@ export interface FilterFormProps {
 export function FilterForm({ filters, onChange }: FilterFormProps): ReactElement {
   const modeId = useId();
   const statusId = useId();
+  // A stable function, so a re-render of the form does not restart the search box's wait.
+  const onSearch = useCallback(
+    (text: string) => {
+      onChange('q', text);
+    },
+    [onChange],
+  );
   return (
     <form
       className="filters"
@@ -20,6 +28,7 @@ export function FilterForm({ filters, onChange }: FilterFormProps): ReactElement
         event.preventDefault();
       }}
     >
+      <SearchBox value={filters.q ?? ''} onChange={onSearch} />
       <div>
         <label htmlFor={modeId}>Mode</label>
         <select

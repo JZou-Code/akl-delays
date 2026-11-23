@@ -95,6 +95,21 @@ describe('BoardPage', () => {
     );
   });
 
+  it('puts the search text in the URL and asks again once typing stops', async () => {
+    const { delaysPaths } = renderPage('/?mode=bus');
+    await screen.findByRole('rowheader', { name: 'NX1' });
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Route or stop' }), {
+      target: { value: 'nx' },
+    });
+
+    await waitFor(() => {
+      expect(delaysPaths()).toEqual(['/api/delays?mode=bus', '/api/delays?mode=bus&q=nx']);
+    });
+    expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent('?mode=bus&q=nx');
+    expect(screen.getByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
+  });
+
   it('says when the data is out of date and still shows it', async () => {
     renderPage('/', answering({ ...summary, stale: true }));
 
