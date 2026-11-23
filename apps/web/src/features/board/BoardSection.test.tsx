@@ -6,7 +6,9 @@ import { ApiRequestError } from '../../api/index.ts';
 import type { Polling } from '../../hooks/index.ts';
 import { BoardSection } from './BoardSection.tsx';
 import type { Filters } from './filters.ts';
+import { DEFAULT_SORT } from './sort.ts';
 import type { SetFilter } from './useFilters.ts';
+import type { SortBy } from './useSort.ts';
 
 const service: ServiceDelay = {
   tripId: 'nx1-0715-1',
@@ -28,7 +30,13 @@ function polling(state: Partial<Polling<DelaysPage>>): Polling<DelaysPage> {
 function renderSection(state: Partial<Polling<DelaysPage>>, filters: Filters = {}) {
   render(
     <MemoryRouter>
-      <BoardSection delays={polling(state)} filters={filters} onFilterChange={vi.fn<SetFilter>()} />
+      <BoardSection
+        delays={polling(state)}
+        filters={filters}
+        onFilterChange={vi.fn<SetFilter>()}
+        sort={DEFAULT_SORT}
+        onSort={vi.fn<SortBy>()}
+      />
     </MemoryRouter>,
   );
 }

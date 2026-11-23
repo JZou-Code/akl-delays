@@ -88,7 +88,7 @@ Components get data through hooks. They do not call `fetch` directly. The hooks 
 
 The page has two views: the board at `/` and one route at `/routes/:routeId`. Each route name on the board links to its route view. When the API answers 404 for a route, the route view says nothing is running on it and links back to the board.
 
-The board keeps its filters in the page URL, as `?mode=`, `?status=` and `?q=` with the same values as the API query. The search box writes `?q=` once typing has stopped for 300 milliseconds. While a changed query loads, the board keeps showing the services it had.
+The board keeps its filters in the page URL, as `?mode=`, `?status=` and `?q=` with the same values as the API query. The search box writes `?q=` once typing has stopped for 300 milliseconds. Each column heading of the board is a button that sorts by that column, and a second press turns the order around. The sort is in the URL as `?sort=` and `?order=`, left out when it is worst delay first. While a changed query loads, the board keeps showing the services it had.
 
 Each view asks the API again every 30 seconds and keeps the last good data when a request fails. A banner says so when that happens, and when the summary's `stale` flag is set. The 503 the API gives before its first poll is shown as waiting for the first data, not as an error.
 

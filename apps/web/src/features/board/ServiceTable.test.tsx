@@ -1,8 +1,10 @@
 import type { ServiceDelay } from '@akl-delays/shared';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ServiceTable } from './ServiceTable.tsx';
+import { DEFAULT_SORT, type Sort } from './sort.ts';
+import type { SortBy } from './useSort.ts';
 
 function service(overrides: Partial<ServiceDelay>): ServiceDelay {
   return {
@@ -20,16 +22,18 @@ function service(overrides: Partial<ServiceDelay>): ServiceDelay {
   };
 }
 
-function renderTable(services: ServiceDelay[]) {
+function renderTable(services: ServiceDelay[], sort: Sort = DEFAULT_SORT) {
+  const onSort = vi.fn<SortBy>();
   render(
     <MemoryRouter>
-      <ServiceTable services={services} />
+      <ServiceTable services={services} sort={sort} onSort={onSort} />
     </MemoryRouter>,
   );
+  return { onSort };
 }
 
 function rowTexts(): string[][] {
-  const table = screen.getByRole('table', { name: 'Services, worst delay first' });
+  const table = screen.getByRole('table', { name: 'Services' });
   const [, ...rows] = within(table).getAllByRole('row');
   return rows.map((row) => Array.from(row.children, (cell) => cell.textContent));
 }
@@ -45,6 +49,33 @@ describe('ServiceTable', () => {
       'Delay',
       'Stop',
     ]);
+  });
+
+  it('marks the sorted column and its direction', () => {
+    renderTable([], { key: 'route', order: 'asc' });
+
+    expect(screen.getByRole('columnheader', { name: 'Route' })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+    expect(screen.getByRole('columnheader', { name: 'Delay' })).not.toHaveAttribute('aria-sort');
+  });
+
+  it('marks the delay column as descending for worst delay first', () => {
+    renderTable([]);
+
+    expect(screen.getByRole('columnheader', { name: 'Delay' })).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    );
+  });
+
+  it('reports the column of the heading that is pressed', () => {
+    const { onSort } = renderTable([]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
+
+    expect(onSort.mock.calls).toEqual([['stop']]);
   });
 
   it('shows one row per service in the order it is given', () => {

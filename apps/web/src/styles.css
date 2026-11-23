@@ -173,6 +173,28 @@ thead th {
   }
 }
 
+.services thead button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.services thead button:hover {
+  text-decoration: underline;
+}
+
+.services th[aria-sort='ascending'] button::after {
+  content: ' \2191';
+}
+
+.services th[aria-sort='descending'] button::after {
+  content: ' \2193';
+}
+
 .services .stop {
   overflow-wrap: anywhere;
 }
