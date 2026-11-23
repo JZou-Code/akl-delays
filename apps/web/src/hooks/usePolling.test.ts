@@ -50,7 +50,7 @@ describe('usePolling', () => {
 
   it('uses the interval it is given', async () => {
     const load = vi.fn<Load<string>>(() => Promise.resolve('data'));
-    renderHook(() => usePolling(load, 5_000));
+    renderHook(() => usePolling(load, { intervalMs: 5_000 }));
     await advance(0);
 
     await advance(5_000);
@@ -201,5 +201,39 @@ describe('usePolling', () => {
     expect(firstSignal?.aborted).toBe(true);
     await advance(30_000);
     expect(first).toHaveBeenCalledTimes(1);
+  });
+
+  describe('with keepLastData', () => {
+    function setup(first: Load<string>) {
+      return renderHook(({ load }) => usePolling(load, { keepLastData: true }), {
+        initialProps: { load: first },
+      });
+    }
+
+    it('keeps the last data while a new load function is loading', async () => {
+      const second = Promise.withResolvers<string>();
+      const { result, rerender } = setup(() => Promise.resolve('bus'));
+      await advance(0);
+
+      rerender({ load: () => second.promise });
+
+      expect(result.current).toEqual({ data: 'bus', error: undefined, loading: true });
+
+      second.resolve('train');
+      await advance(0);
+
+      expect(result.current).toEqual({ data: 'train', error: undefined, loading: false });
+    });
+
+    it('keeps the last data when the new load function fails', async () => {
+      const { result, rerender } = setup(() => Promise.resolve('bus'));
+      await advance(0);
+      const down = new Error('down');
+
+      rerender({ load: () => Promise.reject(down) });
+      await advance(0);
+
+      expect(result.current).toEqual({ data: 'bus', error: down, loading: false });
+    });
   });
 });

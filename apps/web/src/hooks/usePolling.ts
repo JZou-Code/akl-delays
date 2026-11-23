@@ -18,8 +18,15 @@ function asError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
 
-// A new load function starts over with no data, so callers keep it stable with useCallback.
-export function usePolling<T>(load: Load<T>, intervalMs = DEFAULT_INTERVAL_MS): Polling<T> {
+export interface PollingOptions {
+  intervalMs?: number;
+  // Keeps the data of the last load function on screen until the new one answers.
+  keepLastData?: boolean;
+}
+
+// A new load function starts over with no data unless keepLastData is set, so callers keep it stable with useCallback.
+export function usePolling<T>(load: Load<T>, options: PollingOptions = {}): Polling<T> {
+  const { intervalMs = DEFAULT_INTERVAL_MS, keepLastData = false } = options;
   const [held, setHeld] = useState<Held<T>>({
     load,
     data: undefined,
@@ -40,7 +47,7 @@ export function usePolling<T>(load: Load<T>, intervalMs = DEFAULT_INTERVAL_MS): 
         if (controller.signal.aborted) return;
         setHeld((last) => ({
           load,
-          data: last.load === load ? last.data : undefined,
+          data: last.load === load || keepLastData ? last.data : undefined,
           error: asError(error),
           loading: false,
         }));
@@ -58,8 +65,10 @@ export function usePolling<T>(load: Load<T>, intervalMs = DEFAULT_INTERVAL_MS): 
       controller.abort();
       clearTimeout(timer);
     };
-  }, [load, intervalMs]);
+  }, [load, intervalMs, keepLastData]);
 
-  if (held.load !== load) return { data: undefined, error: undefined, loading: true };
+  if (held.load !== load) {
+    return { data: keepLastData ? held.data : undefined, error: undefined, loading: true };
+  }
   return { data: held.data, error: held.error, loading: held.loading };
 }

@@ -10,5 +10,5 @@ export function useDelays(query: DelaysQuery): Polling<DelaysPage> {
     (signal: AbortSignal) => getDelays({ mode, status, q, sort, order, limit }, { fetch, signal }),
     [fetch, mode, status, q, sort, order, limit],
   );
-  return usePolling(load);
+  return usePolling(load, { keepLastData: true });
 }
