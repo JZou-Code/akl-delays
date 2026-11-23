@@ -1,4 +1,4 @@
-import type { ServiceDelay } from '@akl-delays/shared';
+import type { DelaysPage } from '@akl-delays/shared';
 import type { ReactElement } from 'react';
 import { LoadNotice } from '../../components/index.ts';
 import type { Polling } from '../../hooks/index.ts';
@@ -8,7 +8,7 @@ import { ServiceTable } from './ServiceTable.tsx';
 import type { SetFilter } from './useFilters.ts';
 
 export interface BoardSectionProps {
-  delays: Polling<ServiceDelay[]>;
+  delays: Polling<DelaysPage>;
   filters: Filters;
   onFilterChange: SetFilter;
 }
@@ -20,14 +20,14 @@ function emptyText(filters: Filters): string {
 }
 
 export function BoardSection({ delays, filters, onFilterChange }: BoardSectionProps): ReactElement {
-  const { data } = delays;
+  const services = delays.data?.services;
   return (
     <section className="board">
       <h2>Services</h2>
       <FilterForm filters={filters} onChange={onFilterChange} />
-      {data === undefined && <LoadNotice loading={delays.loading} error={delays.error} />}
-      {data?.length === 0 && <p className="notice">{emptyText(filters)}</p>}
-      {data !== undefined && data.length > 0 && <ServiceTable services={data} />}
+      {services === undefined && <LoadNotice loading={delays.loading} error={delays.error} />}
+      {services?.length === 0 && <p className="notice">{emptyText(filters)}</p>}
+      {services !== undefined && services.length > 0 && <ServiceTable services={services} />}
     </section>
   );
 }

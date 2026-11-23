@@ -1,4 +1,4 @@
-import type { DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
+import type { DelaysPage, DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import type { Snapshot, Store } from '../store/index.ts';
@@ -125,7 +125,7 @@ describe('GET /api/delays', () => {
   async function tripIds(path: string): Promise<string[]> {
     const response = await request(app).get(path);
     expect(response.status).toBe(200);
-    return (response.body as ServiceDelay[]).map((item) => item.tripId);
+    return (response.body as DelaysPage).services.map((item) => item.tripId);
   }
 
   it('answers 503 before the first poll', async () => {
@@ -150,7 +150,10 @@ describe('GET /api/delays', () => {
   it('gives each service in full', async () => {
     const response = await request(app).get('/api/delays?limit=1');
 
-    expect(response.body).toEqual([service('train-very-late', 'train', 'very_late', 1080)]);
+    expect(response.body).toEqual({
+      total: 5,
+      services: [service('train-very-late', 'train', 'very_late', 1080)],
+    });
   });
 
   it('filters by mode and status and cuts the list at the limit', async () => {

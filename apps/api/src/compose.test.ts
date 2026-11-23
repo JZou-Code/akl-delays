@@ -1,4 +1,4 @@
-import type { ServiceDelay } from '@akl-delays/shared';
+import type { DelaysPage } from '@akl-delays/shared';
 import { readFile } from 'node:fs/promises';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
@@ -50,7 +50,7 @@ describe('composeApi on the fixture files', () => {
     await poller.start();
 
     const response = await request(app).get('/api/delays?limit=2');
-    const [first, second] = response.body as ServiceDelay[];
+    const [first, second] = (response.body as DelaysPage).services;
 
     expect(first).toMatchObject({
       routeName: '70',
@@ -84,6 +84,6 @@ describe('composeApi with FEED_SOURCE=at', () => {
 
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(health.body).toMatchObject({ feedSource: 'at' });
-    expect((await request(app).get('/api/delays')).body).toHaveLength(20);
+    expect((await request(app).get('/api/delays')).body).toMatchObject({ total: 20 });
   });
 });

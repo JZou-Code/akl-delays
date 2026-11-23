@@ -1,9 +1,9 @@
 import type {
   ApiError,
+  DelaysPage,
   FeedSourceName,
   Health,
   RouteDetail,
-  ServiceDelay,
   Summary,
 } from '@akl-delays/shared';
 import express, { type Express, type Response } from 'express';
@@ -63,7 +63,7 @@ export function createApp({ store, feedSource }: AppOptions): Express {
       sendError(response, 503, NO_DATA);
       return;
     }
-    const body: ServiceDelay[] = selectServices(snapshot.services, parsed.query);
+    const body: DelaysPage = selectServices(snapshot.services, parsed.query);
     response.json(body);
   });
 

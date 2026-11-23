@@ -39,6 +39,12 @@ export interface Summary {
   modes: Record<Mode, ModeSummary>;
 }
 
+// total counts every service that matches the query; services holds at most limit of them.
+export interface DelaysPage {
+  total: number;
+  services: ServiceDelay[];
+}
+
 export interface RouteDetail {
   routeId: string;
   routeName: string | null;

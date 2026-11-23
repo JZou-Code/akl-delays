@@ -1,6 +1,6 @@
 import type { DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
 import { describe, expect, it } from 'vitest';
-import { selectServices } from './select.ts';
+import { selectServices, type ServiceQuery } from './select.ts';
 
 function service(
   tripId: string,
@@ -33,13 +33,17 @@ const services = [
   service('bus-late', 'bus', 'late', 540),
 ];
 
-function tripIds(selected: ServiceDelay[]): string[] {
+function tripIds(selected: readonly ServiceDelay[]): string[] {
   return selected.map((item) => item.tripId);
+}
+
+function selectedIds(query?: ServiceQuery): string[] {
+  return tripIds(selectServices(services, query).services);
 }
 
 describe('selectServices', () => {
   it('puts the worst delay first and services without a delay last, keeping ties in order', () => {
-    expect(tripIds(selectServices(services))).toEqual([
+    expect(selectedIds()).toEqual([
       'train-very-late',
       'ferry-late',
       'bus-late',
@@ -52,7 +56,7 @@ describe('selectServices', () => {
   });
 
   it('keeps one mode', () => {
-    expect(tripIds(selectServices(services, { mode: 'bus' }))).toEqual([
+    expect(selectedIds({ mode: 'bus' })).toEqual([
       'bus-late',
       'bus-on-time',
       'bus-early',
@@ -62,27 +66,24 @@ describe('selectServices', () => {
   });
 
   it('keeps one status', () => {
-    expect(tripIds(selectServices(services, { status: 'late' }))).toEqual([
-      'ferry-late',
-      'bus-late',
-    ]);
+    expect(selectedIds({ status: 'late' })).toEqual(['ferry-late', 'bus-late']);
   });
 
   it('keeps services that match both mode and status', () => {
-    expect(tripIds(selectServices(services, { mode: 'bus', status: 'late' }))).toEqual([
-      'bus-late',
-    ]);
+    expect(selectedIds({ mode: 'bus', status: 'late' })).toEqual(['bus-late']);
   });
 
   it('returns at most limit services, after sorting', () => {
-    expect(tripIds(selectServices(services, { limit: 2 }))).toEqual([
-      'train-very-late',
-      'ferry-late',
-    ]);
+    expect(selectedIds({ limit: 2 })).toEqual(['train-very-late', 'ferry-late']);
   });
 
   it('returns every match when the limit is larger than the list', () => {
-    expect(selectServices(services, { mode: 'ferry', limit: 50 })).toHaveLength(1);
+    expect(selectedIds({ mode: 'ferry', limit: 50 })).toEqual(['ferry-late']);
+  });
+
+  it('counts every match, not only the ones within the limit', () => {
+    expect(selectServices(services, { mode: 'bus', limit: 2 }).total).toBe(5);
+    expect(selectServices(services).total).toBe(8);
   });
 
   it('leaves the input list as it was', () => {

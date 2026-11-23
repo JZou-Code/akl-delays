@@ -68,8 +68,10 @@ describe('getSummary', () => {
 });
 
 describe('getDelays', () => {
-  it('returns the services', async () => {
-    expect(await getDelays({}, { fetch: answering([service]) })).toEqual([service]);
+  it('returns the services and the total', async () => {
+    const page = { total: 1, services: [service] };
+
+    expect(await getDelays({}, { fetch: answering(page) })).toEqual(page);
   });
 
   it('leaves the query out when nothing is set', async () => {

@@ -1,4 +1,4 @@
-import type { DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
+import type { DelaysPage, DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
 
 export interface ServiceQuery {
   mode?: Mode | undefined;
@@ -16,10 +16,10 @@ function worstFirst(a: ServiceDelay, b: ServiceDelay): number {
 export function selectServices(
   services: readonly ServiceDelay[],
   query: ServiceQuery = {},
-): ServiceDelay[] {
+): DelaysPage {
   const selected = services
     .filter((service) => query.mode === undefined || service.mode === query.mode)
     .filter((service) => query.status === undefined || service.status === query.status)
     .sort(worstFirst);
-  return query.limit === undefined ? selected : selected.slice(0, query.limit);
+  return { total: selected.length, services: selected.slice(0, query.limit) };
 }

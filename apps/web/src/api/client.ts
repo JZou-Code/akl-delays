@@ -1,10 +1,10 @@
 import type {
   ApiError,
+  DelaysPage,
   DelayStatus,
   Health,
   Mode,
   RouteDetail,
-  ServiceDelay,
   Summary,
 } from '@akl-delays/shared';
 
@@ -82,7 +82,7 @@ export function getSummary(options: CallOptions): Promise<Summary> {
   return getJson('/api/summary', options);
 }
 
-export function getDelays(query: DelaysQuery, options: CallOptions): Promise<ServiceDelay[]> {
+export function getDelays(query: DelaysQuery, options: CallOptions): Promise<DelaysPage> {
   return getJson(delaysPath(query), options);
 }
 

@@ -18,8 +18,10 @@ const service: ServiceDelay = {
   updatedAt: '2026-11-19T18:59:48.000Z',
 };
 
+const page = { total: 1, services: [service] };
+
 function setup(initialProps: DelaysQuery) {
-  const fetch = vi.fn<Fetch>(() => Promise.resolve(Response.json([service])));
+  const fetch = vi.fn<Fetch>(() => Promise.resolve(Response.json(page)));
   const wrapper = ({ children }: { children: ReactNode }) => (
     <FetchProvider fetch={fetch}>{children}</FetchProvider>
   );
@@ -32,7 +34,7 @@ describe('useDelays', () => {
     const { fetch, result } = setup({ mode: 'bus' });
 
     await waitFor(() => {
-      expect(result.current.data).toEqual([service]);
+      expect(result.current.data).toEqual(page);
     });
     expect(fetch.mock.calls[0]?.[0]).toBe('/api/delays?mode=bus');
   });
@@ -40,7 +42,7 @@ describe('useDelays', () => {
   it('asks again at once when the query changes', async () => {
     const { fetch, result, rerender } = setup({});
     await waitFor(() => {
-      expect(result.current.data).toEqual([service]);
+      expect(result.current.data).toEqual(page);
     });
 
     rerender({ status: 'late' });
@@ -54,7 +56,7 @@ describe('useDelays', () => {
   it('does not ask again when it renders with the same query', async () => {
     const { fetch, result, rerender } = setup({ mode: 'train' });
     await waitFor(() => {
-      expect(result.current.data).toEqual([service]);
+      expect(result.current.data).toEqual(page);
     });
 
     rerender({ mode: 'train' });

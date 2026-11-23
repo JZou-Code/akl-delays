@@ -37,7 +37,7 @@ const detail: RouteDetail = {
 function answer(input: Parameters<Fetch>[0]): unknown {
   if (input === '/api/summary') return summary;
   if (input === '/api/routes/NX1-901') return detail;
-  return [service];
+  return { total: 1, services: [service] };
 }
 
 const fetch = vi.fn<Fetch>((input) => Promise.resolve(Response.json(answer(input))));

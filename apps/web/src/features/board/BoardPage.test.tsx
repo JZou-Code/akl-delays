@@ -33,7 +33,9 @@ function Search() {
 
 function answering(summaryBody: Summary = summary) {
   return vi.fn<Fetch>((input) =>
-    Promise.resolve(Response.json(input === '/api/summary' ? summaryBody : [service])),
+    Promise.resolve(
+      Response.json(input === '/api/summary' ? summaryBody : { total: 1, services: [service] }),
+    ),
   );
 }
 

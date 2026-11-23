@@ -1,4 +1,4 @@
-import type { ServiceDelay } from '@akl-delays/shared';
+import type { DelaysPage, ServiceDelay } from '@akl-delays/shared';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
@@ -21,11 +21,11 @@ const service: ServiceDelay = {
   updatedAt: '2026-11-19T18:59:48.000Z',
 };
 
-function polling(state: Partial<Polling<ServiceDelay[]>>): Polling<ServiceDelay[]> {
+function polling(state: Partial<Polling<DelaysPage>>): Polling<DelaysPage> {
   return { data: undefined, error: undefined, loading: false, ...state };
 }
 
-function renderSection(state: Partial<Polling<ServiceDelay[]>>, filters: Filters = {}) {
+function renderSection(state: Partial<Polling<DelaysPage>>, filters: Filters = {}) {
   render(
     <MemoryRouter>
       <BoardSection delays={polling(state)} filters={filters} onFilterChange={vi.fn<SetFilter>()} />
@@ -49,20 +49,20 @@ describe('BoardSection', () => {
   });
 
   it('says so when the feed has no services', () => {
-    renderSection({ data: [] });
+    renderSection({ data: { total: 0, services: [] } });
 
     expect(screen.getByText('The feed has no services right now.')).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   it('says so when no service matches the filters', () => {
-    renderSection({ data: [] }, { mode: 'ferry', status: 'cancelled' });
+    renderSection({ data: { total: 0, services: [] } }, { mode: 'ferry', status: 'cancelled' });
 
     expect(screen.getByText('No services match these filters.')).toBeInTheDocument();
   });
 
   it('shows the filters and the services', () => {
-    renderSection({ data: [service] }, { mode: 'bus' });
+    renderSection({ data: { total: 1, services: [service] } }, { mode: 'bus' });
 
     expect(screen.getByRole('heading', { name: 'Services' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Mode' })).toHaveValue('bus');
@@ -71,7 +71,7 @@ describe('BoardSection', () => {
 
   it('keeps showing the services when a later request fails', () => {
     renderSection({
-      data: [service],
+      data: { total: 1, services: [service] },
       error: new ApiRequestError(502, 'the API answered HTTP 502'),
     });
 
