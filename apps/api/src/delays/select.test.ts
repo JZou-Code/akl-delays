@@ -86,6 +86,55 @@ describe('selectServices', () => {
     expect(selectServices(services).total).toBe(8);
   });
 
+  describe('with a search text', () => {
+    function named(tripId: string, routeName: string | null, stopName: string | null) {
+      return {
+        ...service(tripId, 'bus', 'on_time', 0),
+        routeId: `${tripId}-205`,
+        routeName,
+        stopName,
+      };
+    }
+    const named3 = [
+      named('seventy', '70', 'Stop A Panmure Station'),
+      named('outer', 'OUT', 'Stop C Westfield Newmarket'),
+      named('unnamed', null, null),
+    ];
+    function found(q: string): string[] {
+      return tripIds(selectServices(named3, { q }).services);
+    }
+
+    it('keeps services whose route name holds the text', () => {
+      expect(found('70')).toEqual(['seventy']);
+    });
+
+    it('keeps services whose stop name holds the text', () => {
+      expect(found('Newmarket')).toEqual(['outer']);
+    });
+
+    it('ignores case and spaces around the text', () => {
+      expect(found('  newMARKET ')).toEqual(['outer']);
+      expect(found('out')).toEqual(['outer']);
+    });
+
+    it('looks in the route id only when the route has no name', () => {
+      expect(found('unnamed-205')).toEqual(['unnamed']);
+      expect(found('205')).toEqual(['unnamed']);
+    });
+
+    it('keeps everything for an empty text', () => {
+      expect(found('   ')).toHaveLength(3);
+    });
+
+    it('keeps nothing when no name holds the text', () => {
+      expect(selectServices(named3, { q: 'ferry' })).toEqual({ total: 0, services: [] });
+    });
+
+    it('works together with the other filters', () => {
+      expect(selectedIds({ q: 'route-1', mode: 'ferry' })).toEqual(['ferry-late']);
+    });
+  });
+
   it('leaves the input list as it was', () => {
     const before = tripIds(services);
 

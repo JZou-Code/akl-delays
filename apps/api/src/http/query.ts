@@ -2,12 +2,15 @@ import { DELAY_STATUSES, MODES } from '@akl-delays/shared';
 import { z } from 'zod';
 
 const LIMIT_MESSAGE = 'limit must be a whole number above 0';
+const Q_MAX_LENGTH = 50;
+const Q_MESSAGE = `q must be text of at most ${Q_MAX_LENGTH} characters`;
 
 const delaysQuerySchema = z.object({
   mode: z.enum(MODES, { error: `mode must be one of ${MODES.join(', ')}` }).optional(),
   status: z
     .enum(DELAY_STATUSES, { error: `status must be one of ${DELAY_STATUSES.join(', ')}` })
     .optional(),
+  q: z.string({ error: Q_MESSAGE }).max(Q_MAX_LENGTH, Q_MESSAGE).optional(),
   limit: z
     .string({ error: LIMIT_MESSAGE })
     .regex(/^[1-9]\d*$/, LIMIT_MESSAGE)

@@ -64,14 +64,14 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 |-------|---------|
 | `GET /api/health` | `{ ok, feedSource, lastFetchedAt }` |
 | `GET /api/summary` | counts per mode and status, feed time, `stale` flag |
-| `GET /api/delays?mode=&status=&limit=` | `{ total, services }`, worst delay first |
+| `GET /api/delays?mode=&status=&q=&limit=` | `{ total, services }`, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
 
 `ok` in the health response is true when a snapshot exists and is not stale. The health route answers 200 even before the first poll.
 
 Worst delay first means the highest `delaySeconds` first. Services with no delay value, such as most cancelled trips, come last.
 
-`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `limit` is a whole number above 0; without it every matching service is returned. `total` counts every match, so the page can say how many are left out by the limit. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
+`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `q` is text of at most 50 characters. It keeps the services whose route name or stop name holds it, ignoring case. A route with no name is matched by its id. `limit` is a whole number above 0; without it every matching service is returned. `total` counts every match, so the page can say how many are left out by the limit. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
 
 ## Web app
 

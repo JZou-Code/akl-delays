@@ -167,6 +167,11 @@ describe('GET /api/delays', () => {
     expect(await tripIds('/api/delays?limit=2')).toEqual(['train-very-late', 'bus-late']);
   });
 
+  it('searches the route and stop names with q', async () => {
+    expect(await tripIds('/api/delays?q=ROUTE%201&mode=ferry')).toEqual(['ferry-late']);
+    expect(await tripIds('/api/delays?q=nowhere')).toEqual([]);
+  });
+
   it('treats an empty value as not set', async () => {
     expect(await tripIds('/api/delays?mode=&status=&limit=')).toHaveLength(5);
   });
@@ -179,6 +184,8 @@ describe('GET /api/delays', () => {
     ['mode=plane', 'mode must be one of bus, train, ferry'],
     ['mode=bus&mode=train', 'mode must be one of bus, train, ferry'],
     ['status=lost', 'status must be one of early, on_time, late, very_late, cancelled, unknown'],
+    [`q=${'x'.repeat(51)}`, 'q must be text of at most 50 characters'],
+    ['q=a&q=b', 'q must be text of at most 50 characters'],
     ['limit=0', 'limit must be a whole number above 0'],
     ['limit=-1', 'limit must be a whole number above 0'],
     ['limit=1.5', 'limit must be a whole number above 0'],

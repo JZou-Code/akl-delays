@@ -3,7 +3,13 @@ import type { DelaysPage, DelayStatus, Mode, ServiceDelay } from '@akl-delays/sh
 export interface ServiceQuery {
   mode?: Mode | undefined;
   status?: DelayStatus | undefined;
+  q?: string | undefined;
   limit?: number | undefined;
+}
+
+function matchesText(service: ServiceDelay, text: string): boolean {
+  const names = [service.routeName ?? service.routeId, service.stopName];
+  return names.some((name) => name?.toLowerCase().includes(text) === true);
 }
 
 function worstFirst(a: ServiceDelay, b: ServiceDelay): number {
@@ -17,9 +23,11 @@ export function selectServices(
   services: readonly ServiceDelay[],
   query: ServiceQuery = {},
 ): DelaysPage {
+  const text = query.q?.trim().toLowerCase() ?? '';
   const selected = services
     .filter((service) => query.mode === undefined || service.mode === query.mode)
     .filter((service) => query.status === undefined || service.status === query.status)
+    .filter((service) => text === '' || matchesText(service, text))
     .sort(worstFirst);
   return { total: selected.length, services: selected.slice(0, query.limit) };
 }
