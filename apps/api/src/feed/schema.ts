@@ -4,7 +4,8 @@ import { FeedError } from './errors.ts';
 const posixSeconds = z.number().int().nonnegative();
 
 const headerSchema = z.object({
-  timestamp: posixSeconds,
+  // The AT feed gives the header time with milliseconds, such as 1795470709.552.
+  timestamp: z.number().nonnegative(),
   gtfs_realtime_version: z.string(),
   incrementality: z.union([z.string(), z.number()]).optional(),
 });

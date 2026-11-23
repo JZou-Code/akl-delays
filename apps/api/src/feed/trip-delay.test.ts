@@ -121,4 +121,13 @@ describe('feedTimestamp', () => {
   it('gives the header time as an ISO string', () => {
     expect(feedTimestamp(feedOf())).toBe('2026-11-19T19:00:00.000Z');
   });
+
+  it('keeps the milliseconds of a header time', () => {
+    const feed = parseFeed({
+      status: 'OK',
+      response: { header: { timestamp: 1795114800.552, gtfs_realtime_version: '1.0' } },
+    });
+
+    expect(feedTimestamp(feed)).toBe('2026-11-19T19:00:00.552Z');
+  });
 });

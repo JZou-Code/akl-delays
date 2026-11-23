@@ -50,8 +50,14 @@ describe('parseFeed', () => {
     expect(() => parseFeed(value)).toThrow(FeedError);
   });
 
-  it('rejects a timestamp that is not whole seconds', () => {
-    expect(() => parseFeed(body({ header: { ...header, timestamp: 1.5 } }))).toThrow(
+  it('accepts a header timestamp with a fraction of a second', () => {
+    const feed = parseFeed(body({ header: { ...header, timestamp: 1795470709.552 } }));
+
+    expect(feed.header.timestamp).toBe(1795470709.552);
+  });
+
+  it('rejects a negative header timestamp', () => {
+    expect(() => parseFeed(body({ header: { ...header, timestamp: -1 } }))).toThrow(
       /response\.header\.timestamp/,
     );
   });
