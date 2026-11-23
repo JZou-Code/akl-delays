@@ -5,6 +5,8 @@ import type {
   Health,
   Mode,
   RouteDetail,
+  SortKey,
+  SortOrder,
   Summary,
 } from '@akl-delays/shared';
 
@@ -16,9 +18,12 @@ export interface CallOptions {
 }
 
 export interface DelaysQuery {
-  mode?: Mode;
-  status?: DelayStatus;
-  limit?: number;
+  mode?: Mode | undefined;
+  status?: DelayStatus | undefined;
+  q?: string | undefined;
+  sort?: SortKey | undefined;
+  order?: SortOrder | undefined;
+  limit?: number | undefined;
 }
 
 export class ApiRequestError extends Error {
@@ -65,11 +70,12 @@ async function getJson<T>(path: string, { fetch, signal }: CallOptions): Promise
   }
 }
 
-function delaysPath({ mode, status, limit }: DelaysQuery): string {
+function delaysPath(query: DelaysQuery): string {
   const params = new URLSearchParams();
-  if (mode !== undefined) params.set('mode', mode);
-  if (status !== undefined) params.set('status', status);
-  if (limit !== undefined) params.set('limit', String(limit));
+  for (const name of ['mode', 'status', 'q', 'sort', 'order', 'limit'] as const) {
+    const value = query[name];
+    if (value !== undefined && value !== '') params.set(name, String(value));
+  }
   const search = params.toString();
   return search === '' ? '/api/delays' : `/api/delays?${search}`;
 }

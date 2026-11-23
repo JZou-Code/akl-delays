@@ -89,6 +89,22 @@ describe('getDelays', () => {
 
     expect(calledPath(fetch)).toBe('/api/delays?mode=train&status=very_late&limit=20');
   });
+
+  it('puts the search text and the sort in the query', async () => {
+    const fetch = answering([]);
+
+    await getDelays({ q: 'stop a', sort: 'route', order: 'asc' }, { fetch });
+
+    expect(calledPath(fetch)).toBe('/api/delays?q=stop+a&sort=route&order=asc');
+  });
+
+  it('leaves an empty search text out', async () => {
+    const fetch = answering([]);
+
+    await getDelays({ q: '', mode: 'bus' }, { fetch });
+
+    expect(calledPath(fetch)).toBe('/api/delays?mode=bus');
+  });
 });
 
 describe('getRoute', () => {
