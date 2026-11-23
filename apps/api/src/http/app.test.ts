@@ -172,6 +172,15 @@ describe('GET /api/delays', () => {
     expect(await tripIds('/api/delays?q=nowhere')).toEqual([]);
   });
 
+  it('sorts by the column in sort, in the direction in order', async () => {
+    expect(await tripIds('/api/delays?sort=delay&order=asc&mode=bus')).toEqual([
+      'bus-on-time',
+      'bus-late',
+      'bus-cancelled',
+    ]);
+    expect(await tripIds('/api/delays?sort=mode&order=desc&limit=1')).toEqual(['train-very-late']);
+  });
+
   it('treats an empty value as not set', async () => {
     expect(await tripIds('/api/delays?mode=&status=&limit=')).toHaveLength(5);
   });
@@ -186,6 +195,8 @@ describe('GET /api/delays', () => {
     ['status=lost', 'status must be one of early, on_time, late, very_late, cancelled, unknown'],
     [`q=${'x'.repeat(51)}`, 'q must be text of at most 50 characters'],
     ['q=a&q=b', 'q must be text of at most 50 characters'],
+    ['sort=colour', 'sort must be one of route, mode, status, delay, stop'],
+    ['order=up', 'order must be one of asc, desc'],
     ['limit=0', 'limit must be a whole number above 0'],
     ['limit=-1', 'limit must be a whole number above 0'],
     ['limit=1.5', 'limit must be a whole number above 0'],

@@ -135,6 +135,94 @@ describe('selectServices', () => {
     });
   });
 
+  describe('with a sort column', () => {
+    function row(tripId: string, overrides: Partial<ServiceDelay>): ServiceDelay {
+      return { ...service(tripId, 'bus', 'on_time', 0), ...overrides };
+    }
+    function sorted(rows: ServiceDelay[], query: ServiceQuery): string[] {
+      return tripIds(selectServices(rows, query).services);
+    }
+
+    it('sorts by delay, lowest first when ascending, with no delay last either way', () => {
+      expect(selectedIds({ sort: 'delay', order: 'asc', mode: 'bus' })).toEqual([
+        'bus-early',
+        'bus-on-time',
+        'bus-late',
+        'bus-unknown',
+        'bus-cancelled',
+      ]);
+      expect(selectedIds({ sort: 'delay', mode: 'bus' }).slice(-2)).toEqual([
+        'bus-unknown',
+        'bus-cancelled',
+      ]);
+    });
+
+    it('sorts route names with numbers in number order, ignoring case', () => {
+      const rows = [
+        row('r101', { routeName: '101' }),
+        row('out', { routeName: 'OUT' }),
+        row('r70', { routeName: '70' }),
+        row('nx1', { routeName: 'nx1' }),
+      ];
+
+      expect(sorted(rows, { sort: 'route', order: 'asc' })).toEqual(['r70', 'r101', 'nx1', 'out']);
+      expect(sorted(rows, { sort: 'route', order: 'desc' })).toEqual(['out', 'nx1', 'r101', 'r70']);
+    });
+
+    it('sorts a route with no name by its id', () => {
+      const rows = [row('b', { routeName: 'B' }), row('a', { routeId: 'A-205', routeName: null })];
+
+      expect(sorted(rows, { sort: 'route', order: 'asc' })).toEqual(['a', 'b']);
+    });
+
+    it('sorts by mode and puts services with no mode last either way', () => {
+      expect(selectedIds({ sort: 'mode', order: 'asc', status: 'on_time' })).toEqual([
+        'bus-on-time',
+        'no-mode',
+      ]);
+      expect(selectedIds({ sort: 'mode', order: 'desc', status: 'late' })).toEqual([
+        'ferry-late',
+        'bus-late',
+      ]);
+      expect(selectedIds({ sort: 'mode', order: 'desc' }).at(-1)).toBe('no-mode');
+    });
+
+    it('sorts by status from early to unknown', () => {
+      expect(selectedIds({ sort: 'status', order: 'asc', mode: 'bus' })).toEqual([
+        'bus-early',
+        'bus-on-time',
+        'bus-late',
+        'bus-cancelled',
+        'bus-unknown',
+      ]);
+    });
+
+    it('sorts by stop name', () => {
+      const rows = [
+        row('p', { stopName: 'Panmure Station' }),
+        row('none', { stopName: null }),
+        row('a', { stopName: 'Albany Station' }),
+      ];
+
+      expect(sorted(rows, { sort: 'stop', order: 'asc' })).toEqual(['a', 'p', 'none']);
+      expect(sorted(rows, { sort: 'stop', order: 'desc' })).toEqual(['p', 'a', 'none']);
+    });
+
+    it('puts the worst delay first among services equal in the sort column', () => {
+      expect(selectedIds({ sort: 'mode', order: 'asc', mode: 'bus' })).toEqual([
+        'bus-late',
+        'bus-on-time',
+        'bus-early',
+        'bus-unknown',
+        'bus-cancelled',
+      ]);
+    });
+
+    it('sorts before it cuts at the limit', () => {
+      expect(selectedIds({ sort: 'delay', order: 'asc', limit: 1 })).toEqual(['bus-early']);
+    });
+  });
+
   it('leaves the input list as it was', () => {
     const before = tripIds(services);
 

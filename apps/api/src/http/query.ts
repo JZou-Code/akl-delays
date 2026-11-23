@@ -1,4 +1,4 @@
-import { DELAY_STATUSES, MODES } from '@akl-delays/shared';
+import { DELAY_STATUSES, MODES, SORT_KEYS, SORT_ORDERS } from '@akl-delays/shared';
 import { z } from 'zod';
 
 const LIMIT_MESSAGE = 'limit must be a whole number above 0';
@@ -11,6 +11,10 @@ const delaysQuerySchema = z.object({
     .enum(DELAY_STATUSES, { error: `status must be one of ${DELAY_STATUSES.join(', ')}` })
     .optional(),
   q: z.string({ error: Q_MESSAGE }).max(Q_MAX_LENGTH, Q_MESSAGE).optional(),
+  sort: z.enum(SORT_KEYS, { error: `sort must be one of ${SORT_KEYS.join(', ')}` }).optional(),
+  order: z
+    .enum(SORT_ORDERS, { error: `order must be one of ${SORT_ORDERS.join(', ')}` })
+    .optional(),
   limit: z
     .string({ error: LIMIT_MESSAGE })
     .regex(/^[1-9]\d*$/, LIMIT_MESSAGE)

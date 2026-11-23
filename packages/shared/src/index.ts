@@ -11,6 +11,13 @@ export const DELAY_STATUSES = [
 ] as const;
 export type DelayStatus = (typeof DELAY_STATUSES)[number];
 
+// The columns GET /api/delays can sort by.
+export const SORT_KEYS = ['route', 'mode', 'status', 'delay', 'stop'] as const;
+export type SortKey = (typeof SORT_KEYS)[number];
+
+export const SORT_ORDERS = ['asc', 'desc'] as const;
+export type SortOrder = (typeof SORT_ORDERS)[number];
+
 export type FeedSourceName = 'fixture' | 'at';
 
 // Every time field is an ISO 8601 string in UTC.
