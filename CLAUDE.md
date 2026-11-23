@@ -16,6 +16,7 @@ Node version is in `.nvmrc`. Run everything from the repo root.
 | Tests for one workspace | `npm test -w apps/api` |
 | Type check | `npm run typecheck` |
 | Lint | `npm run lint` |
+| Download the real timetable | `npm run gtfs:download -w apps/api` |
 
 The API runs on fixture data unless `FEED_SOURCE=at` and `AT_API_KEY` are set. See `.env.example`.
 

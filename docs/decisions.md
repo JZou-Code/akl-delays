@@ -2,6 +2,10 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-24: fflate to unpack the GTFS zip
+
+Node has no zip reader. fflate has no dependencies and can unpack chosen files from a zip held in memory. The script takes `routes.txt` and `stops.txt` and leaves the rest packed, so the 114 MB `stop_times.txt` is never inflated. Calling the `unzip` program would work on macOS and Linux only and could not be tested with a fake.
+
 ## 2026-11-24: leave out trip updates older than 20 minutes
 
 The AT feed keeps a trip long after its last update. One response, recorded on 24 November 2026 at 10:51 NZDT, had 1817 trip updates. 1108 of them were more than ten minutes old and the oldest was almost six hours old. The old ones carry the last delay AT worked out, and some are wrong by hours: the lowest was 27023 seconds early. Sorted worst first, they would fill the top of the board.

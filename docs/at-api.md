@@ -35,6 +35,10 @@ Route names, the kind of vehicle and stop names are not in the realtime feed. Th
 
 `route_type` in `routes.txt` gives the mode: 2 is rail, 3 is bus, 4 is ferry.
 
+The zip is at https://gtfs.at.govt.nz/gtfs.zip and needs no key. On 24 November 2026 it was 32 MB and held 13 files. `routes.txt` had 218 routes: 197 bus, 17 ferry and 4 rail. `stop_times.txt` is 114 MB unpacked and the project does not read it.
+
+`npm run gtfs:download -w apps/api` writes `routes.txt` and `stops.txt` to `apps/api/data/gtfs`, which git ignores. Set `GTFS_DIR=data/gtfs` to use them. The route and stop ids in the realtime feed carry a version suffix, such as `32-203`, that changes with the timetable, so download again when lookups start to miss. `feed_info.txt` in the zip gives the dates the timetable covers.
+
 ## The fixtures
 
 The files in `apps/api/fixtures` are hand-written to the shape above. They are not recordings. Replace them with real responses when a key exists. The `connect-live-feed` skill has the steps.

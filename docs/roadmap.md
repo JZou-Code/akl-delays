@@ -50,7 +50,7 @@ Blocked until the AT account works. Follow the `connect-live-feed` skill.
 
 - [ ] Record real responses and replace the hand-written fixtures
 - [ ] Fix the schema where the real feed differs
-- [ ] Script to download the GTFS zip and unpack `routes.txt` and `stops.txt`
+- [x] Script to download the GTFS zip and unpack `routes.txt` and `stops.txt`
 - [ ] Read AT's terms of use and write down what they allow
 
 ## Later
