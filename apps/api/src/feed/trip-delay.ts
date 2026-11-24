@@ -27,7 +27,8 @@ function toTripDelay(update: TripUpdate): TripDelay {
     delaySeconds: update.delay ?? stop?.arrival?.delay ?? stop?.departure?.delay ?? null,
     cancelled: update.trip.schedule_relationship === 'CANCELED',
     stopId: stop?.stop_id ?? null,
-    vehicleId: update.vehicle?.id ?? null,
+    // The AT feed sometimes gives a vehicle with an empty id.
+    vehicleId: update.vehicle?.id || null,
     updatedAt: update.timestamp === undefined ? null : isoFromSeconds(update.timestamp),
   };
 }

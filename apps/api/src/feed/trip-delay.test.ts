@@ -100,6 +100,10 @@ describe('toTripDelays', () => {
     expect(onlyTrip({ trip })).toMatchObject({ stopId: null, vehicleId: null, updatedAt: null });
   });
 
+  it('gives null for a vehicle with an empty id', () => {
+    expect(onlyTrip({ trip, vehicle: { id: '' } }).vehicleId).toBeNull();
+  });
+
   it('skips deleted entities and entities without a trip update', () => {
     const feed = parseFeed({
       status: 'OK',
