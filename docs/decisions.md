@@ -2,6 +2,26 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-24: one colour list for both themes, and a theme select
+
+Each colour in `styles.css` is written once as `light-dark(light, dark)`. The browser picks a side from `color-scheme`. The page follows the system setting until the reader picks Light or Dark in the header. The pick sets `data-theme` on `<html>`, which pins `color-scheme`, and is kept in `localStorage`. Picking System removes both.
+
+A short inline script in `index.html` sets `data-theme` before the first paint. Without it a saved theme would show the other one for a moment while the module script loads.
+
+The select has three options and not a two-state switch. A switch needs to know the system setting to show its state, which means reading `matchMedia` and listening for changes. The select only shows the saved choice.
+
+The dark page background is `#1b1e23` with panels at `#23272e`, not near-black. Text is `#e2e5e9`, not white. The status colours in dark mode are less saturated than in light mode.
+
+`light-dark()` works in Chrome 123, Firefox 120 and Safari 17.5 or later. Older browsers are not handled.
+
+## 2026-11-24: board layout
+
+On a screen 62rem or wider the summary sits in a column on the left and stays in view while the services scroll. Below that the two stack. The table header sticks to the top of the window. The table uses separate borders because a sticky cell loses a collapsed border.
+
+The delay column is text such as "5 min late", so it is not right-aligned. The counts in the summary are numbers and are right-aligned.
+
+On a phone the table keeps all five columns and long stop names wrap. It was checked at 320px and 375px in headless Chrome and did not scroll sideways. It was not checked on a real phone.
+
 ## 2026-11-24: fflate to unpack the GTFS zip
 
 Node has no zip reader. fflate has no dependencies and can unpack chosen files from a zip held in memory. The script takes `routes.txt` and `stops.txt` and leaves the rest packed, so the 114 MB `stop_times.txt` is never inflated. Calling the `unzip` program would work on macOS and Linux only and could not be tested with a fake.

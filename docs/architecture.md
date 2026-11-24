@@ -82,6 +82,7 @@ src/api         one function per API route, and the context that holds fetch
 src/hooks       usePolling, useNow
 src/features    summary, board, route
 src/components  small shared pieces and the text formatting
+src/theme       the theme select and the saved choice
 ```
 
 Components get data through hooks. They do not call `fetch` directly. The hooks take `fetch` from a React context, so tests pass in a fake one.

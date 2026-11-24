@@ -17,15 +17,17 @@ export function BoardPage(): ReactElement {
   return (
     <>
       <StatusBanner {...bannerState(summary, delays)} />
-      <SummarySection summary={summary} />
-      <BoardSection
-        delays={delays}
-        filters={filters}
-        onFilterChange={setFilter}
-        sort={sort}
-        onSort={sortBy}
-        onShowMore={showMore}
-      />
+      <div className="board-layout">
+        <SummarySection summary={summary} />
+        <BoardSection
+          delays={delays}
+          filters={filters}
+          onFilterChange={setFilter}
+          sort={sort}
+          onSort={sortBy}
+          onShowMore={showMore}
+        />
+      </div>
     </>
   );
 }

@@ -20,7 +20,7 @@ export function RouteServices({ services }: { services: readonly ServiceDelay[] 
             <td>
               <StatusBadge status={service.status} />
             </td>
-            <td>{formatDelay(service.delaySeconds, service.status)}</td>
+            <td className="delay">{formatDelay(service.delaySeconds, service.status)}</td>
             <td className="stop">{service.stopName ?? service.stopId ?? 'Unknown'}</td>
             <td>{service.vehicleId ?? 'Unknown'}</td>
           </tr>

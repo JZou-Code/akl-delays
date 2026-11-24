@@ -28,7 +28,7 @@ function ariaSort(sort: Sort, key: SortKey): 'ascending' | 'descending' | undefi
 export function ServiceTable({ services, sort, onSort }: ServiceTableProps): ReactElement {
   return (
     <table className="services">
-      <caption>Services</caption>
+      <caption className="visually-hidden">Services</caption>
       <thead>
         <tr>
           {COLUMNS.map(({ key, label }) => (
@@ -55,7 +55,7 @@ export function ServiceTable({ services, sort, onSort }: ServiceTableProps): Rea
             <td>
               <StatusBadge status={service.status} />
             </td>
-            <td>{formatDelay(service.delaySeconds, service.status)}</td>
+            <td className="delay">{formatDelay(service.delaySeconds, service.status)}</td>
             <td className="stop">{service.stopName ?? service.stopId ?? 'Unknown'}</td>
           </tr>
         ))}
