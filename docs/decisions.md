@@ -2,6 +2,12 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-24: a cancelled trip is not dropped for its age
+
+AT sends one update for a cancelled trip, at the moment it is cancelled. It has no stop and no vehicle. One response, recorded on 24 November 2026 at 14:54 NZDT, had four cancelled trips. Their updates were 26 to 53 minutes old, so the 20-minute rule dropped all of them. A trip cancelled half an hour before it was due would leave the board before its departure time.
+
+Cancelled trips are now kept whatever their age. AT removes them from the feed itself: the four in that response were due to start 30 to 54 minutes before it. How long AT keeps them is not known.
+
 ## 2026-11-24: one colour list for both themes, and a theme select
 
 Each colour in `styles.css` is written once as `light-dark(light, dark)`. The browser picks a side from `color-scheme`. The page follows the system setting until the reader picks Light or Dark in the header. The pick sets `data-theme` on `<html>`, which pins `color-scheme`, and is kept in `localStorage`. Picking System removes both.

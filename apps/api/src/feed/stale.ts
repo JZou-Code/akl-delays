@@ -7,5 +7,8 @@ export function dropStale(
   maxAgeSeconds: number,
 ): TripDelay[] {
   const oldest = Date.parse(feedTime) - maxAgeSeconds * 1000;
-  return trips.filter((trip) => trip.updatedAt === null || Date.parse(trip.updatedAt) >= oldest);
+  // A cancelled trip gets one update, when it is cancelled, so its age says nothing. AT takes it out of the feed itself.
+  return trips.filter(
+    (trip) => trip.cancelled || trip.updatedAt === null || Date.parse(trip.updatedAt) >= oldest,
+  );
 }

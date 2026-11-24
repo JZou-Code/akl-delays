@@ -42,6 +42,12 @@ describe('dropStale', () => {
     expect(kept([trip('no-time', null)])).toEqual(['no-time']);
   });
 
+  it('keeps a cancelled trip of any age', () => {
+    const cancelled = { ...trip('cancelled', '2026-11-23T20:58:00.000Z'), cancelled: true };
+
+    expect(kept([cancelled])).toEqual(['cancelled']);
+  });
+
   it('keeps a trip updated after the feed time', () => {
     expect(kept([trip('ahead', '2026-11-23T21:52:10.000Z')])).toEqual(['ahead']);
   });
