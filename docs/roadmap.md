@@ -46,12 +46,12 @@ One line is one commit. Tick the line in the commit that finishes it. Work top t
 
 ## 4. Live feed
 
-Blocked until the AT account works. Follow the `connect-live-feed` skill.
+Follow the `connect-live-feed` skill.
 
-- [ ] Record real responses and replace the hand-written fixtures
-- [ ] Fix the schema where the real feed differs
+- [x] Record real responses and replace the hand-written fixtures
+- [x] Fix the schema where the real feed differs
 - [x] Script to download the GTFS zip and unpack `routes.txt` and `stops.txt`
-- [ ] Read AT's terms of use and write down what they allow
+- [x] Read AT's terms of use and write down what they allow
 
 ## Later
 

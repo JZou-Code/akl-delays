@@ -6,9 +6,9 @@ Auckland Transport publishes a realtime feed of its vehicles. This project polls
 
 ## Status
 
-Early. The API and the page run on hand-written sample data. The live feed is not connected. See [the roadmap](docs/roadmap.md).
+Early. The API and the page run on a small recording of the real feed by default. With an AT key they run on the live feed. Nothing is deployed and no history is kept. See [the roadmap](docs/roadmap.md).
 
-The page shows the number of services per mode and status, a board of services with the worst delay first, and one route with its services. The board filters by mode and status. The page asks the API again every 30 seconds and says so when the data is out of date or a request fails.
+The page shows the number of services per mode and status, a board of services with the worst delay first, and one route with its services. The board searches by route or stop name, filters by mode and status, and sorts by any column. The page has a light and a dark theme. The page asks the API again every 30 seconds and says so when the data is out of date or a request fails.
 
 ## Run it
 
@@ -33,4 +33,6 @@ The [architecture notes](docs/architecture.md) cover the modules and the data fl
 
 ## Data
 
-Realtime data comes from Auckland Transport's developer portal, https://dev-portal.at.govt.nz.
+Realtime and timetable data come from [Auckland Transport](https://at.govt.nz/about-us/at-data-sources/) under the [Creative Commons Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/). The files in `apps/api/fixtures` are cut from that data, with licence plates removed.
+
+To use the live feed, get a key from https://dev-portal.at.govt.nz, set `FEED_SOURCE=at` and `AT_API_KEY` in `.env`, and run `npm run gtfs:download -w apps/api` with `GTFS_DIR=data/gtfs`.
