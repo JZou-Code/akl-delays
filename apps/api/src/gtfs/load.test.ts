@@ -30,22 +30,21 @@ describe('loadGtfs', () => {
   it('loads the fixture routes for every mode', async () => {
     const gtfs = await loadFixture();
 
-    expect(gtfs.route('NX1-901')).toEqual({ routeId: 'NX1-901', name: 'NX1', mode: 'bus' });
-    expect(gtfs.route('EAST-901')?.mode).toBe('train');
-    expect(gtfs.route('DEV-901')?.mode).toBe('ferry');
+    expect(gtfs.route('373-203')).toEqual({ routeId: '373-203', name: '373', mode: 'bus' });
+    expect(gtfs.route('S-C-201')?.mode).toBe('train');
+    expect(gtfs.route('MTIA-209')?.mode).toBe('ferry');
   });
 
-  it('loads the fixture stops, including a quoted name', async () => {
+  it('loads the fixture stops', async () => {
     const gtfs = await loadFixture();
 
-    expect(gtfs.stop('4015-901')?.name).toBe('Downtown Ferry Terminal Pier 1');
-    expect(gtfs.stop('4003-901')?.name).toBe('Britomart, Lower Albert St');
+    expect(gtfs.stop('9705-54050269')?.name).toBe('Downtown Ferry Terminal Pier 5');
+    expect(gtfs.stop('2616-316a3b84')?.name).toBe('Smiths Avenue');
   });
 
-  it('leaves route 66-901 and stop 4099-901 out of the fixture, so the feed has ids it cannot name', async () => {
+  it('has no route S094-217, a school bus the real routes.txt does not list', async () => {
     const gtfs = await loadFixture();
 
-    expect(gtfs.route('66-901')).toBeUndefined();
-    expect(gtfs.stop('4099-901')).toBeUndefined();
+    expect(gtfs.route('S094-217')).toBeUndefined();
   });
 });

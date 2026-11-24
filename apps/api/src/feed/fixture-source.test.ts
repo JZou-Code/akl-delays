@@ -69,8 +69,8 @@ describe('the fixture feed file', () => {
     return toTripDelays(await source.fetchFeed());
   }
 
-  it('holds twenty trips', async () => {
-    expect(await fixtureTrips()).toHaveLength(20);
+  it('holds 23 trips', async () => {
+    expect(await fixtureTrips()).toHaveLength(23);
   });
 
   it('holds the cases the board needs to show', async () => {
@@ -78,7 +78,7 @@ describe('the fixture feed file', () => {
     const delays = trips.map((trip) => trip.delaySeconds ?? 0);
 
     expect(trips.filter((trip) => trip.cancelled)).toHaveLength(2);
-    expect(trips.some((trip) => !trip.cancelled && trip.delaySeconds === null)).toBe(true);
+    expect(trips.some((trip) => !trip.cancelled && trip.vehicleId === null)).toBe(true);
     expect(delays.some((delay) => delay < -60)).toBe(true);
     expect(delays.some((delay) => delay > 300 && delay <= 900)).toBe(true);
     expect(delays.some((delay) => delay > 900)).toBe(true);

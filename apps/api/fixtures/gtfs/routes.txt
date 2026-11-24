@@ -1,11 +1,22 @@
-route_id,agency_id,route_short_name,route_long_name,route_type
-NX1-901,AT,NX1,"Hibiscus Coast to Britomart, via Northern Busway",3
-70-901,AT,70,Botany to Britomart via Panmure,3
-27H-901,AT,27H,Waikowhai to Britomart via Hillsborough Rd,3
-25B-901,AT,25B,Blockhouse Bay to City Centre via Dominion Rd,3
-OUT-901,AT,OUT,Outer Link,3
-EAST-901,AT,EAST,Eastern Line,2
-STH-901,AT,STH,Southern Line,2
-WEST-901,AT,WEST,Western Line,2
-DEV-901,AT,DEV,"Downtown to Devonport, Victoria Wharf",4
-HMB-901,AT,HMB,Downtown to Half Moon Bay,4
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color,route_sort_order,contract_id
+14-203,RTH,14,14,,3,,,,,108
+162-203,RTH,162,162,,3,,,,,108
+195-203,RTH,195,195,,3,,,,,108
+22N-202,NZB,22N,22N,,3,,,,,6
+325-203,RTH,325,325,,3,,,,,122
+327-203,RTH,327,327,,3,,,,,119
+373-203,RTH,373,373,,3,,,,,120
+65-202,NZB,65,65,,3,,,,,17
+68-202,NZB,68,68,,3,,,,,22
+70-205,HE,70,70,,3,,,,,50
+83-203,RTH,83,83,,3,,,,,45
+928-203,RTH,928,928,,3,,,,,36
+95B-203,RTH,95B,95B,,3,,,,,35
+BAYS-240,EXPNZ,BAYS,BAYS,,4,,00B1BF,152239,,811
+E-W-201,AM,E-W,E-W,,2,,97C93D,152239,,TRAIN
+HUIA-404,WRC,HUIA,HUIA,,2,,000000,FFFFFF,,TRAIN
+MTIA-209,FGL,MTIA,MTIA,,4,,00B1BF,152239,,FERRY
+O-W-201,AM,O-W,O-W,,2,,00AEEF,152239,,TRAIN
+RBW-402,ATMB,RBW,RBW,,3,,97C93D,152239,,BUS
+S-C-201,AM,S-C,S-C,,2,,D52923,FFFFFF,,TRAIN
+WX1-207,TZG,WX1,WX1,,3,,,,,110
