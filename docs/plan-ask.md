@@ -77,7 +77,7 @@ Each tool has a zod schema for its input. The loop parses the model's input with
 | Tool | Input | Returns | Built on |
 |------|-------|---------|----------|
 | `get_summary` | none | Counts per mode and status, the feed time, whether the data is stale | `summariseModes` |
-| `list_delays` | `mode`, `status`, `q`, `sort`, `order`, `limit` (1 to 20, default 10), all optional | `total` and the matching services, each cut down to route, mode, status, delay in seconds, stop name | `selectServices` |
+| `list_delays` | `mode`, `status`, `q`, `sort`, `order`, `limit` (1 to 20, default 10), all optional | `total` and the matching services, each cut down to route, mode, status, delay in whole minutes, stop name | `selectServices` |
 | `get_route` | `route`, the name a rider uses, such as `70` or `NX1` | The route's running services, at most 20, or a message that none are running | `selectServices` |
 
 Tool results are JSON text. A result holds at most 20 services, so one question cannot pull the whole snapshot into the prompt.
@@ -137,10 +137,10 @@ Add these lines to `docs/roadmap.md` as section 5 before starting. One line is o
 
 1. `shared`: `AskRequest`, `AskResponse`, `AskStep`; `assistant` on `Health`
 2. `config`: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL`, `ASSISTANT_QUESTIONS_PER_HOUR`; `.env.example`
-3. `assistant`: the three tools over a snapshot
+3. `assistant`: the three tools over a snapshot; add `@anthropic-ai/sdk` to `apps/api` for its types
 4. `assistant`: the loop with an injected model client
 5. `assistant`: the hourly question limit
-6. `assistant`: the Anthropic client behind `ModelClient`; add `@anthropic-ai/sdk` to `apps/api`
+6. `assistant`: the Anthropic client behind `ModelClient`
 7. `http`: `POST /api/ask` and `assistant` on `GET /api/health`
 8. `web/api`: `ask()`
 9. `web/features/ask`: the box, the answer and the steps
