@@ -7,6 +7,7 @@
     "dev": "tsx watch --env-file-if-exists=../../.env src/main.ts",
     "start": "tsx --env-file-if-exists=../../.env src/main.ts",
     "gtfs:download": "tsx src/download-gtfs.ts",
+    "ask:check": "tsx --env-file-if-exists=../../.env src/ask-check.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

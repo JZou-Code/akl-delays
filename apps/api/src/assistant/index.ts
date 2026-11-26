@@ -2,6 +2,8 @@ export { createAnthropicClient } from './anthropic-client.ts';
 export type { AnthropicClientOptions } from './anthropic-client.ts';
 export { AskError, createAssistant } from './assistant.ts';
 export type { AskFailure, Assistant, AssistantOptions } from './assistant.ts';
+export { CHECK_CASES, checkOutcome } from './check.ts';
+export type { CheckCase } from './check.ts';
 export { loadFixtureBoard } from './fixture-board.ts';
 export { createHourlyLimiter } from './limiter.ts';
 export type { HourlyLimiterOptions, Limiter } from './limiter.ts';

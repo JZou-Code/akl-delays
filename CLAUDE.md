@@ -17,6 +17,7 @@ Node version is in `.nvmrc`. Run everything from the repo root.
 | Type check | `npm run typecheck` |
 | Lint | `npm run lint` |
 | Download the real timetable | `npm run gtfs:download -w apps/api` |
+| Send the fixed questions to the real model (billed) | `npm run ask:check -w apps/api` |
 
 The API runs on fixture data unless `FEED_SOURCE=at` and `AT_API_KEY` are set. See `.env.example`.
 
@@ -30,6 +31,7 @@ apps/api          Node.js + Express
   src/gtfs        static timetable lookups (routes, stops)
   src/delays      pure functions: status, joins, summaries
   src/store       the latest snapshot
+  src/assistant   answers a question from the snapshot with a Claude model and read-only tools
   src/poller      polling loop and the weekly call budget
   src/http        Express app and routes
 apps/web          React + Vite
@@ -46,7 +48,7 @@ docs              architecture, AT API notes, decisions, roadmap
 - No comments on code that reads plainly. Write a comment only for a constraint the code cannot show, such as a quirk of the AT feed. One line.
 - One commit holds one small feature or one fix, with its tests. Subject in the imperative, lower case, under 70 characters. Add a body only when the reason is not obvious from the diff.
 - Tick the item in `docs/roadmap.md` in the commit that finishes it.
-- Never commit `.env` or an AT key.
+- Never commit `.env`, an AT key or an Anthropic key.
 
 ## Writing
 
