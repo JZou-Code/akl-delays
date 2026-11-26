@@ -8,6 +8,7 @@ describe('loadConfig', () => {
 
     expect(config.port).toBe(3000);
     expect(config.feed).toEqual({ source: 'fixture' });
+    expect(config.assistant).toBeNull();
     expect(config.pollIntervalSeconds).toBe(60);
     expect(config.maxUpdateAgeSeconds).toBe(1200);
     expect(config.gtfsDir.endsWith(join('apps', 'api', 'fixtures', 'gtfs'))).toBe(true);
@@ -21,11 +22,15 @@ describe('loadConfig', () => {
       POLL_INTERVAL_SECONDS: '120',
       MAX_UPDATE_AGE_SECONDS: '600',
       GTFS_DIR: '/data/gtfs',
+      ANTHROPIC_API_KEY: 'test-anthropic-key',
+      ASSISTANT_MODEL: 'claude-sonnet-5-5',
+      ASSISTANT_QUESTIONS_PER_HOUR: '5',
     });
 
     expect(config).toEqual({
       port: 8080,
       feed: { source: 'at', apiKey: 'test-key' },
+      assistant: { apiKey: 'test-anthropic-key', model: 'claude-sonnet-5-5', questionsPerHour: 5 },
       pollIntervalSeconds: 120,
       maxUpdateAgeSeconds: 600,
       gtfsDir: '/data/gtfs',
@@ -37,6 +42,26 @@ describe('loadConfig', () => {
 
     expect(config.port).toBe(3000);
     expect(config.feed).toEqual({ source: 'fixture' });
+  });
+
+  it('turns the assistant on with its defaults when only the key is set', () => {
+    expect(loadConfig({ ANTHROPIC_API_KEY: 'test-anthropic-key' }).assistant).toEqual({
+      apiKey: 'test-anthropic-key',
+      model: 'claude-haiku-5-5',
+      questionsPerHour: 20,
+    });
+  });
+
+  it('leaves the assistant off when the key is empty', () => {
+    const config = loadConfig({ ANTHROPIC_API_KEY: '', ASSISTANT_MODEL: 'claude-sonnet-5-5' });
+
+    expect(config.assistant).toBeNull();
+  });
+
+  it.each(['0', '1001', 'many'])('rejects ASSISTANT_QUESTIONS_PER_HOUR=%s', (value) => {
+    expect(() => loadConfig({ ASSISTANT_QUESTIONS_PER_HOUR: value })).toThrow(
+      new ConfigError('ASSISTANT_QUESTIONS_PER_HOUR must be a whole number from 1 to 1000'),
+    );
   });
 
   it('ignores variables it does not know', () => {

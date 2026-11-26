@@ -58,7 +58,7 @@ Follow the `connect-live-feed` skill.
 The design is in [plan-ask.md](plan-ask.md).
 
 - [x] `shared`: `AskRequest`, `AskResponse`, `AskStep`; `assistant` on `Health`
-- [ ] `config`: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL`, `ASSISTANT_QUESTIONS_PER_HOUR`; `.env.example`
+- [x] `config`: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL`, `ASSISTANT_QUESTIONS_PER_HOUR`; `.env.example`
 - [ ] `assistant`: the three tools over a snapshot
 - [ ] `assistant`: the loop with an injected model client
 - [ ] `assistant`: the hourly question limit

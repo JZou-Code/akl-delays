@@ -5,9 +5,19 @@ export const DEFAULT_GTFS_DIR = fileURLToPath(new URL('../../fixtures/gtfs', imp
 
 export type FeedConfig = { source: 'fixture' } | { source: 'at'; apiKey: string };
 
+export const DEFAULT_ASSISTANT_MODEL = 'claude-haiku-5-5';
+
+export interface AssistantConfig {
+  apiKey: string;
+  model: string;
+  questionsPerHour: number;
+}
+
 export interface Config {
   port: number;
   feed: FeedConfig;
+  // null when no Anthropic key is set. The ask feature is then off.
+  assistant: AssistantConfig | null;
   pollIntervalSeconds: number;
   maxUpdateAgeSeconds: number;
   gtfsDir: string;
@@ -37,6 +47,9 @@ const envSchema = z.object({
   POLL_INTERVAL_SECONDS: wholeNumber('POLL_INTERVAL_SECONDS', 1, 86400).default(60),
   MAX_UPDATE_AGE_SECONDS: wholeNumber('MAX_UPDATE_AGE_SECONDS', 1, 86400).default(1200),
   GTFS_DIR: z.string().default(DEFAULT_GTFS_DIR),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  ASSISTANT_MODEL: z.string().default(DEFAULT_ASSISTANT_MODEL),
+  ASSISTANT_QUESTIONS_PER_HOUR: wholeNumber('ASSISTANT_QUESTIONS_PER_HOUR', 1, 1000).default(20),
 });
 
 function toFeedConfig(source: 'fixture' | 'at', apiKey: string | undefined): FeedConfig {
@@ -53,9 +66,18 @@ export function loadConfig(env: Env): Config {
   }
   const { PORT, FEED_SOURCE, AT_API_KEY, POLL_INTERVAL_SECONDS, MAX_UPDATE_AGE_SECONDS, GTFS_DIR } =
     result.data;
+  const { ANTHROPIC_API_KEY, ASSISTANT_MODEL, ASSISTANT_QUESTIONS_PER_HOUR } = result.data;
   return {
     port: PORT,
     feed: toFeedConfig(FEED_SOURCE, AT_API_KEY),
+    assistant:
+      ANTHROPIC_API_KEY === undefined
+        ? null
+        : {
+            apiKey: ANTHROPIC_API_KEY,
+            model: ASSISTANT_MODEL,
+            questionsPerHour: ASSISTANT_QUESTIONS_PER_HOUR,
+          },
     pollIntervalSeconds: POLL_INTERVAL_SECONDS,
     maxUpdateAgeSeconds: MAX_UPDATE_AGE_SECONDS,
     gtfsDir: GTFS_DIR,
