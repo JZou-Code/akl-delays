@@ -31,6 +31,9 @@ async function main(): Promise<void> {
       return;
     }
     log(`listening on port ${config.port}, feed source ${config.feed.source}`);
+    log(
+      config.assistant === null ? 'assistant off' : `assistant on, model ${config.assistant.model}`,
+    );
     void poller.start();
   });
 

@@ -1,6 +1,7 @@
-import type { DelaysPage, DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
+import type { AskResponse, DelaysPage, DelayStatus, Mode, ServiceDelay } from '@akl-delays/shared';
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
+import { AskError, type AskFailure, type Assistant } from '../assistant/index.ts';
 import type { Snapshot, Store } from '../store/index.ts';
 import { createApp } from './app.ts';
 
@@ -40,7 +41,7 @@ function snapshotOf(services: ServiceDelay[] = []): Snapshot {
 
 describe('GET /api/health', () => {
   it('is not ok before the first poll', async () => {
-    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture', assistant: null });
 
     const response = await request(app).get('/api/health');
 
@@ -54,7 +55,7 @@ describe('GET /api/health', () => {
   });
 
   it('is ok with a fresh snapshot', async () => {
-    const app = createApp({ store: storeWith(snapshotOf()), feedSource: 'at' });
+    const app = createApp({ store: storeWith(snapshotOf()), feedSource: 'at', assistant: null });
 
     const response = await request(app).get('/api/health');
 
@@ -67,7 +68,11 @@ describe('GET /api/health', () => {
   });
 
   it('is not ok when the snapshot is stale', async () => {
-    const app = createApp({ store: storeWith(snapshotOf(), true), feedSource: 'fixture' });
+    const app = createApp({
+      store: storeWith(snapshotOf(), true),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(app).get('/api/health');
 
@@ -77,7 +82,7 @@ describe('GET /api/health', () => {
 
 describe('GET /api/summary', () => {
   it('answers 503 before the first poll', async () => {
-    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture', assistant: null });
 
     const response = await request(app).get('/api/summary');
 
@@ -92,7 +97,11 @@ describe('GET /api/summary', () => {
       service('t3', 'train', 'cancelled', null),
       service('t4', null, 'on_time', 300),
     ];
-    const app = createApp({ store: storeWith(snapshotOf(services)), feedSource: 'fixture' });
+    const app = createApp({
+      store: storeWith(snapshotOf(services)),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(app).get('/api/summary');
 
@@ -110,7 +119,11 @@ describe('GET /api/summary', () => {
   });
 
   it('says when the snapshot is stale', async () => {
-    const app = createApp({ store: storeWith(snapshotOf(), true), feedSource: 'fixture' });
+    const app = createApp({
+      store: storeWith(snapshotOf(), true),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(app).get('/api/summary');
 
@@ -126,7 +139,11 @@ describe('GET /api/delays', () => {
     service('ferry-late', 'ferry', 'late', 540),
     service('bus-late', 'bus', 'late', 600),
   ];
-  const app = createApp({ store: storeWith(snapshotOf(services)), feedSource: 'fixture' });
+  const app = createApp({
+    store: storeWith(snapshotOf(services)),
+    feedSource: 'fixture',
+    assistant: null,
+  });
 
   async function tripIds(path: string): Promise<string[]> {
     const response = await request(app).get(path);
@@ -135,7 +152,11 @@ describe('GET /api/delays', () => {
   }
 
   it('answers 503 before the first poll', async () => {
-    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+    const empty = createApp({
+      store: storeWith(null, true),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(empty).get('/api/delays');
 
@@ -223,7 +244,11 @@ describe('GET /api/delays', () => {
   });
 
   it('checks the query before it checks for data', async () => {
-    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+    const empty = createApp({
+      store: storeWith(null, true),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(empty).get('/api/delays?mode=plane');
 
@@ -241,10 +266,18 @@ describe('GET /api/routes/:routeId', () => {
     onRoute('70-a', '70-901', 600),
     onRoute('nx1-b', 'NX1-901', 240),
   ];
-  const app = createApp({ store: storeWith(snapshotOf(services)), feedSource: 'fixture' });
+  const app = createApp({
+    store: storeWith(snapshotOf(services)),
+    feedSource: 'fixture',
+    assistant: null,
+  });
 
   it('answers 503 before the first poll', async () => {
-    const empty = createApp({ store: storeWith(null, true), feedSource: 'fixture' });
+    const empty = createApp({
+      store: storeWith(null, true),
+      feedSource: 'fixture',
+      assistant: null,
+    });
 
     const response = await request(empty).get('/api/routes/NX1-901');
 
@@ -274,11 +307,141 @@ describe('GET /api/routes/:routeId', () => {
 
 describe('unknown paths', () => {
   it('answer 404 with an error body', async () => {
-    const app = createApp({ store: storeWith(null), feedSource: 'fixture' });
+    const app = createApp({ store: storeWith(null), feedSource: 'fixture', assistant: null });
 
     const response = await request(app).get('/api/nothing-here');
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'not found' });
+  });
+});
+
+describe('POST /api/ask', () => {
+  const answer: AskResponse = {
+    answer: 'Two buses are cancelled.',
+    steps: [{ tool: 'list_delays', input: { status: 'cancelled' }, summary: '2 services' }],
+    model: 'claude-test',
+    usage: { inputTokens: 900, outputTokens: 40 },
+    feedTimestamp: '2026-11-19T19:00:00.000Z',
+  };
+
+  function setup(assistant: Assistant | null) {
+    return createApp({ store: storeWith(snapshotOf()), feedSource: 'fixture', assistant });
+  }
+
+  function answering() {
+    const questions: string[] = [];
+    const assistant: Assistant = {
+      ask: (question) => {
+        questions.push(question);
+        return Promise.resolve(answer);
+      },
+    };
+    return { assistant, questions };
+  }
+
+  function failing(failure: AskFailure, message: string): Assistant {
+    return { ask: () => Promise.reject(new AskError(failure, message)) };
+  }
+
+  it('answers a question', async () => {
+    const { assistant, questions } = answering();
+
+    const response = await request(setup(assistant))
+      .post('/api/ask')
+      .send({ question: 'Is anything cancelled?' });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(answer);
+    expect(questions).toEqual(['Is anything cancelled?']);
+  });
+
+  it('trims the question', async () => {
+    const { assistant, questions } = answering();
+
+    await request(setup(assistant)).post('/api/ask').send({ question: '  Are trains late? ' });
+
+    expect(questions).toEqual(['Are trains late?']);
+  });
+
+  it.each([
+    ['no question', {}],
+    ['an empty question', { question: '   ' }],
+    ['a question that is not text', { question: 7 }],
+    ['a question over 300 characters', { question: 'a'.repeat(301) }],
+  ])('answers 400 to %s', async (_name, body) => {
+    const { assistant, questions } = answering();
+
+    const response = await request(setup(assistant)).post('/api/ask').send(body);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'question must be text of 1 to 300 characters' });
+    expect(questions).toEqual([]);
+  });
+
+  it('takes a question of 300 characters', async () => {
+    const { assistant } = answering();
+
+    const response = await request(setup(assistant))
+      .post('/api/ask')
+      .send({ question: 'a'.repeat(300) });
+
+    expect(response.status).toBe(200);
+  });
+
+  it('answers 400 to a body that is not JSON', async () => {
+    const response = await request(setup(answering().assistant))
+      .post('/api/ask')
+      .set('Content-Type', 'application/json')
+      .send('{"question": ');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'the request body could not be read' });
+  });
+
+  it('answers 413 to a body over 2 kB', async () => {
+    const response = await request(setup(answering().assistant))
+      .post('/api/ask')
+      .send({ question: 'a', padding: 'b'.repeat(3000) });
+
+    expect(response.status).toBe(413);
+  });
+
+  it('answers 503 when no key is set', async () => {
+    const response = await request(setup(null)).post('/api/ask').send({ question: 'Anything?' });
+
+    expect(response.status).toBe(503);
+    expect(response.body).toEqual({ error: 'the assistant is not set up' });
+  });
+
+  it.each([
+    ['no_data', 503],
+    ['limit', 429],
+    ['failed', 502],
+  ] as const)('answers a %s failure with %i', async (failure, status) => {
+    const app = setup(failing(failure, 'the reason'));
+
+    const response = await request(app).post('/api/ask').send({ question: 'Anything?' });
+
+    expect(response.status).toBe(status);
+    expect(response.body).toEqual({ error: 'the reason' });
+  });
+
+  it('answers 500 without the reason when something else breaks', async () => {
+    const app = setup({ ask: () => Promise.reject(new Error('secret detail')) });
+
+    const response = await request(app).post('/api/ask').send({ question: 'Anything?' });
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'the API failed' });
+  });
+});
+
+describe('GET /api/health with an assistant', () => {
+  it('reports that questions can be asked', async () => {
+    const assistant: Assistant = { ask: () => Promise.reject(new Error('not called')) };
+    const app = createApp({ store: storeWith(snapshotOf()), feedSource: 'at', assistant });
+
+    expect((await request(app).get('/api/health')).body).toMatchObject({ assistant: true });
   });
 });

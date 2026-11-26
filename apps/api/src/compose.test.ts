@@ -87,3 +87,67 @@ describe('composeApi with FEED_SOURCE=at', () => {
     expect((await request(app).get('/api/delays')).body).toMatchObject({ total: 20 });
   });
 });
+
+describe('composeApi with ANTHROPIC_API_KEY', () => {
+  const message = {
+    id: 'msg_1',
+    type: 'message',
+    role: 'assistant',
+    model: 'claude-haiku-5-5',
+    content: [{ type: 'text', text: 'Two buses are cancelled.' }],
+    stop_reason: 'end_turn',
+    stop_sequence: null,
+    usage: { input_tokens: 900, output_tokens: 40 },
+  };
+
+  function setup(env: Record<string, string>) {
+    const fetch = vi.fn<Fetch>(() => Promise.resolve(Response.json(message)));
+    return { fetch, composed: composeApi(loadConfig(env), deps(fetch)) };
+  }
+
+  it('leaves the assistant off without a key', async () => {
+    const { composed } = setup({});
+    const { app, poller } = await composed;
+    await poller.start();
+
+    expect((await request(app).get('/api/health')).body).toMatchObject({ assistant: false });
+    expect((await request(app).post('/api/ask').send({ question: 'Anything?' })).status).toBe(503);
+  });
+
+  it('answers a question through the model with the default model name', async () => {
+    const { fetch, composed } = setup({ ANTHROPIC_API_KEY: 'test-anthropic-key' });
+    const { app, poller } = await composed;
+    await poller.start();
+
+    const health = await request(app).get('/api/health');
+    const response = await request(app)
+      .post('/api/ask')
+      .send({ question: 'Is anything cancelled?' });
+
+    expect(health.body).toMatchObject({ assistant: true });
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      answer: 'Two buses are cancelled.',
+      steps: [],
+      model: 'claude-haiku-5-5',
+      usage: { inputTokens: 900, outputTokens: 40 },
+      feedTimestamp: NOW.toISOString(),
+    });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0]?.[0]).toBe('https://api.anthropic.com/v1/messages');
+  });
+
+  it('answers 429 after the hourly limit', async () => {
+    const { composed } = setup({
+      ANTHROPIC_API_KEY: 'test-anthropic-key',
+      ASSISTANT_QUESTIONS_PER_HOUR: '1',
+    });
+    const { app, poller } = await composed;
+    await poller.start();
+
+    const first = await request(app).post('/api/ask').send({ question: 'Anything?' });
+    const second = await request(app).post('/api/ask').send({ question: 'Anything?' });
+
+    expect([first.status, second.status]).toEqual([200, 429]);
+  });
+});
