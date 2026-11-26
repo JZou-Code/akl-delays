@@ -62,7 +62,7 @@ The design is in [plan-ask.md](plan-ask.md).
 - [x] `assistant`: the three tools over a snapshot
 - [x] `assistant`: the loop with an injected model client
 - [x] `assistant`: the hourly question limit
-- [ ] `assistant`: the Anthropic client behind `ModelClient`
+- [x] `assistant`: the Anthropic client behind `ModelClient`
 - [ ] `http`: `POST /api/ask` and `assistant` on `GET /api/health`
 - [ ] `web/api`: `ask()`
 - [ ] `web/features/ask`: the box, the answer and the steps
