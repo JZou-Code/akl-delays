@@ -33,6 +33,7 @@ export function createApp({ store, feedSource }: AppOptions): Express {
       ok: snapshot !== null && !store.isStale(),
       feedSource,
       lastFetchedAt: snapshot?.fetchedAt ?? null,
+      assistant: false,
     };
     response.json(body);
   });

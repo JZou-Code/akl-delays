@@ -45,7 +45,12 @@ const service: ServiceDelay = {
 
 describe('getHealth', () => {
   it('returns the health body', async () => {
-    const health: Health = { ok: true, feedSource: 'fixture', lastFetchedAt: null };
+    const health: Health = {
+      ok: true,
+      feedSource: 'fixture',
+      lastFetchedAt: null,
+      assistant: false,
+    };
     const fetch = answering(health);
 
     expect(await getHealth({ fetch })).toEqual(health);

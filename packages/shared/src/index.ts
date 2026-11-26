@@ -63,6 +63,34 @@ export interface Health {
   ok: boolean;
   feedSource: FeedSourceName;
   lastFetchedAt: string | null;
+  // True when POST /api/ask can answer. It needs an Anthropic key on the server.
+  assistant: boolean;
+}
+
+export const QUESTION_MAX_LENGTH = 300;
+
+export interface AskRequest {
+  question: string;
+}
+
+// One tool call the model made on the way to its answer.
+export interface AskStep {
+  tool: string;
+  input: Record<string, unknown>;
+  summary: string;
+}
+
+export interface AskUsage {
+  inputTokens: number;
+  outputTokens: number;
+}
+
+export interface AskResponse {
+  answer: string;
+  steps: AskStep[];
+  model: string;
+  usage: AskUsage;
+  feedTimestamp: string;
 }
 
 export interface ApiError {

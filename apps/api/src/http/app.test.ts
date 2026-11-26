@@ -45,7 +45,12 @@ describe('GET /api/health', () => {
     const response = await request(app).get('/api/health');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ ok: false, feedSource: 'fixture', lastFetchedAt: null });
+    expect(response.body).toEqual({
+      ok: false,
+      feedSource: 'fixture',
+      lastFetchedAt: null,
+      assistant: false,
+    });
   });
 
   it('is ok with a fresh snapshot', async () => {
@@ -57,6 +62,7 @@ describe('GET /api/health', () => {
       ok: true,
       feedSource: 'at',
       lastFetchedAt: '2026-11-19T19:00:05.000Z',
+      assistant: false,
     });
   });
 
