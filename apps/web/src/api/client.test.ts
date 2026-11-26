@@ -1,7 +1,8 @@
-import type { Health, RouteDetail, ServiceDelay, Summary } from '@akl-delays/shared';
+import type { AskResponse, Health, RouteDetail, ServiceDelay, Summary } from '@akl-delays/shared';
 import { describe, expect, it, vi } from 'vitest';
 import {
   ApiRequestError,
+  ask,
   failureReason,
   getDelays,
   getHealth,
@@ -207,5 +208,40 @@ describe('failureReason', () => {
 
   it('says the API could not be reached for any other error', () => {
     expect(failureReason(new TypeError('Failed to fetch'))).toBe('could not reach the API');
+  });
+});
+
+describe('ask', () => {
+  const answer: AskResponse = {
+    answer: 'Two buses are cancelled.',
+    steps: [{ tool: 'list_delays', input: { status: 'cancelled' }, summary: '2 services' }],
+    model: 'claude-haiku-5-5',
+    usage: { inputTokens: 900, outputTokens: 40 },
+    feedTimestamp: '2026-11-19T19:00:00.000Z',
+  };
+
+  it('posts the question as JSON and returns the answer', async () => {
+    const fetch = answering(answer);
+    const signal = new AbortController().signal;
+
+    expect(await ask('Is anything cancelled?', { fetch, signal })).toEqual(answer);
+
+    const [path, init] = fetch.mock.calls[0] ?? [];
+    expect(path).toBe('/api/ask');
+    expect(init?.method).toBe('POST');
+    expect(new Headers(init?.headers).get('Content-Type')).toBe('application/json');
+    expect(init?.body).toBe('{"question":"Is anything cancelled?"}');
+    expect(init?.signal).toBe(signal);
+  });
+
+  it('fails with the reason the API gives', async () => {
+    const fetch = answering(
+      { error: 'the hourly question limit is reached, try again later' },
+      429,
+    );
+
+    await expect(ask('Anything?', { fetch })).rejects.toThrow(
+      new ApiRequestError(429, 'the hourly question limit is reached, try again later'),
+    );
   });
 });

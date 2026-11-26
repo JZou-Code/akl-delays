@@ -64,7 +64,7 @@ The design is in [plan-ask.md](plan-ask.md).
 - [x] `assistant`: the hourly question limit
 - [x] `assistant`: the Anthropic client behind `ModelClient`
 - [x] `http`: `POST /api/ask` and `assistant` on `GET /api/health`
-- [ ] `web/api`: `ask()`
+- [x] `web/api`: `ask()`
 - [ ] `web/features/ask`: the box, the answer and the steps
 - [ ] Docs: architecture, decisions, README
 - [ ] `ask:check`: fixed questions against the fixture with the real model

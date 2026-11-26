@@ -1,5 +1,7 @@
 import type {
   ApiError,
+  AskRequest,
+  AskResponse,
   DelaysPage,
   DelayStatus,
   Health,
@@ -59,8 +61,7 @@ async function errorMessage(response: Response): Promise<string> {
   return isApiError(body) ? body.error : `the API answered HTTP ${response.status}`;
 }
 
-async function getJson<T>(path: string, { fetch, signal }: CallOptions): Promise<T> {
-  const response = await fetch(path, { headers: { Accept: 'application/json' }, signal });
+async function readJson<T>(response: Response): Promise<T> {
   if (!response.ok) throw new ApiRequestError(response.status, await errorMessage(response));
   try {
     return (await response.json()) as T;
@@ -68,6 +69,22 @@ async function getJson<T>(path: string, { fetch, signal }: CallOptions): Promise
     if (!(error instanceof SyntaxError)) throw error;
     throw new ApiRequestError(response.status, 'the API answered with a body that is not JSON');
   }
+}
+
+async function getJson<T>(path: string, { fetch, signal }: CallOptions): Promise<T> {
+  return readJson(await fetch(path, { headers: { Accept: 'application/json' }, signal }));
+}
+
+async function postJson<T>(path: string, body: unknown, options: CallOptions): Promise<T> {
+  const { fetch, signal } = options;
+  return readJson(
+    await fetch(path, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal,
+    }),
+  );
 }
 
 function delaysPath(query: DelaysQuery): string {
@@ -94,4 +111,9 @@ export function getDelays(query: DelaysQuery, options: CallOptions): Promise<Del
 
 export function getRoute(routeId: string, options: CallOptions): Promise<RouteDetail> {
   return getJson(`/api/routes/${encodeURIComponent(routeId)}`, options);
+}
+
+export function ask(question: string, options: CallOptions): Promise<AskResponse> {
+  const body: AskRequest = { question };
+  return postJson('/api/ask', body, options);
 }
