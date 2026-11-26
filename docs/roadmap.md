@@ -53,6 +53,22 @@ Follow the `connect-live-feed` skill.
 - [x] Script to download the GTFS zip and unpack `routes.txt` and `stops.txt`
 - [x] Read AT's terms of use and write down what they allow
 
+## 5. Ask a question
+
+The design is in [plan-ask.md](plan-ask.md).
+
+- [ ] `shared`: `AskRequest`, `AskResponse`, `AskStep`; `assistant` on `Health`
+- [ ] `config`: `ANTHROPIC_API_KEY`, `ASSISTANT_MODEL`, `ASSISTANT_QUESTIONS_PER_HOUR`; `.env.example`
+- [ ] `assistant`: the three tools over a snapshot
+- [ ] `assistant`: the loop with an injected model client
+- [ ] `assistant`: the hourly question limit
+- [ ] `assistant`: the Anthropic client behind `ModelClient`
+- [ ] `http`: `POST /api/ask` and `assistant` on `GET /api/health`
+- [ ] `web/api`: `ask()`
+- [ ] `web/features/ask`: the box, the answer and the steps
+- [ ] Docs: architecture, decisions, README
+- [ ] `ask:check`: fixed questions against the fixture with the real model
+
 ## Later
 
 Not planned in detail.
