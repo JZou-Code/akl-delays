@@ -66,7 +66,7 @@ The design is in [plan-ask.md](plan-ask.md).
 - [x] `http`: `POST /api/ask` and `assistant` on `GET /api/health`
 - [x] `web/api`: `ask()`
 - [x] `web/features/ask`: the box, the answer and the steps
-- [ ] Docs: architecture, decisions, README
+- [x] Docs: architecture, decisions, README
 - [ ] `ask:check`: fixed questions against the fixture with the real model
 
 ## Later

@@ -30,7 +30,8 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | `delays` | Status from seconds, join with route and stop, summary per mode | `shared` types |
 | `store` | Holds the latest snapshot and says whether it is stale: no successful fetch for more than three poll intervals | `shared` types |
 | `poller` | Runs fetch, parse, join, store on a timer. Checks the weekly call budget | `feed`, `gtfs`, `delays`, `store` |
-| `http` | Express app and routes | `store`, `delays` |
+| `assistant` | Answers a question in plain English from the snapshot: three read-only tools, the loop that lets a Claude model call them, the hourly limit | `store`, `delays`, the Anthropic SDK |
+| `http` | Express app and routes | `store`, `delays`, `assistant` |
 
 `compose.ts` builds the pieces from the config and passes them to each other. `main.ts` reads the env vars, calls it with the real `fetch`, clock, timer and file reads, then listens and starts the poller. No module creates its own dependencies, so tests pass in fakes: a fake `fetch`, a fake clock, a fake timer.
 
@@ -40,6 +41,26 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 
 - `FixtureFeedSource` reads a cut-down recording of the real feed from `apps/api/fixtures`. It is the default, so the project runs without a key.
 - `AtFeedSource` calls the AT API. It is used when `FEED_SOURCE=at`.
+
+## Asking a question
+
+`POST /api/ask` takes a question and returns an answer that a Claude model wrote. It is off unless `ANTHROPIC_API_KEY` is set. [plan-ask.md](plan-ask.md) has the full design.
+
+1. `http` checks the question, 1 to 300 characters.
+2. `assistant` checks that a snapshot exists and that the hour has room for one more question. The default is 20 an hour, counted in memory.
+3. The loop sends the question, a fixed system prompt and the three tools to the model. A line after the question says whether the data is live or a recording, the feed time in Auckland time, and whether the data is stale.
+4. When the model asks for tools, the loop checks each input with zod, runs the tool on the snapshot, and sends every result back in one message. An unknown tool or a bad input goes back as an error, so the model can try again.
+5. The loop stops when the model writes its answer, or after 5 model calls.
+
+| Tool | Returns |
+|------|---------|
+| `get_summary` | counts per mode and status, the feed time, whether the data is stale |
+| `list_delays` | services filtered and sorted like `GET /api/delays`, at most 20 |
+| `get_route` | the services on one route, found by the name a rider uses, at most 20 |
+
+The tools only read. A tool result holds route, mode, status, delay in whole minutes and stop name for each service, so the model never sees a trip id, a vehicle id or a route id.
+
+Only `anthropic-client.ts` builds the SDK client. The loop depends on a `ModelClient` interface with one method, so the tests script the model's replies and call no API.
 
 ## Status rules
 
@@ -62,10 +83,11 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 
 | Route | Returns |
 |-------|---------|
-| `GET /api/health` | `{ ok, feedSource, lastFetchedAt }` |
+| `GET /api/health` | `{ ok, feedSource, lastFetchedAt, assistant }` |
 | `GET /api/summary` | counts per mode and status, feed time, `stale` flag |
 | `GET /api/delays?mode=&status=&q=&sort=&order=&limit=` | `{ total, services }`, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
+| `POST /api/ask` with `{ question }` | `{ answer, steps, model, usage, feedTimestamp }` |
 
 `ok` in the health response is true when a snapshot exists and is not stale. The health route answers 200 even before the first poll.
 
@@ -75,12 +97,14 @@ Worst delay first means the highest `delaySeconds` first. Services with no delay
 
 `mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `q` is text of at most 50 characters. It keeps the services whose route name or stop name holds it, ignoring case. A route with no name is matched by its id. `limit` is a whole number above 0; without it every matching service is returned. `total` counts every match, so the page can say how many are left out by the limit. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
 
+`assistant` in the health response is true when the API has an Anthropic key. `POST /api/ask` answers 400 for a question that is missing, empty or over 300 characters, 429 when the hourly limit is reached, 502 when the model call fails or the loop runs out of calls, and 503 when no key is set or there is no snapshot yet. `steps` lists the tool calls the model made, each with its input and a short count of what came back. `usage` is the input and output tokens of all the model calls for the question.
+
 ## Web app
 
 ```
 src/api         one function per API route, and the context that holds fetch
 src/hooks       usePolling, useNow
-src/features    summary, board, route
+src/features    summary, board, route, ask
 src/components  small shared pieces and the text formatting
 src/theme       the theme select and the saved choice
 ```
@@ -90,6 +114,8 @@ Components get data through hooks. They do not call `fetch` directly. The hooks 
 The page has two views: the board at `/` and one route at `/routes/:routeId`. Each route name on the board links to its route view. When the API answers 404 for a route, the route view says nothing is running on it and links back to the board.
 
 The board keeps its filters in the page URL, as `?mode=`, `?status=` and `?q=` with the same values as the API query. The search box writes `?q=` once typing has stopped for 300 milliseconds. Each column heading of the board is a button that sorts by that column, and a second press turns the order around. The sort is in the URL as `?sort=` and `?order=`, left out when it is worst delay first. The board asks for 50 services, says how many match, and has a button that asks for 50 more. A new filter or sort goes back to 50. While a changed query loads, the board keeps showing the services it had.
+
+The board asks the health route once. When `assistant` is true it shows a box for a question, with three example questions. Under the answer it lists the tool calls the model made, the model's name and the token counts. A new question replaces the last answer. Nothing is kept.
 
 Each view asks the API again every 30 seconds and keeps the last good data when a request fails. A banner says so when that happens, and when the summary's `stale` flag is set. The 503 the API gives before its first poll is shown as waiting for the first data, not as an error.
 

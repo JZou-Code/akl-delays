@@ -2,6 +2,28 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-27: the cheapest model answers the questions
+
+`claude-haiku-5-5` is the default and `ASSISTANT_MODEL` changes it. The questions are lookups over three tools, not reasoning. At list price a question of a few thousand tokens costs under a tenth of a US cent on this model. `claude-opus-5-5` costs 40 times as much for each token.
+
+Not checked: no question has been sent to the real model yet. `npm run ask:check -w apps/api` sends eight fixed questions and is how this choice gets tested.
+
+## 2026-11-27: the tools only read, and questions are limited by the hour
+
+Route and stop names come from AT and reach the model inside tool results. Text in a name could try to steer the model. Every tool reads the snapshot and none can change anything, so the worst result is a wrong answer.
+
+A tool result holds at most 20 services. One question cannot pull the whole snapshot of about 900 services into the prompt.
+
+The API answers at most 20 questions an hour. The count is in memory. It stops a bug in the page or a test from running up a bill. It is not enough for a public site: a restart clears it, and one visitor can use up the hour for everyone. A public deployment needs a daily limit and a spend limit set in the Anthropic Console as well.
+
+## 2026-11-27: a hand-written tool loop
+
+The Anthropic SDK has a tool runner that does this loop, but it is in beta. The loop here is about 40 lines in `assistant/loop.ts`. It takes a fake model in tests, records each tool call for the page to show, and stops after 5 model calls.
+
+The loop sends each reply back to the model whole. A reply holds thinking blocks next to the tool calls, and the API needs them returned as they came.
+
+Thinking cannot be turned off on the current models. The loop always sends `effort: 'low'`. It sets `max_tokens` to 16,000 because thinking counts against that limit, and the prompt keeps the answer short. A model call has 30 seconds and one retry. The SDK's defaults are 10 minutes and two retries.
+
 ## 2026-11-24: a cancelled trip is not dropped for its age
 
 AT sends one update for a cancelled trip, at the moment it is cancelled. It has no stop and no vehicle. One response, recorded on 24 November 2026 at 14:54 NZDT, had four cancelled trips. Their updates were 26 to 53 minutes old, so the 20-minute rule dropped all of them. A trip cancelled half an hour before it was due would leave the board before its departure time.
