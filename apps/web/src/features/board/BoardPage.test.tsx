@@ -49,7 +49,9 @@ function renderPage(url: string, fetch = answering()) {
     </FetchProvider>,
   );
   const delaysPaths = () =>
-    fetch.mock.calls.map(([input]) => input).filter((input) => input !== '/api/summary');
+    fetch.mock.calls
+      .map(([input]) => input)
+      .filter((input) => input !== '/api/summary' && input !== '/api/health');
   return { delaysPaths };
 }
 

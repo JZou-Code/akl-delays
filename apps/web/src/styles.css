@@ -314,6 +314,8 @@ thead th {
 
 select,
 input[type='search'],
+.ask input,
+.ask button,
 .more {
   min-height: 2.25rem;
   padding: 0.25rem 0.5rem;
@@ -324,11 +326,13 @@ input[type='search'],
   font: inherit;
 }
 
+.ask button,
 .more {
   padding-inline: 0.75rem;
   cursor: pointer;
 }
 
+.ask button:hover:enabled,
 .more:hover {
   background: var(--hover);
 }
@@ -344,6 +348,82 @@ input[type='search'],
 
 .banner p {
   margin: 0.25rem 0;
+}
+
+.ask {
+  margin-bottom: 1rem;
+}
+
+.ask-form label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ask-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ask-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.ask-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ask-examples button {
+  min-height: 1.75rem;
+  border-radius: 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.ask button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ask .notice {
+  margin: 1rem 0 0;
+}
+
+.ask-answer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.ask-answer p {
+  margin: 0;
+}
+
+.ask-answer h3 {
+  margin: 1rem 0 0.25rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.ask-answer ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.ask-answer .ask-source {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
 }
 
 @media (max-width: 32rem) {

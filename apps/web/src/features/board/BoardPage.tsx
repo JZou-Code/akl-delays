@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { bannerState, StatusBanner } from '../../components/index.ts';
+import { AskSection } from '../ask/index.ts';
 import { SummarySection, useSummary } from '../summary/index.ts';
 import { BoardSection } from './BoardSection.tsx';
 import { useDelays } from './useDelays.ts';
@@ -17,6 +18,7 @@ export function BoardPage(): ReactElement {
   return (
     <>
       <StatusBanner {...bannerState(summary, delays)} />
+      <AskSection />
       <div className="board-layout">
         <SummarySection summary={summary} />
         <BoardSection
