@@ -67,7 +67,7 @@ The design is in [plan-ask.md](plan-ask.md).
 - [x] `web/api`: `ask()`
 - [x] `web/features/ask`: the box, the answer and the steps
 - [x] Docs: architecture, decisions, README
-- [ ] `ask:check`: fixed questions against the fixture with the real model
+- [x] `ask:check`: fixed questions against the fixture with the real model
 
 ## Later
 

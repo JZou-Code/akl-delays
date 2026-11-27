@@ -164,9 +164,14 @@ Commits 1 to 10 need no key to write or to test. Commit 6 is the first that can 
 - `npm test`, `npm run typecheck` and `npm run lint` pass.
 - No key in the repository, in a commit or in a log line.
 
+## Checked on 27 November 2026
+
+- `npm run ask:check -w apps/api` passed 8 of 8 with `claude-haiku-5-5` at `low` effort on the fixture.
+- The run used 24,648 input tokens and 2,052 output tokens. At list price (0.10 US dollars a million input tokens, 0.50 output) that is about 0.35 of a cent for eight questions.
+- One question through the page took about 2.5 seconds.
+
 ## Not checked
 
-- The token counts in the example response are made up. Real numbers come from the first run.
-- The cost per question has not been measured. At the list price of `claude-haiku-5-5` (0.10 US dollars a million input tokens, 0.50 output) a question of a few thousand tokens costs well under a tenth of a cent.
-- Whether `claude-haiku-5-5` answers these questions well has not been tried. The check script answers that.
-- Whether `low` effort answers these questions well has not been tried. If it does not, try `medium`.
+- The token counts in the example response above are made up.
+- Questions outside the eight in the check script.
+- Answers on live data. The run used the recorded sample.

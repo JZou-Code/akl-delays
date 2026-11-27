@@ -10,7 +10,7 @@ Early. The API and the page run on a small recording of the real feed by default
 
 The page shows the number of services per mode and status, a board of services with the worst delay first, and one route with its services. The board searches by route or stop name, filters by mode and status, and sorts by any column. The page has a light and a dark theme. The page asks the API again every 30 seconds and says so when the data is out of date or a request fails.
 
-With an Anthropic key the page also has a box that takes a question in plain English, such as "Is anything cancelled?". A Claude model answers it from the same data and the page shows which lookups the model made. This part has been tested with a scripted stand-in for the model. It has not been run against the real model yet.
+With an Anthropic key the page also has a box that takes a question in plain English, such as "Is anything cancelled?". A Claude model answers it from the same data and the page shows which lookups the model made. On 27 November 2026 the check script sent eight fixed questions to `claude-haiku-5-5` on the recorded sample. All eight answers passed. The run used about 24,600 input tokens and 2,100 output tokens, which is under half a US cent at list price.
 
 ## Run it
 

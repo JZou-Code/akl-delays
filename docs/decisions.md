@@ -6,7 +6,7 @@ Newest first. Each entry says what was chosen and why.
 
 `claude-haiku-5-5` is the default and `ASSISTANT_MODEL` changes it. The questions are lookups over three tools, not reasoning. At list price a question of a few thousand tokens costs under a tenth of a US cent on this model. `claude-opus-5-5` costs 40 times as much for each token.
 
-Not checked: no question has been sent to the real model yet. `npm run ask:check -w apps/api` sends eight fixed questions and is how this choice gets tested.
+Checked on 27 November 2026: `npm run ask:check -w apps/api` sent eight fixed questions on the recorded sample and all eight passed. The run used 24,648 input tokens and 2,052 output tokens. Not checked: questions outside those eight, and live data.
 
 ## 2026-11-27: the tools only read, and questions are limited by the hour
 
