@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { Link } from 'react-router';
 import { formatDelay, modeLabel, StatusBadge } from '../../components/index.ts';
 import { routePath } from '../route/index.ts';
+import { stopPath } from '../stops/index.ts';
 import type { Sort } from './sort.ts';
 import type { SortBy } from './useSort.ts';
 
@@ -56,7 +57,13 @@ export function ServiceTable({ services, sort, onSort }: ServiceTableProps): Rea
               <StatusBadge status={service.status} />
             </td>
             <td className="delay">{formatDelay(service.delaySeconds, service.status)}</td>
-            <td className="stop">{service.stopName ?? service.stopId ?? 'Unknown'}</td>
+            <td className="stop">
+              {service.stopId === null ? (
+                'Unknown'
+              ) : (
+                <Link to={stopPath(service.stopId)}>{service.stopName ?? service.stopId}</Link>
+              )}
+            </td>
           </tr>
         ))}
       </tbody>

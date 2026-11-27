@@ -9,6 +9,8 @@ import type {
   RouteDetail,
   SortKey,
   SortOrder,
+  StopDepartures,
+  StopsPage,
   Summary,
 } from '@akl-delays/shared';
 
@@ -113,6 +115,20 @@ export function getDelays(query: DelaysQuery, options: CallOptions): Promise<Del
 
 export function getRoute(routeId: string, options: CallOptions): Promise<RouteDetail> {
   return getJson(`/api/routes/${encodeURIComponent(routeId)}`, options);
+}
+
+export function searchStops(text: string, options: CallOptions): Promise<StopsPage> {
+  return getJson(`/api/stops?${new URLSearchParams({ q: text }).toString()}`, options);
+}
+
+export function getDepartures(
+  stopId: string,
+  route: string,
+  options: CallOptions,
+): Promise<StopDepartures> {
+  const path = `/api/stops/${encodeURIComponent(stopId)}/departures`;
+  const search = route === '' ? '' : `?${new URLSearchParams({ route }).toString()}`;
+  return getJson(path + search, options);
 }
 
 export function ask(question: string, options: CallOptions): Promise<AskResponse> {

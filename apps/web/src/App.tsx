@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { Link, NavLink, Route, Routes } from 'react-router';
 import { BoardPage } from './features/board/index.ts';
 import { ROUTE_PATH, RoutePage } from './features/route/index.ts';
+import { STOP_PATH, STOPS_PATH, StopPage, StopsPage } from './features/stops/index.ts';
 import { ThemeSelect } from './theme/index.ts';
 
 function NotFoundPage(): ReactElement {
@@ -28,6 +29,7 @@ export function App(): ReactElement {
             <NavLink to="/" end>
               Board
             </NavLink>
+            <NavLink to={STOPS_PATH}>Stops</NavLink>
           </nav>
           <ThemeSelect />
         </div>
@@ -36,6 +38,8 @@ export function App(): ReactElement {
         <Routes>
           <Route index element={<BoardPage />} />
           <Route path={ROUTE_PATH} element={<RoutePage />} />
+          <Route path={STOPS_PATH} element={<StopsPage />} />
+          <Route path={STOP_PATH} element={<StopPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

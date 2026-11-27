@@ -5,8 +5,6 @@ export { FilterForm } from './FilterForm.tsx';
 export type { FilterFormProps } from './FilterForm.tsx';
 export { filtersFromSearch, hasFilters, searchWithFilter } from './filters.ts';
 export type { FilterName, Filters } from './filters.ts';
-export { SearchBox } from './SearchBox.tsx';
-export type { SearchBoxProps } from './SearchBox.tsx';
 export { ServiceTable } from './ServiceTable.tsx';
 export type { ServiceTableProps } from './ServiceTable.tsx';
 export { DEFAULT_SORT, nextSort, searchWithSort, sortFromSearch, sortQuery } from './sort.ts';

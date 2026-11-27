@@ -59,6 +59,13 @@ describe('App', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Auckland delays' })).toBeInTheDocument();
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect(nav).toContainElement(screen.getByRole('link', { name: 'Board' }));
+    expect(nav).toContainElement(screen.getByRole('link', { name: 'Stops' }));
+  });
+
+  it('shows the stop search at /stops', () => {
+    renderApp('/stops');
+
+    expect(screen.getByRole('heading', { name: 'Find a stop' })).toBeInTheDocument();
   });
 
   it('shows the board at the root', async () => {

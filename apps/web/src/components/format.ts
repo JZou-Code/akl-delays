@@ -31,6 +31,17 @@ export function formatClock(iso: string, locale?: string, timeZone?: string): st
   return new Intl.DateTimeFormat(locale, { timeStyle: 'medium', timeZone }).format(new Date(iso));
 }
 
+// Hours and minutes, for a time a rider reads off a list.
+export function formatTime(iso: string, locale?: string, timeZone?: string): string {
+  return new Intl.DateTimeFormat(locale, { timeStyle: 'short', timeZone }).format(new Date(iso));
+}
+
+// How long until a time, in whole minutes. A time that has come is due.
+export function formatWait(iso: string, now: Date): string {
+  const minutes = Math.round((Date.parse(iso) - now.getTime()) / 60_000);
+  return minutes <= 0 ? 'due' : `${minutes} min`;
+}
+
 function plural(count: number, one: string, many: string): string {
   return `${count} ${count === 1 ? one : many}`;
 }

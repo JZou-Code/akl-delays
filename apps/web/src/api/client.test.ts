@@ -11,6 +11,8 @@ import {
   isNoDataYet,
   isNotFound,
   type Fetch,
+  getDepartures,
+  searchStops,
 } from './client.ts';
 
 function answering(body: unknown, status = 200) {
@@ -253,5 +255,38 @@ describe('ask', () => {
     await expect(ask('Anything?', { fetch })).rejects.toThrow(
       new ApiRequestError(429, 'the hourly question limit is reached, try again later'),
     );
+  });
+});
+
+describe('searchStops', () => {
+  it('asks for the stops that match the text', async () => {
+    const page = { stops: [{ stopId: '4227-x', code: '4227', name: 'Stop C Albany Bus Station' }] };
+    const fetch = answering(page);
+
+    expect(await searchStops('albany station', { fetch })).toEqual(page);
+    expect(calledPath(fetch)).toBe('/api/stops?q=albany+station');
+  });
+});
+
+describe('getDepartures', () => {
+  const body = {
+    stop: { stopId: '4227-x', code: '4227', name: 'Stop C Albany Bus Station' },
+    feedTimestamp: '2026-11-19T19:00:00.000Z',
+    departures: [],
+  };
+
+  it('asks for the departures at the stop', async () => {
+    const fetch = answering(body);
+
+    expect(await getDepartures('4227-x', '', { fetch })).toEqual(body);
+    expect(calledPath(fetch)).toBe('/api/stops/4227-x/departures');
+  });
+
+  it('sends the route and encodes the stop id', async () => {
+    const fetch = answering(body);
+
+    await getDepartures('a/b', 'NX 1', { fetch });
+
+    expect(calledPath(fetch)).toBe('/api/stops/a%2Fb/departures?route=NX+1');
   });
 });

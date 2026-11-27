@@ -1,8 +1,7 @@
 import { DELAY_STATUSES, MODES } from '@akl-delays/shared';
 import { useCallback, useId, type ReactElement } from 'react';
-import { modeLabel, statusLabel } from '../../components/index.ts';
+import { modeLabel, SearchBox, statusLabel } from '../../components/index.ts';
 import type { Filters } from './filters.ts';
-import { SearchBox } from './SearchBox.tsx';
 import type { SetFilter } from './useFilters.ts';
 
 export interface FilterFormProps {

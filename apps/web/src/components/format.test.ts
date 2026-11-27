@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { formatAge, formatClock, formatDelay, modeLabel, statusLabel } from './format.ts';
+import {
+  formatAge,
+  formatClock,
+  formatDelay,
+  formatTime,
+  formatWait,
+  modeLabel,
+  statusLabel,
+} from './format.ts';
 
 describe('modeLabel', () => {
   it.each([
@@ -73,5 +81,25 @@ describe('formatAge', () => {
 
   it('says just now when the clock is behind the time given', () => {
     expect(formatAge(at, later(-30))).toBe('just now');
+  });
+});
+
+describe('formatTime', () => {
+  it('gives hours and minutes in the given time zone', () => {
+    expect(formatTime('2026-11-19T19:05:40.000Z', 'en-GB', 'Pacific/Auckland')).toBe('08:05');
+  });
+});
+
+describe('formatWait', () => {
+  const now = new Date('2026-11-19T19:00:00.000Z');
+
+  it.each([
+    ['2026-11-19T19:04:00.000Z', '4 min'],
+    ['2026-11-19T19:00:40.000Z', '1 min'],
+    ['2026-11-19T19:00:20.000Z', 'due'],
+    ['2026-11-19T18:55:00.000Z', 'due'],
+    ['2026-11-19T20:01:00.000Z', '61 min'],
+  ])('says %s as %s', (iso, text) => {
+    expect(formatWait(iso, now)).toBe(text);
   });
 });

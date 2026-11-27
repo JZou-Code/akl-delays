@@ -108,6 +108,15 @@ describe('ServiceTable', () => {
     ]);
   });
 
+  it('links each stop name to the stop view', () => {
+    renderTable([service({})]);
+
+    expect(screen.getByRole('link', { name: 'Constellation Station' })).toHaveAttribute(
+      'href',
+      '/stops/4002-901',
+    );
+  });
+
   it('links each route name to the route view', () => {
     renderTable([service({})]);
 

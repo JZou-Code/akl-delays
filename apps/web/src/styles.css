@@ -90,6 +90,11 @@ a {
   font-size: 0.875rem;
 }
 
+.page-header nav {
+  display: flex;
+  gap: 1rem;
+}
+
 .page-header nav a {
   text-decoration: none;
 }
@@ -481,6 +486,63 @@ input[type='search'],
   margin-top: 0.75rem;
   color: var(--muted);
   font-size: 0.8125rem;
+}
+
+.stop-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stop-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stop-code,
+.stop-note,
+.departures .detail {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.stop-page h2 + .stop-code {
+  margin: -0.5rem 0 1rem;
+}
+
+.stops .filters div,
+.stop-page .filters div {
+  flex: 0 1 22rem;
+}
+
+.stop-page .filters .filter-route {
+  flex: 0 1 9rem;
+}
+
+.departures .detail {
+  display: block;
+}
+
+.departures .due {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.departures .status + .detail {
+  margin-top: 0.125rem;
+}
+
+.services .stop a {
+  color: inherit;
+  text-decoration-color: var(--border);
+}
+
+.services .stop a:hover {
+  text-decoration-color: currentColor;
 }
 
 @media (max-width: 32rem) {
