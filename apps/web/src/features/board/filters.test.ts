@@ -10,7 +10,10 @@ describe('filtersFromSearch', () => {
   });
 
   it('reads the search text as it is written', () => {
-    expect(filtersFromSearch(new URLSearchParams('q=Stop+A'))).toEqual({ q: 'Stop A' });
+    expect(filtersFromSearch(new URLSearchParams('stop=Stop+A&route=70'))).toEqual({
+      route: '70',
+      stop: 'Stop A',
+    });
   });
 
   it('has no filters for an empty query', () => {
@@ -22,7 +25,7 @@ describe('filtersFromSearch', () => {
   });
 
   it('ignores an empty value', () => {
-    expect(filtersFromSearch(new URLSearchParams('mode=&status=late&q='))).toEqual({
+    expect(filtersFromSearch(new URLSearchParams('mode=&status=late&route=&stop='))).toEqual({
       status: 'late',
     });
   });
@@ -60,7 +63,7 @@ describe('hasFilters', () => {
   it('is true when mode or status is set', () => {
     expect(hasFilters({ mode: 'bus' })).toBe(true);
     expect(hasFilters({ status: 'late' })).toBe(true);
-    expect(hasFilters({ q: '70' })).toBe(true);
+    expect(hasFilters({ route: '70' })).toBe(true);
   });
 
   it('is false when neither is set', () => {

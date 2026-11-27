@@ -12,6 +12,10 @@ export interface ServiceQuery {
   mode?: Mode | undefined;
   status?: DelayStatus | undefined;
   q?: string | undefined;
+  // The start of the route name.
+  route?: string | undefined;
+  // Text the stop name holds.
+  stop?: string | undefined;
   sort?: SortKey | undefined;
   order?: SortOrder | undefined;
   limit?: number | undefined;
@@ -20,6 +24,14 @@ export interface ServiceQuery {
 function matchesText(service: ServiceDelay, text: string): boolean {
   const names = [service.routeName ?? service.routeId, service.stopName];
   return names.some((name) => name?.toLowerCase().includes(text) === true);
+}
+
+function routeStartsWith(service: ServiceDelay, text: string): boolean {
+  return (service.routeName ?? service.routeId).toLowerCase().startsWith(text);
+}
+
+function stopHolds(service: ServiceDelay, text: string): boolean {
+  return service.stopName?.toLowerCase().includes(text) === true;
 }
 
 type SortValue = string | number | null;
@@ -60,10 +72,14 @@ export function selectServices(
   query: ServiceQuery = {},
 ): DelaysPage {
   const text = query.q?.trim().toLowerCase() ?? '';
+  const route = query.route?.trim().toLowerCase() ?? '';
+  const stop = query.stop?.trim().toLowerCase() ?? '';
   const selected = services
     .filter((service) => query.mode === undefined || service.mode === query.mode)
     .filter((service) => query.status === undefined || service.status === query.status)
     .filter((service) => text === '' || matchesText(service, text))
+    .filter((service) => route === '' || routeStartsWith(service, route))
+    .filter((service) => stop === '' || stopHolds(service, stop))
     .sort(comparing(query.sort ?? 'delay', query.order ?? 'desc'));
   return { total: selected.length, services: selected.slice(0, query.limit) };
 }

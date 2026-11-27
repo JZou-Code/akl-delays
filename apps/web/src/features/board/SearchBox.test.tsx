@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SEARCH_DELAY_MS, SearchBox } from './SearchBox.tsx';
 
 function type(text: string): void {
-  fireEvent.change(screen.getByRole('searchbox', { name: 'Route or stop' }), {
+  fireEvent.change(screen.getByRole('searchbox', { name: 'Stop' }), {
     target: { value: text },
   });
 }
@@ -24,14 +24,14 @@ afterEach(() => {
 
 describe('SearchBox', () => {
   it('shows the text it is given', () => {
-    render(<SearchBox value="newmarket" onChange={vi.fn()} />);
+    render(<SearchBox label="Stop" name="stop" value="newmarket" onChange={vi.fn()} />);
 
-    expect(screen.getByRole('searchbox', { name: 'Route or stop' })).toHaveValue('newmarket');
+    expect(screen.getByRole('searchbox', { name: 'Stop' })).toHaveValue('newmarket');
   });
 
   it('reports the text once typing has stopped', () => {
     const onChange = vi.fn<(text: string) => void>();
-    render(<SearchBox value="" onChange={onChange} />);
+    render(<SearchBox label="Stop" name="stop" value="" onChange={onChange} />);
 
     type('7');
     wait(SEARCH_DELAY_MS - 1);
@@ -43,7 +43,7 @@ describe('SearchBox', () => {
 
   it('reports only the last text of a burst of typing', () => {
     const onChange = vi.fn<(text: string) => void>();
-    render(<SearchBox value="" onChange={onChange} />);
+    render(<SearchBox label="Stop" name="stop" value="" onChange={onChange} />);
 
     type('7');
     wait(100);
@@ -55,7 +55,7 @@ describe('SearchBox', () => {
 
   it('reports an emptied box', () => {
     const onChange = vi.fn<(text: string) => void>();
-    render(<SearchBox value="70" onChange={onChange} />);
+    render(<SearchBox label="Stop" name="stop" value="70" onChange={onChange} />);
 
     type('');
     wait(SEARCH_DELAY_MS);
@@ -65,7 +65,7 @@ describe('SearchBox', () => {
 
   it('reports nothing when the text is back to what it was given', () => {
     const onChange = vi.fn<(text: string) => void>();
-    render(<SearchBox value="70" onChange={onChange} />);
+    render(<SearchBox label="Stop" name="stop" value="70" onChange={onChange} />);
 
     type('701');
     wait(100);
@@ -76,10 +76,10 @@ describe('SearchBox', () => {
   });
 
   it('shows the text as typed before it is reported', () => {
-    render(<SearchBox value="" onChange={vi.fn()} />);
+    render(<SearchBox label="Stop" name="stop" value="" onChange={vi.fn()} />);
 
     type('pan');
 
-    expect(screen.getByRole('searchbox', { name: 'Route or stop' })).toHaveValue('pan');
+    expect(screen.getByRole('searchbox', { name: 'Stop' })).toHaveValue('pan');
   });
 });

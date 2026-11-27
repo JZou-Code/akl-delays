@@ -5,12 +5,19 @@ const LIMIT_MESSAGE = 'limit must be a whole number above 0';
 const Q_MAX_LENGTH = 50;
 const Q_MESSAGE = `q must be text of at most ${Q_MAX_LENGTH} characters`;
 
+function shortText(name: string) {
+  const message = `${name} must be text of at most ${Q_MAX_LENGTH} characters`;
+  return z.string({ error: message }).max(Q_MAX_LENGTH, message).optional();
+}
+
 const delaysQuerySchema = z.object({
   mode: z.enum(MODES, { error: `mode must be one of ${MODES.join(', ')}` }).optional(),
   status: z
     .enum(DELAY_STATUSES, { error: `status must be one of ${DELAY_STATUSES.join(', ')}` })
     .optional(),
   q: z.string({ error: Q_MESSAGE }).max(Q_MAX_LENGTH, Q_MESSAGE).optional(),
+  route: shortText('route'),
+  stop: shortText('stop'),
   sort: z.enum(SORT_KEYS, { error: `sort must be one of ${SORT_KEYS.join(', ')}` }).optional(),
   order: z
     .enum(SORT_ORDERS, { error: `order must be one of ${SORT_ORDERS.join(', ')}` })

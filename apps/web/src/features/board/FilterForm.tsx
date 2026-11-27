@@ -13,10 +13,16 @@ export interface FilterFormProps {
 export function FilterForm({ filters, onChange }: FilterFormProps): ReactElement {
   const modeId = useId();
   const statusId = useId();
-  // A stable function, so a re-render of the form does not restart the search box's wait.
-  const onSearch = useCallback(
+  // Stable functions, so a re-render of the form does not restart a search box's wait.
+  const onRoute = useCallback(
     (text: string) => {
-      onChange('q', text);
+      onChange('route', text);
+    },
+    [onChange],
+  );
+  const onStop = useCallback(
+    (text: string) => {
+      onChange('stop', text);
     },
     [onChange],
   );
@@ -28,7 +34,8 @@ export function FilterForm({ filters, onChange }: FilterFormProps): ReactElement
         event.preventDefault();
       }}
     >
-      <SearchBox value={filters.q ?? ''} onChange={onSearch} />
+      <SearchBox label="Route" name="route" value={filters.route ?? ''} onChange={onRoute} />
+      <SearchBox label="Stop" name="stop" value={filters.stop ?? ''} onChange={onStop} />
       <div>
         <label htmlFor={modeId}>Mode</label>
         <select

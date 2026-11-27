@@ -101,17 +101,17 @@ describe('BoardPage', () => {
     const { delaysPaths } = renderPage('/?mode=bus');
     await screen.findByRole('rowheader', { name: 'NX1' });
 
-    fireEvent.change(screen.getByRole('searchbox', { name: 'Route or stop' }), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Route' }), {
       target: { value: 'nx' },
     });
 
     await waitFor(() => {
       expect(delaysPaths()).toEqual([
         '/api/delays?mode=bus&limit=50',
-        '/api/delays?mode=bus&q=nx&limit=50',
+        '/api/delays?mode=bus&route=nx&limit=50',
       ]);
     });
-    expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent('?mode=bus&q=nx');
+    expect(screen.getByRole('status', { name: 'search' })).toHaveTextContent('?mode=bus&route=nx');
     expect(screen.getByRole('rowheader', { name: 'NX1' })).toBeInTheDocument();
   });
 

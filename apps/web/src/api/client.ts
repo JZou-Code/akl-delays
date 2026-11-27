@@ -23,6 +23,8 @@ export interface DelaysQuery {
   mode?: Mode | undefined;
   status?: DelayStatus | undefined;
   q?: string | undefined;
+  route?: string | undefined;
+  stop?: string | undefined;
   sort?: SortKey | undefined;
   order?: SortOrder | undefined;
   limit?: number | undefined;
@@ -89,7 +91,7 @@ async function postJson<T>(path: string, body: unknown, options: CallOptions): P
 
 function delaysPath(query: DelaysQuery): string {
   const params = new URLSearchParams();
-  for (const name of ['mode', 'status', 'q', 'sort', 'order', 'limit'] as const) {
+  for (const name of ['mode', 'status', 'q', 'route', 'stop', 'sort', 'order', 'limit'] as const) {
     const value = query[name];
     if (value !== undefined && value !== '') params.set(name, String(value));
   }

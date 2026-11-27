@@ -3,7 +3,10 @@ import { DELAY_STATUSES, MODES, type DelayStatus, type Mode } from '@akl-delays/
 export interface Filters {
   mode?: Mode | undefined;
   status?: DelayStatus | undefined;
-  q?: string | undefined;
+  // The start of a route name.
+  route?: string | undefined;
+  // Text a stop name holds.
+  stop?: string | undefined;
 }
 
 export type FilterName = keyof Filters;
@@ -22,7 +25,8 @@ export function filtersFromSearch(search: URLSearchParams): Filters {
   return {
     mode: isMode(mode) ? mode : undefined,
     status: isStatus(status) ? status : undefined,
-    q: search.get('q') || undefined,
+    route: search.get('route') || undefined,
+    stop: search.get('stop') || undefined,
   };
 }
 
@@ -37,6 +41,6 @@ export function searchWithFilter(
   return next;
 }
 
-export function hasFilters({ mode, status, q }: Filters): boolean {
-  return mode !== undefined || status !== undefined || q !== undefined;
+export function hasFilters(filters: Filters): boolean {
+  return Object.values(filters).some((value) => value !== undefined);
 }

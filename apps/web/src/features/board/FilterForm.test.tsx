@@ -40,10 +40,13 @@ describe('FilterForm', () => {
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveValue('late');
   });
 
-  it('has a search box that shows the search text', () => {
-    render(<FilterForm filters={{ q: 'newmarket' }} onChange={vi.fn<SetFilter>()} />);
+  it('has a box for the route and a box for the stop', () => {
+    render(
+      <FilterForm filters={{ route: '70', stop: 'newmarket' }} onChange={vi.fn<SetFilter>()} />,
+    );
 
-    expect(screen.getByRole('searchbox', { name: 'Route or stop' })).toHaveValue('newmarket');
+    expect(screen.getByRole('searchbox', { name: 'Route' })).toHaveValue('70');
+    expect(screen.getByRole('searchbox', { name: 'Stop' })).toHaveValue('newmarket');
   });
 
   it('shows all when no filter is set', () => {

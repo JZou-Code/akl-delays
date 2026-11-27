@@ -2,6 +2,16 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-27: route and stop are two filters
+
+The board had one box that matched a route name or a stop name. It could not answer "the 70 at Panmure", because one text cannot name both. The board now has a Route box and a Stop box, and `GET /api/delays` takes `route` and `stop`. Every filter that is set has to match.
+
+`route` matches the start of the route name, so typing 7 then 0 narrows the list as it goes and 70 does not bring in 170 or 670. It does bring in 70A. `stop` matches anywhere in the stop name, because riders know a stop by a word in the middle of its name, such as Panmure in "Stop B Panmure Station".
+
+The limit: the feed gives one stop for each running service, the one it reports now. The filter finds the services at that stop now. It does not find the services that will call there later. That needs the timetable in `stop_times.txt`, which the project does not load.
+
+`q` stays in the API for a search over both names. The page no longer sends it.
+
 ## 2026-11-27: a school bus gets its name from its route id
 
 AT's `routes.txt` leaves out school buses. On a school afternoon about 250 of 1,300 running services had no route name and no mode, so the board showed them as "Unknown" and the mode counts left them out. Their route ids all look like `S050B-203`. A route id of that shape that is not in `routes.txt` is now read as the bus `S050B`. For every route that is in `routes.txt`, the name is the id without its last part, which is why the same rule is used here. Any other id that is not in the file still has no name and no mode.

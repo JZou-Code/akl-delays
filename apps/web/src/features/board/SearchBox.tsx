@@ -3,12 +3,14 @@ import { useEffect, useId, useState, type ReactElement } from 'react';
 export const SEARCH_DELAY_MS = 300;
 
 export interface SearchBoxProps {
+  label: string;
+  name: string;
   value: string;
   onChange: (text: string) => void;
 }
 
 // Reports the text once typing has stopped for SEARCH_DELAY_MS, so each key press is not a request.
-export function SearchBox({ value, onChange }: SearchBoxProps): ReactElement {
+export function SearchBox({ label, name, value, onChange }: SearchBoxProps): ReactElement {
   const id = useId();
   const [text, setText] = useState(value);
 
@@ -23,11 +25,11 @@ export function SearchBox({ value, onChange }: SearchBoxProps): ReactElement {
   }, [text, value, onChange]);
 
   return (
-    <div>
-      <label htmlFor={id}>Route or stop</label>
+    <div className={`filter-${name}`}>
+      <label htmlFor={id}>{label}</label>
       <input
         id={id}
-        name="q"
+        name={name}
         type="search"
         maxLength={50}
         autoComplete="off"

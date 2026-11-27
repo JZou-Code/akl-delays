@@ -22,6 +22,12 @@ describe('describeStep', () => {
     [{ status: 'on_time', mode: 'train' }, 'Looked at on-time trains'],
     [{ status: 'unknown' }, 'Looked at services with no data'],
     [{ q: 'Newmarket' }, 'Looked at services matching "Newmarket"'],
+    [{ route: '70' }, 'Looked at services on routes starting with 70'],
+    [{ stop: 'Panmure', mode: 'bus' }, 'Looked at buses at stops matching "Panmure"'],
+    [
+      { route: '70', stop: 'Panmure', status: 'late' },
+      'Looked at late services on routes starting with 70 at stops matching "Panmure"',
+    ],
     [
       { mode: 'bus', sort: 'delay', order: 'desc', limit: 10 },
       'Looked at buses, most delayed first',

@@ -105,11 +105,21 @@ const getSummary = defineTool({
 
 const listDelays = defineTool({
   name: 'list_delays',
-  description: `Running services, filtered and sorted. Returns the number that match, a count of the matches by status in byStatus, and at most ${MAX_SERVICES} of them. Take counts from total and byStatus, not from the list. delayMinutes above 0 is late, below 0 is early, null is unknown. With no input it returns the ${DEFAULT_SERVICES} latest services.`,
+  description: `Running services, filtered and sorted. Returns the number that match, a count of the matches by status in byStatus, and at most ${MAX_SERVICES} of them. Take counts from total and byStatus, not from the list. delayMinutes above 0 is late, below 0 is early, null is unknown. With no input it returns the ${DEFAULT_SERVICES} latest services. Filters combine, so route with stop gives the services on that route at that stop. The stop of a service is the one stop it is at or heading to now, not every stop on its trip.`,
   input: z.strictObject({
     mode: z.enum(MODES).optional().describe('Only this mode'),
     status: z.enum(DELAY_STATUSES).optional().describe('Only this status'),
     q: z.string().max(50).optional().describe('Text that the route name or the stop name contains'),
+    route: z
+      .string()
+      .max(50)
+      .optional()
+      .describe('The start of the route name, such as 70 or NX. Combine it with stop.'),
+    stop: z
+      .string()
+      .max(50)
+      .optional()
+      .describe('Text that the stop name contains, such as Panmure or Britomart'),
     sort: z.enum(SORT_KEYS).optional().describe('Column to sort by. The default is delay.'),
     order: z.enum(SORT_ORDERS).optional().describe('The default is desc, latest first.'),
     limit: z

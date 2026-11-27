@@ -140,6 +140,21 @@ describe('list_delays', () => {
   );
 });
 
+describe('list_delays by route and stop', () => {
+  it('combines the route and the stop', () => {
+    const { result } = call('list_delays', { route: 's-c', stop: 'Homai' });
+
+    expect(result).toMatchObject({
+      total: 1,
+      services: [{ route: 'S-C', stop: 'Homai Train Station 1' }],
+    });
+  });
+
+  it('finds nothing when the route is not at that stop', () => {
+    expect(call('list_delays', { route: '373', stop: 'Homai' }).result).toMatchObject({ total: 0 });
+  });
+});
+
 describe('list_delays counts', () => {
   it('counts every match by status, not only the ones returned', () => {
     const { result } = call('list_delays', { mode: 'bus', limit: 1 });

@@ -197,6 +197,8 @@ describe('GET /api/delays', () => {
   it('searches the route and stop names with q', async () => {
     expect(await tripIds('/api/delays?q=ROUTE%201&mode=ferry')).toEqual(['ferry-late']);
     expect(await tripIds('/api/delays?q=nowhere')).toEqual([]);
+    expect(await tripIds('/api/delays?route=ROUTE&mode=ferry')).toEqual(['ferry-late']);
+    expect(await tripIds('/api/delays?route=route&stop=nowhere')).toEqual([]);
   });
 
   it('sorts by the column in sort, in the direction in order', async () => {
@@ -222,6 +224,8 @@ describe('GET /api/delays', () => {
     ['status=lost', 'status must be one of early, on_time, late, very_late, cancelled, unknown'],
     [`q=${'x'.repeat(51)}`, 'q must be text of at most 50 characters'],
     ['q=a&q=b', 'q must be text of at most 50 characters'],
+    [`route=${'x'.repeat(51)}`, 'route must be text of at most 50 characters'],
+    ['stop=a&stop=b', 'stop must be text of at most 50 characters'],
     ['sort=colour', 'sort must be one of route, mode, status, delay, stop'],
     ['order=up', 'order must be one of asc, desc'],
     ['limit=0', 'limit must be a whole number above 0'],

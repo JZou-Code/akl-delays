@@ -85,7 +85,7 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 |-------|---------|
 | `GET /api/health` | `{ ok, feedSource, lastFetchedAt, assistant }` |
 | `GET /api/summary` | counts per mode and status, feed time, `stale` flag |
-| `GET /api/delays?mode=&status=&q=&sort=&order=&limit=` | `{ total, services }`, worst delay first |
+| `GET /api/delays?mode=&status=&route=&stop=&q=&sort=&order=&limit=` | `{ total, services }`, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
 | `POST /api/ask` with `{ question }` | `{ answer, steps, model, usage, feedSource, feedTimestamp }` |
 
@@ -95,7 +95,7 @@ Worst delay first means the highest `delaySeconds` first. Services with no delay
 
 `sort` is `route`, `mode`, `status`, `delay` or `stop`, and `order` is `asc` or `desc`. Without them the list is worst delay first, which is `sort=delay&order=desc`. Names sort with numbers in number order, so route 70 comes before route 101. Status sorts from early to unknown. A service with no value in the sort column comes last in both directions. Services equal in the sort column are worst delay first. The limit applies after the sort.
 
-`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `q` is text of at most 50 characters. It keeps the services whose route name or stop name holds it, ignoring case. A route with no name is matched by its id. `limit` is a whole number above 0; without it every matching service is returned. `total` counts every match, so the page can say how many are left out by the limit. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
+`mode` is `bus`, `train` or `ferry`. `status` takes the values in the table above. `q` is text of at most 50 characters. It keeps the services whose route name or stop name holds it, ignoring case. A route with no name is matched by its id. `route` keeps the services whose route name starts with it, and `stop` keeps the services whose stop name holds it, both ignoring case and both at most 50 characters. Every filter that is set has to match, so `route=70&stop=Panmure` gives the 70 services at a stop with Panmure in its name. The stop of a service is the one stop the feed reports for it now, not every stop on its trip. `limit` is a whole number above 0; without it every matching service is returned. `total` counts every match, so the page can say how many are left out by the limit. An empty query value counts as not set. A bad query value gets a 400 with `{ error }`. An unknown route gets a 404. `http` reads only the snapshot, so a route with no service in the current feed also gets a 404, even when it is in `routes.txt`. Before the first successful poll, data routes return 503.
 
 `assistant` in the health response is true when the API has an Anthropic key. `POST /api/ask` answers 400 for a question that is missing, empty or over 300 characters, 429 when the hourly limit is reached, 502 when the model call fails or the loop runs out of calls, and 503 when no key is set or there is no snapshot yet. `steps` lists the tool calls the model made, each with its input and a short count of what came back. `usage` is the input and output tokens of all the model calls for the question.
 

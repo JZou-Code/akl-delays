@@ -231,3 +231,51 @@ describe('selectServices', () => {
     expect(tripIds(services)).toEqual(before);
   });
 });
+
+describe('selectServices by route and stop', () => {
+  function at(tripId: string, routeName: string | null, stopName: string | null): ServiceDelay {
+    return { ...service(tripId, 'bus', 'late', 300), routeId: `${tripId}-id`, routeName, stopName };
+  }
+
+  const running = [
+    at('a', '70', 'Panmure Station'),
+    at('b', '70', 'Britomart'),
+    at('c', '70A', 'Panmure Station'),
+    at('d', '170', 'Panmure Station'),
+    at('e', 'NX1', 'Stop B Lower Albert'),
+    at('f', null, null),
+  ];
+
+  function found(query: ServiceQuery): string[] {
+    return selectServices(running, query)
+      .services.map(({ tripId }) => tripId)
+      .sort();
+  }
+
+  it('keeps routes whose name starts with the text, ignoring case', () => {
+    expect(found({ route: '70' })).toEqual(['a', 'b', 'c']);
+    expect(found({ route: ' nx ' })).toEqual(['e']);
+  });
+
+  it('matches a route with no name by its id', () => {
+    expect(found({ route: 'f-id' })).toEqual(['f']);
+  });
+
+  it('keeps stops whose name holds the text, ignoring case', () => {
+    expect(found({ stop: 'panmure' })).toEqual(['a', 'c', 'd']);
+    expect(found({ stop: 'albert' })).toEqual(['e']);
+  });
+
+  it('leaves out a service with no stop name when a stop is asked for', () => {
+    expect(found({ stop: 'a' })).not.toContain('f');
+  });
+
+  it('combines route and stop', () => {
+    expect(found({ route: '70', stop: 'Panmure' })).toEqual(['a', 'c']);
+    expect(found({ route: '70', stop: 'Albert' })).toEqual([]);
+  });
+
+  it('treats blank text as no filter', () => {
+    expect(found({ route: ' ', stop: '' })).toHaveLength(running.length);
+  });
+});

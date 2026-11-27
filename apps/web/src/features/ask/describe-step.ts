@@ -39,7 +39,12 @@ function listPhrase(input: AskStep['input']): string {
       : status === null
         ? noun
         : `${STATUS_WORDS[status] ?? status} ${noun}`;
-  const matching = q === null ? '' : ` matching "${q}"`;
+  const route = text(input.route);
+  const stop = text(input.stop);
+  const matching =
+    (q === null ? '' : ` matching "${q}"`) +
+    (route === null ? '' : ` on routes starting with ${route}`) +
+    (stop === null ? '' : ` at stops matching "${stop}"`);
   const sorted = sortPhrase(text(input.sort), text(input.order));
   return `Looked at ${subject}${matching}${sorted === null ? '' : `, ${sorted}`}`;
 }

@@ -104,6 +104,14 @@ describe('getDelays', () => {
     expect(calledPath(fetch)).toBe('/api/delays?q=stop+a&sort=route&order=asc');
   });
 
+  it('sends the route and the stop as separate filters', async () => {
+    const fetch = answering([]);
+
+    await getDelays({ route: '70', stop: 'Panmure' }, { fetch });
+
+    expect(calledPath(fetch)).toBe('/api/delays?route=70&stop=Panmure');
+  });
+
   it('leaves an empty search text out', async () => {
     const fetch = answering([]);
 
