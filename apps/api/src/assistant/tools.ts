@@ -76,7 +76,7 @@ function brief(service: ServiceDelay) {
 
 function counted(shown: number, total: number): string {
   const noun = total === 1 ? 'service' : 'services';
-  return shown === total ? `${total} ${noun}` : `${shown} of ${total} ${noun}`;
+  return shown === total ? `${total} ${noun}` : `${total} ${noun}, read the first ${shown}`;
 }
 
 const getSummary = defineTool({

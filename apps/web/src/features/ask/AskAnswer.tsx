@@ -18,7 +18,7 @@ export function AskAnswer({ response }: { response: AskResponse }): ReactElement
           <ol>
             {steps.map((step, index) => (
               <li key={index}>
-                {describeStep(step)}: {step.summary}
+                {describeStep(step)}. Found {step.summary}.
               </li>
             ))}
           </ol>

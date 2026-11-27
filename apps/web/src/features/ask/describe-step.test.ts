@@ -22,8 +22,11 @@ describe('describeStep', () => {
     [{ status: 'on_time', mode: 'train' }, 'Looked at on-time trains'],
     [{ status: 'unknown' }, 'Looked at services with no data'],
     [{ q: 'Newmarket' }, 'Looked at services matching "Newmarket"'],
-    [{ mode: 'bus', sort: 'delay', order: 'desc', limit: 10 }, 'Looked at buses, latest first'],
-    [{ order: 'asc' }, 'Looked at services, earliest first'],
+    [
+      { mode: 'bus', sort: 'delay', order: 'desc', limit: 10 },
+      'Looked at buses, most delayed first',
+    ],
+    [{ order: 'asc' }, 'Looked at services, least delayed first'],
     [{ sort: 'route', order: 'asc' }, 'Looked at services, sorted by route'],
   ])('describes list_delays with %j', (input, expected) => {
     expect(describeStep(step('list_delays', input))).toBe(expected);

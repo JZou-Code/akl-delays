@@ -31,8 +31,8 @@ describe('AskAnswer', () => {
 
     const steps = within(screen.getByRole('list')).getAllByRole('listitem');
     expect(steps.map((step) => step.textContent)).toEqual([
-      'Counted the services on the board: 19 services',
-      'Looked at cancelled buses: 2 services',
+      'Counted the services on the board. Found 19 services.',
+      'Looked at cancelled buses. Found 2 services.',
     ]);
   });
 

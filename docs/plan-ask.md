@@ -50,7 +50,7 @@ Response 200:
     {
       "tool": "list_delays",
       "input": { "mode": "bus", "sort": "delay", "order": "desc", "limit": 5 },
-      "summary": "5 of 13 services"
+      "summary": "13 services, read the first 5"
     }
   ],
   "model": "claude-haiku-5-5",

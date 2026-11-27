@@ -23,7 +23,8 @@ function text(value: unknown): string | null {
 
 function sortPhrase(sort: string | null, order: string | null): string | null {
   if (sort === null && order === null) return null;
-  if (sort === null || sort === 'delay') return order === 'asc' ? 'earliest first' : 'latest first';
+  if (sort === null || sort === 'delay')
+    return order === 'asc' ? 'least delayed first' : 'most delayed first';
   return `sorted by ${SORT_WORDS[sort] ?? sort}`;
 }
 

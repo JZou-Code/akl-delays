@@ -86,7 +86,7 @@ describe('list_delays', () => {
 
     expect(result).toMatchObject({ total: 20 });
     expect((result as { services: unknown[] }).services).toHaveLength(10);
-    expect(summary).toBe('10 of 20 services');
+    expect(summary).toBe('20 services, read the first 10');
   });
 
   it('cuts a service down to five fields and gives the delay in minutes', () => {
