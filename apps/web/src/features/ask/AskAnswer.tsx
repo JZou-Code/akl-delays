@@ -9,7 +9,11 @@ function inputText(input: AskStep['input']): string {
 }
 
 export function AskAnswer({ response }: { response: AskResponse }): ReactElement {
-  const { answer, steps, model, usage, feedTimestamp } = response;
+  const { answer, steps, model, usage, feedSource, feedTimestamp } = response;
+  const from =
+    feedSource === 'at'
+      ? `the live feed at ${formatClock(feedTimestamp)}`
+      : 'recorded sample data, not the live feed';
   return (
     <div className="ask-answer">
       <p>{answer}</p>
@@ -26,8 +30,8 @@ export function AskAnswer({ response }: { response: AskResponse }): ReactElement
         </>
       )}
       <p className="ask-source">
-        Written by the AI model {model} from the feed at {formatClock(feedTimestamp)}. It can be
-        wrong. {usage.inputTokens.toLocaleString('en-NZ')} tokens in,{' '}
+        Written by the AI model {model} from {from}. It can be wrong.{' '}
+        {usage.inputTokens.toLocaleString('en-NZ')} tokens in,{' '}
         {usage.outputTokens.toLocaleString('en-NZ')} out.
       </p>
     </div>

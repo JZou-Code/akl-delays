@@ -48,7 +48,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 
 1. `http` checks the question, 1 to 300 characters.
 2. `assistant` checks that a snapshot exists and that the hour has room for one more question. The default is 20 an hour, counted in memory.
-3. The loop sends the question, a fixed system prompt and the three tools to the model. A line after the question says whether the data is live or a recording, the feed time in Auckland time, and whether the data is stale.
+3. The loop sends the question, a fixed system prompt and the three tools to the model. A note after the question says so when the data is stale. The page, not the model, says whether the data is live or a recording.
 4. When the model asks for tools, the loop checks each input with zod, runs the tool on the snapshot, and sends every result back in one message. An unknown tool or a bad input goes back as an error, so the model can try again.
 5. The loop stops when the model writes its answer, or after 5 model calls.
 
@@ -87,7 +87,7 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 | `GET /api/summary` | counts per mode and status, feed time, `stale` flag |
 | `GET /api/delays?mode=&status=&q=&sort=&order=&limit=` | `{ total, services }`, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
-| `POST /api/ask` with `{ question }` | `{ answer, steps, model, usage, feedTimestamp }` |
+| `POST /api/ask` with `{ question }` | `{ answer, steps, model, usage, feedSource, feedTimestamp }` |
 
 `ok` in the health response is true when a snapshot exists and is not stale. The health route answers 200 even before the first poll.
 

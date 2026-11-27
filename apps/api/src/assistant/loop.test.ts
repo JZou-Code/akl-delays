@@ -94,7 +94,7 @@ describe('runAsk', () => {
       tools: BOARD_TOOLS.map((tool) => tool.definition),
     });
     expect(requests[0]?.messages).toHaveLength(1);
-    expect(requests[0]?.messages[0]?.content).toMatch(/^Are the trains on time\?\n\nData source/);
+    expect(requests[0]?.messages[0]?.content).toBe('Are the trains on time?');
   });
 
   it('runs a tool call and answers from its result', async () => {

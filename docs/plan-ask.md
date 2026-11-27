@@ -55,6 +55,7 @@ Response 200:
   ],
   "model": "claude-haiku-5-5",
   "usage": { "inputTokens": 2130, "outputTokens": 164 },
+  "feedSource": "fixture",
   "feedTimestamp": "2026-11-24T01:54:00.000Z"
 }
 ```
@@ -92,7 +93,9 @@ Tool results are JSON text. A result holds at most 20 services, so one question 
 4. If `stop_reason` is `refusal` or `max_tokens`: return a fixed sentence saying the question could not be answered.
 5. Stop after 5 model calls and report an error.
 
-The system prompt is fixed text. It says: answer only from tool results; give delays in minutes; say when the data is a recording and not live; say when the data is stale; say plainly when the snapshot cannot answer the question; keep the answer under 80 words. The feed source and feed time go in the user message after the question, so the system prompt never changes.
+The system prompt is fixed text. It says: answer only from tool results; start with the answer; say only what was asked; count a service as late only when its status is late or very late; leave cancelled services out unless the question is about them; give delays in minutes; say when the data is stale; say plainly when the snapshot cannot answer the question; keep the answer under 60 words. A note that the data is stale goes in the user message after the question, so the system prompt never changes.
+
+The model does not say whether the data is live or a recording. The page says it under the answer, from `feedSource` in the response. The first version had the model say it, and every answer opened with that sentence before the answer itself.
 
 Route and stop names come from AT and reach the model inside tool results. The tools only read, so text in a name cannot make the model change anything.
 
@@ -167,7 +170,8 @@ Commits 1 to 10 need no key to write or to test. Commit 6 is the first that can 
 ## Checked on 27 November 2026
 
 - `npm run ask:check -w apps/api` passed 8 of 8 with `claude-haiku-5-5` at `low` effort on the fixture.
-- The run used 24,648 input tokens and 2,052 output tokens. At list price (0.10 US dollars a million input tokens, 0.50 output) that is about 0.35 of a cent for eight questions.
+- The first run used 24,648 input tokens and 2,052 output tokens. At list price (0.10 US dollars a million input tokens, 0.50 output) that is about 0.35 of a cent for eight questions.
+- After the prompt was changed to answer first and leave out what was not asked, the script passed 8 of 8 again with 26,333 input tokens and 1,777 output tokens.
 - One question through the page took about 2.5 seconds.
 
 ## Not checked

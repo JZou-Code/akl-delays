@@ -131,6 +131,7 @@ describe('composeApi with ANTHROPIC_API_KEY', () => {
       steps: [],
       model: 'claude-haiku-5-5',
       usage: { inputTokens: 900, outputTokens: 40 },
+      feedSource: 'fixture',
       feedTimestamp: NOW.toISOString(),
     });
     expect(fetch).toHaveBeenCalledTimes(1);

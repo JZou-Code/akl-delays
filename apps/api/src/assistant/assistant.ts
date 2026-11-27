@@ -51,7 +51,7 @@ export function createAssistant(options: AssistantOptions): Assistant {
         log(
           `ask ok: ${steps.length} tool calls, ${usage.inputTokens} tokens in, ${usage.outputTokens} out`,
         );
-        return { answer, steps, model, usage, feedTimestamp: snapshot.feedTimestamp };
+        return { answer, steps, model, usage, feedSource, feedTimestamp: snapshot.feedTimestamp };
       } catch (error) {
         log(`ask failed: ${oneLine(error)}`);
         throw new AskError('failed', 'the model could not answer');

@@ -73,18 +73,18 @@ describe('createAssistant', () => {
       steps: [],
       model: 'claude-test',
       usage: { inputTokens: 900, outputTokens: 40 },
+      feedSource: 'at',
       feedTimestamp: '2026-11-24T01:54:00.000Z',
     });
   });
 
-  it('tells the model where the data is from and whether it is stale', async () => {
+  it('tells the model when the data is stale', async () => {
     const { assistant, requests } = setup({ stale: true });
 
     await assistant.ask('What is running?');
 
     const content = requests[0]?.messages[0]?.content;
-    expect(content).toContain("Auckland Transport's live feed");
-    expect(content).toContain('The data is stale');
+    expect(content).toContain('the data is stale');
   });
 
   it('fails with no_data before the first poll, without counting the question', async () => {

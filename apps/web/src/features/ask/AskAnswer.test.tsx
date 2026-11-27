@@ -15,6 +15,7 @@ const response: AskResponse = {
   ],
   model: 'claude-haiku-5-5',
   usage: { inputTokens: 2130, outputTokens: 164 },
+  feedSource: 'fixture',
   feedTimestamp: '2026-11-24T01:54:00.000Z',
 };
 
@@ -49,5 +50,21 @@ describe('AskAnswer', () => {
     expect(source).toHaveTextContent('claude-haiku-5-5');
     expect(source).toHaveTextContent('It can be wrong.');
     expect(source).toHaveTextContent('2,130 tokens in, 164 out.');
+  });
+
+  it('says that fixture data is a recording and gives no feed time', () => {
+    render(<AskAnswer response={response} />);
+
+    const source = screen.getByText(/Written by the AI model/);
+    expect(source).toHaveTextContent('from recorded sample data, not the live feed.');
+    expect(source).not.toHaveTextContent(/\d{1,2}:\d{2}/);
+  });
+
+  it('gives the feed time for live data', () => {
+    render(<AskAnswer response={{ ...response, feedSource: 'at' }} />);
+
+    expect(screen.getByText(/Written by the AI model/)).toHaveTextContent(
+      /from the live feed at \d{1,2}:54:00/,
+    );
   });
 });

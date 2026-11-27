@@ -9,6 +9,7 @@ const answer: AskResponse = {
   steps: [{ tool: 'list_delays', input: { status: 'cancelled' }, summary: '2 services' }],
   model: 'claude-haiku-5-5',
   usage: { inputTokens: 900, outputTokens: 40 },
+  feedSource: 'fixture',
   feedTimestamp: '2026-11-24T01:54:00.000Z',
 };
 
@@ -81,13 +82,13 @@ describe('AskSection', () => {
     expect(asked()[0]?.[1]?.body).toBe('{"question":"Is anything cancelled?"}');
   });
 
-  it('says it is asking until the answer comes', async () => {
+  it('says it is thinking until the answer comes', async () => {
     let finish: (response: Response) => void = () => undefined;
     setup(true, () => new Promise<Response>((resolve) => (finish = resolve)));
 
     await askQuestion('Is anything cancelled?');
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Asking.');
+    expect(await screen.findByRole('status')).toHaveTextContent('Thinking');
     expect(screen.getByRole('button', { name: 'Ask' })).toBeDisabled();
 
     finish(Response.json(answer));

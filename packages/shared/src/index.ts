@@ -90,6 +90,7 @@ export interface AskResponse {
   steps: AskStep[];
   model: string;
   usage: AskUsage;
+  feedSource: FeedSourceName;
   feedTimestamp: string;
 }
 

@@ -8,8 +8,13 @@ import { useAssistant } from './useAssistant.ts';
 function AskResult({ state }: { state: AskState }): ReactElement | null {
   if (state.status === 'asking') {
     return (
-      <p className="notice" role="status">
-        Asking.
+      <p className="ask-thinking" role="status">
+        Thinking
+        <span className="ask-dots" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
       </p>
     );
   }

@@ -16,33 +16,14 @@ function board(overrides: Partial<BoardView> = {}): BoardView {
 }
 
 describe('questionMessage', () => {
-  it('starts with the question as it was asked', () => {
-    expect(questionMessage('Are the trains on time?', board())).toMatch(
-      /^Are the trains on time\?\n\n/,
-    );
+  it('is the question alone when the data is current', () => {
+    expect(questionMessage('Are the trains on time?', board())).toBe('Are the trains on time?');
   });
 
-  it('says that fixture data is a recording', () => {
-    expect(questionMessage('Q', board())).toContain(
-      'Data source: a recording of the feed, not live data.',
+  it('adds a note after the question when the data is stale', () => {
+    expect(questionMessage('Are the trains on time?', board({ stale: true }))).toBe(
+      'Are the trains on time?\n\nNote: the data is stale. The last fetches from the feed failed.',
     );
-  });
-
-  it('says that the AT feed is live', () => {
-    expect(questionMessage('Q', board({ feedSource: 'at' }))).toContain(
-      "Data source: Auckland Transport's live feed.",
-    );
-  });
-
-  it('gives the feed time in Auckland time', () => {
-    expect(questionMessage('Q', board())).toMatch(
-      /Feed time: 24 Nov 2026, 2:54\spm, Auckland time\./,
-    );
-  });
-
-  it('mentions stale data only when it is stale', () => {
-    expect(questionMessage('Q', board())).not.toContain('stale');
-    expect(questionMessage('Q', board({ stale: true }))).toContain('The data is stale');
   });
 });
 

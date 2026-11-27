@@ -217,6 +217,7 @@ describe('ask', () => {
     steps: [{ tool: 'list_delays', input: { status: 'cancelled' }, summary: '2 services' }],
     model: 'claude-haiku-5-5',
     usage: { inputTokens: 900, outputTokens: 40 },
+    feedSource: 'fixture',
     feedTimestamp: '2026-11-19T19:00:00.000Z',
   };
 

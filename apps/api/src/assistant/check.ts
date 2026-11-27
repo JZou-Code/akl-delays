@@ -7,10 +7,13 @@ export interface CheckCase {
   tools: readonly string[];
   // Every pattern has to match the answer.
   answer: readonly RegExp[];
+  // No pattern may match the answer.
+  absent?: readonly RegExp[];
 }
 
-export const MAX_ANSWER_WORDS = 100;
+export const MAX_ANSWER_WORDS = 80;
 
+// The page says where the data is from, so the answer should not.
 const RECORDING = /record|sample|not live/i;
 const CANNOT =
   /cannot|can't|can not|unable|not able|no (history|forecast|timetable)|only (shows?|holds?|has)/i;
@@ -19,27 +22,33 @@ export const CHECK_CASES: readonly CheckCase[] = [
   {
     question: 'Which bus routes are running latest right now?',
     tools: ['list_delays'],
-    answer: [/\b373\b/, RECORDING],
+    answer: [/\b373\b/, /\b83\b/],
+    // 65, WX1 and 22N are on time. 162 is cancelled.
+    absent: [/\b(65|WX1|22N|162)\b/, RECORDING],
   },
   {
     question: 'Are the trains on time?',
     tools: ['get_summary', 'list_delays'],
-    answer: [/on time/i, RECORDING],
+    answer: [/on time/i],
+    absent: [RECORDING],
   },
   {
     question: 'Is anything cancelled?',
     tools: ['get_summary', 'list_delays'],
-    answer: [/cancel/i, /\b(2|two)\b/i, RECORDING],
+    answer: [/cancel/i, /\b162\b/, /\b70\b/],
+    absent: [RECORDING],
   },
   {
     question: 'How late is the 373?',
     tools: ['get_route', 'list_delays'],
-    answer: [/\b46\b/, RECORDING],
+    answer: [/\b46\b/],
+    absent: [RECORDING],
   },
   {
     question: 'How are the ferries doing?',
     tools: ['get_summary', 'list_delays'],
-    answer: [/ferr/i, /late/i, RECORDING],
+    answer: [/ferr/i, /late/i],
+    absent: [RECORDING],
   },
   {
     question: 'Is route 999X running?',
@@ -63,6 +72,9 @@ export function checkOutcome(check: CheckCase, outcome: AskOutcome): string[] {
   }
   for (const pattern of check.answer) {
     if (!pattern.test(outcome.answer)) problems.push(`answer does not match ${String(pattern)}`);
+  }
+  for (const pattern of check.absent ?? []) {
+    if (pattern.test(outcome.answer)) problems.push(`answer matches ${String(pattern)}`);
   }
   const words = wordCount(outcome.answer);
   if (words > MAX_ANSWER_WORDS) problems.push(`answer has ${words} words`);
