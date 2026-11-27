@@ -3,7 +3,14 @@ import { unzipSync } from 'fflate';
 import { GtfsError } from './csv.ts';
 
 export const AT_GTFS_URL = 'https://gtfs.at.govt.nz/gtfs.zip';
-export const GTFS_FILES = ['routes.txt', 'stops.txt'] as const;
+export const GTFS_FILES = [
+  'routes.txt',
+  'stops.txt',
+  'trips.txt',
+  'calendar.txt',
+  'calendar_dates.txt',
+  'stop_times.txt',
+] as const;
 const TIMEOUT_MS = 120_000;
 
 export interface DownloadGtfsOptions {
@@ -28,7 +35,7 @@ async function fetchZip(fetch: typeof globalThis.fetch, url: string): Promise<Ui
 function unzipWanted(zip: Uint8Array): Record<string, Uint8Array> {
   const wanted: readonly string[] = GTFS_FILES;
   try {
-    // The zip also holds stop_times.txt, 114 MB unpacked. The filter leaves it packed.
+    // The zip also holds shapes.txt, 30 MB unpacked. The filter leaves it packed.
     return unzipSync(zip, { filter: (file) => wanted.includes(file.name) });
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);

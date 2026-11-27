@@ -27,7 +27,11 @@ describe('toTripDelays', () => {
   it('turns a trip update into a trip delay', () => {
     const result = onlyTrip({
       trip,
-      stop_time_update: { stop_id: 'stop-1', arrival: { delay: 240 } },
+      stop_time_update: {
+        stop_id: 'stop-1',
+        stop_sequence: 7,
+        arrival: { delay: 240, time: 1795114780 },
+      },
       vehicle: { id: 'vehicle-1' },
       timestamp: 1795114790,
     });
@@ -40,6 +44,8 @@ describe('toTripDelays', () => {
       stopId: 'stop-1',
       vehicleId: 'vehicle-1',
       updatedAt: '2026-11-19T18:59:50.000Z',
+      stopSequence: 7,
+      stopScheduledAt: '2026-11-19T18:55:40.000Z',
     });
   });
 
@@ -133,5 +139,21 @@ describe('feedTimestamp', () => {
     });
 
     expect(feedTimestamp(feed)).toBe('2026-11-19T19:00:00.552Z');
+  });
+
+  it('takes the scheduled stop time from the departure when there is no arrival', () => {
+    const result = onlyTrip({
+      trip,
+      stop_time_update: { stop_sequence: 1, departure: { delay: -60, time: 1795114800 } },
+    });
+
+    expect(result).toMatchObject({
+      stopSequence: 1,
+      stopScheduledAt: '2026-11-19T19:01:00.000Z',
+    });
+  });
+
+  it('has no stop sequence or stop time when the feed gives none', () => {
+    expect(onlyTrip({ trip })).toMatchObject({ stopSequence: null, stopScheduledAt: null });
   });
 });

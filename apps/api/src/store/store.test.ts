@@ -4,7 +4,7 @@ import { createMemoryStore, type Snapshot } from './store.ts';
 const FETCHED_AT = '2026-11-19T19:00:00.000Z';
 
 function snapshot(fetchedAt = FETCHED_AT): Snapshot {
-  return { feedTimestamp: fetchedAt, fetchedAt, services: [] };
+  return { feedTimestamp: fetchedAt, fetchedAt, services: [], positions: [] };
 }
 
 function clockAt(iso: string) {

@@ -65,6 +65,41 @@ export interface Health {
   lastFetchedAt: string | null;
   // True when POST /api/ask can answer. It needs an Anthropic key on the server.
   assistant: boolean;
+  // True when the API has a timetable and can answer the stop routes.
+  timetable: boolean;
+}
+
+export interface StopSummary {
+  stopId: string;
+  // The number on the stop's pole, such as 7136.
+  code: string | null;
+  name: string | null;
+}
+
+export interface StopsPage {
+  stops: StopSummary[];
+}
+
+// One service that is due to call at a stop.
+export interface Departure {
+  tripId: string;
+  routeId: string;
+  routeName: string | null;
+  mode: Mode | null;
+  headsign: string | null;
+  scheduledAt: string;
+  // The scheduled time moved by the trip's current delay. null with no live data or when cancelled.
+  expectedAt: string | null;
+  delaySeconds: number | null;
+  status: DelayStatus;
+  // False when the trip is in the timetable but the feed has not reported it.
+  live: boolean;
+}
+
+export interface StopDepartures {
+  stop: StopSummary;
+  feedTimestamp: string;
+  departures: Departure[];
 }
 
 export const QUESTION_MAX_LENGTH = 300;

@@ -1,4 +1,4 @@
-import type { DelaysPage } from '@akl-delays/shared';
+import type { DelaysPage, StopDepartures, StopsPage } from '@akl-delays/shared';
 import { readFile } from 'node:fs/promises';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
@@ -69,6 +69,63 @@ describe('composeApi on the fixture files', () => {
     const response = await request(app).get('/api/routes/S094-217');
 
     expect(response.body).toMatchObject({ routeId: 'S094-217', routeName: 'S094', mode: 'bus' });
+  });
+});
+
+describe('composeApi stop routes on the fixture files', () => {
+  it('reports the timetable on health', async () => {
+    const { app } = await composeApi(loadConfig({}), deps());
+
+    expect((await request(app).get('/api/health')).body).toMatchObject({ timetable: true });
+  });
+
+  it('finds a stop by a word in its name', async () => {
+    const { app } = await composeApi(loadConfig({}), deps());
+
+    const response = await request(app).get('/api/stops?q=smiths');
+
+    expect((response.body as StopsPage).stops).toContainEqual({
+      stopId: '2616-316a3b84',
+      code: '2616',
+      name: 'Smiths Avenue',
+    });
+  });
+
+  it('lists the 373 at a stop three stops after the one it reported at', async () => {
+    const { app, poller } = await composeApi(loadConfig({}), deps());
+    await poller.start();
+
+    const response = await request(app).get('/api/stops/2521-0ce47481/departures?route=373');
+    const { stop, departures } = response.body as StopDepartures;
+
+    expect(stop.stopId).toBe('2521-0ce47481');
+    expect(departures).toHaveLength(1);
+    expect(departures[0]).toMatchObject({
+      routeName: '373',
+      mode: 'bus',
+      headsign: 'Red Hill to Papakura Shops',
+      delaySeconds: 2756,
+      status: 'very_late',
+      live: true,
+    });
+    const { scheduledAt, expectedAt } = departures[0]!;
+    expect(Date.parse(expectedAt!) - Date.parse(scheduledAt)).toBe(2756_000);
+  });
+
+  it('does not list the 373 at the stop it has already reported at', async () => {
+    const { app, poller } = await composeApi(loadConfig({}), deps());
+    await poller.start();
+
+    const response = await request(app).get('/api/stops/2616-316a3b84/departures?route=373');
+
+    expect((response.body as StopDepartures).departures).toEqual([]);
+  });
+
+  it('answers 404 for a stop it does not know', async () => {
+    const { app, poller } = await composeApi(loadConfig({}), deps());
+    await poller.start();
+
+    expect((await request(app).get('/api/stops/nope/departures')).status).toBe(404);
   });
 });
 

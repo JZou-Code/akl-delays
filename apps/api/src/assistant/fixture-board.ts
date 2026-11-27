@@ -9,6 +9,7 @@ import {
   toTripDelays,
 } from '../feed/index.ts';
 import { loadGtfs } from '../gtfs/index.ts';
+import { toPositions } from '../poller/index.ts';
 import type { BoardView } from './tools.ts';
 
 // The recorded fixture as the tools see it, for the tests and the check script.
@@ -24,6 +25,7 @@ export async function loadFixtureBoard(now: Date): Promise<BoardView> {
       feedTimestamp: feedTime,
       fetchedAt: now.toISOString(),
       services: trips.map((trip) => toServiceDelay(trip, gtfs)),
+      positions: toPositions(trips),
     },
     stale: false,
     feedSource: 'fixture',

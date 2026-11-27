@@ -15,8 +15,8 @@ describe('parseStops', () => {
     );
 
     expect([...stops.values()]).toEqual([
-      { stopId: 's1', name: 'Britomart Train Station' },
-      { stopId: 's2', name: 'Queen St, near Wellesley St' },
+      { stopId: 's1', name: 'Britomart Train Station', code: '1001' },
+      { stopId: 's2', name: 'Queen St, near Wellesley St', code: '1002' },
     ]);
   });
 

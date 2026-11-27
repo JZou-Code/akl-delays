@@ -12,6 +12,8 @@ function trip(tripId: string, updatedAt: string | null): TripDelay {
     cancelled: false,
     stopId: null,
     vehicleId: null,
+    stopSequence: null,
+    stopScheduledAt: null,
     updatedAt,
   };
 }

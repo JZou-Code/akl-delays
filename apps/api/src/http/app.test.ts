@@ -2,6 +2,7 @@ import type { AskResponse, DelaysPage, DelayStatus, Mode, ServiceDelay } from '@
 import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import { AskError, type AskFailure, type Assistant } from '../assistant/index.ts';
+import type { StopBoard } from '../departures/index.ts';
 import type { Snapshot, Store } from '../store/index.ts';
 import { createApp } from './app.ts';
 
@@ -36,12 +37,18 @@ function snapshotOf(services: ServiceDelay[] = []): Snapshot {
     feedTimestamp: '2026-11-19T19:00:00.000Z',
     fetchedAt: '2026-11-19T19:00:05.000Z',
     services,
+    positions: [],
   };
 }
 
 describe('GET /api/health', () => {
   it('is not ok before the first poll', async () => {
-    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture', assistant: null });
+    const app = createApp({
+      store: storeWith(null, true),
+      feedSource: 'fixture',
+      assistant: null,
+      stops: null,
+    });
 
     const response = await request(app).get('/api/health');
 
@@ -51,11 +58,17 @@ describe('GET /api/health', () => {
       feedSource: 'fixture',
       lastFetchedAt: null,
       assistant: false,
+      timetable: false,
     });
   });
 
   it('is ok with a fresh snapshot', async () => {
-    const app = createApp({ store: storeWith(snapshotOf()), feedSource: 'at', assistant: null });
+    const app = createApp({
+      store: storeWith(snapshotOf()),
+      feedSource: 'at',
+      assistant: null,
+      stops: null,
+    });
 
     const response = await request(app).get('/api/health');
 
@@ -64,6 +77,7 @@ describe('GET /api/health', () => {
       feedSource: 'at',
       lastFetchedAt: '2026-11-19T19:00:05.000Z',
       assistant: false,
+      timetable: false,
     });
   });
 
@@ -72,6 +86,7 @@ describe('GET /api/health', () => {
       store: storeWith(snapshotOf(), true),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(app).get('/api/health');
@@ -82,7 +97,12 @@ describe('GET /api/health', () => {
 
 describe('GET /api/summary', () => {
   it('answers 503 before the first poll', async () => {
-    const app = createApp({ store: storeWith(null, true), feedSource: 'fixture', assistant: null });
+    const app = createApp({
+      store: storeWith(null, true),
+      feedSource: 'fixture',
+      assistant: null,
+      stops: null,
+    });
 
     const response = await request(app).get('/api/summary');
 
@@ -101,6 +121,7 @@ describe('GET /api/summary', () => {
       store: storeWith(snapshotOf(services)),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(app).get('/api/summary');
@@ -123,6 +144,7 @@ describe('GET /api/summary', () => {
       store: storeWith(snapshotOf(), true),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(app).get('/api/summary');
@@ -143,6 +165,7 @@ describe('GET /api/delays', () => {
     store: storeWith(snapshotOf(services)),
     feedSource: 'fixture',
     assistant: null,
+    stops: null,
   });
 
   async function tripIds(path: string): Promise<string[]> {
@@ -156,6 +179,7 @@ describe('GET /api/delays', () => {
       store: storeWith(null, true),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(empty).get('/api/delays');
@@ -252,6 +276,7 @@ describe('GET /api/delays', () => {
       store: storeWith(null, true),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(empty).get('/api/delays?mode=plane');
@@ -274,6 +299,7 @@ describe('GET /api/routes/:routeId', () => {
     store: storeWith(snapshotOf(services)),
     feedSource: 'fixture',
     assistant: null,
+    stops: null,
   });
 
   it('answers 503 before the first poll', async () => {
@@ -281,6 +307,7 @@ describe('GET /api/routes/:routeId', () => {
       store: storeWith(null, true),
       feedSource: 'fixture',
       assistant: null,
+      stops: null,
     });
 
     const response = await request(empty).get('/api/routes/NX1-901');
@@ -311,7 +338,12 @@ describe('GET /api/routes/:routeId', () => {
 
 describe('unknown paths', () => {
   it('answer 404 with an error body', async () => {
-    const app = createApp({ store: storeWith(null), feedSource: 'fixture', assistant: null });
+    const app = createApp({
+      store: storeWith(null),
+      feedSource: 'fixture',
+      assistant: null,
+      stops: null,
+    });
 
     const response = await request(app).get('/api/nothing-here');
 
@@ -331,7 +363,12 @@ describe('POST /api/ask', () => {
   };
 
   function setup(assistant: Assistant | null) {
-    return createApp({ store: storeWith(snapshotOf()), feedSource: 'fixture', assistant });
+    return createApp({
+      store: storeWith(snapshotOf()),
+      feedSource: 'fixture',
+      assistant,
+      stops: null,
+    });
   }
 
   function answering() {
@@ -445,8 +482,128 @@ describe('POST /api/ask', () => {
 describe('GET /api/health with an assistant', () => {
   it('reports that questions can be asked', async () => {
     const assistant: Assistant = { ask: () => Promise.reject(new Error('not called')) };
-    const app = createApp({ store: storeWith(snapshotOf()), feedSource: 'at', assistant });
+    const app = createApp({
+      store: storeWith(snapshotOf()),
+      feedSource: 'at',
+      assistant,
+      stops: null,
+    });
 
-    expect((await request(app).get('/api/health')).body).toMatchObject({ assistant: true });
+    expect((await request(app).get('/api/health')).body).toMatchObject({
+      assistant: true,
+      timetable: false,
+    });
+  });
+});
+
+describe('stop routes', () => {
+  const albany = { stopId: '4227-x', code: '4227', name: 'Stop C Albany Bus Station' };
+  const departure = {
+    tripId: 't1',
+    routeId: 'NX1-1',
+    routeName: 'NX1',
+    mode: 'bus' as const,
+    headsign: 'Albany to Britomart',
+    scheduledAt: '2026-11-19T19:10:00.000Z',
+    expectedAt: '2026-11-19T19:14:00.000Z',
+    delaySeconds: 240,
+    status: 'on_time' as const,
+    live: true,
+  };
+
+  function setup(snapshot: Snapshot | null = snapshotOf()) {
+    const asked: { stopId: string; routePrefix: string | undefined }[] = [];
+    const stops: StopBoard = {
+      search: (text) => (text === 'albany' ? [albany] : []),
+      stop: (stopId) => (stopId === albany.stopId ? albany : undefined),
+      departures: (stopId, _snapshot, query) => {
+        asked.push({ stopId, routePrefix: query?.routePrefix });
+        return [departure];
+      },
+    };
+    const app = createApp({ store: storeWith(snapshot), feedSource: 'at', assistant: null, stops });
+    return { app, asked };
+  }
+
+  it('reports the timetable on health', async () => {
+    expect((await request(setup().app).get('/api/health')).body).toMatchObject({
+      timetable: true,
+    });
+  });
+
+  it('searches the stops with q, trimmed', async () => {
+    const response = await request(setup().app).get('/api/stops?q=%20albany%20');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ stops: [albany] });
+  });
+
+  it.each(['/api/stops', '/api/stops?q=', '/api/stops?q=%20', `/api/stops?q=${'x'.repeat(51)}`])(
+    'answers 400 for %s',
+    async (path) => {
+      const response = await request(setup().app).get(path);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'q must be text of 1 to 50 characters' });
+    },
+  );
+
+  it('gives the departures at a stop with the stop and the feed time', async () => {
+    const { app, asked } = setup();
+
+    const response = await request(app).get('/api/stops/4227-x/departures');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      stop: albany,
+      feedTimestamp: '2026-11-19T19:00:00.000Z',
+      departures: [departure],
+    });
+    expect(asked).toEqual([{ stopId: '4227-x', routePrefix: '' }]);
+  });
+
+  it('passes the route on', async () => {
+    const { app, asked } = setup();
+
+    await request(app).get('/api/stops/4227-x/departures?route=NX');
+
+    expect(asked).toEqual([{ stopId: '4227-x', routePrefix: 'NX' }]);
+  });
+
+  it('answers 400 for a route that is too long', async () => {
+    const response = await request(setup().app).get(
+      `/api/stops/4227-x/departures?route=${'x'.repeat(51)}`,
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'route must be text of at most 50 characters' });
+  });
+
+  it('answers 404 for a stop it does not know', async () => {
+    const response = await request(setup().app).get('/api/stops/nope/departures');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'no stop with this id' });
+  });
+
+  it('answers 503 before the first poll', async () => {
+    const response = await request(setup(null).app).get('/api/stops/4227-x/departures');
+
+    expect(response.status).toBe(503);
+  });
+
+  it('answers 503 on both routes when no timetable is loaded', async () => {
+    const app = createApp({
+      store: storeWith(snapshotOf()),
+      feedSource: 'at',
+      assistant: null,
+      stops: null,
+    });
+
+    for (const path of ['/api/stops?q=albany', '/api/stops/4227-x/departures']) {
+      const response = await request(app).get(path);
+      expect(response.status).toBe(503);
+      expect(response.body).toEqual({ error: 'the timetable is not loaded' });
+    }
   });
 });

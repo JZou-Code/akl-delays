@@ -14,7 +14,7 @@ const answer: AskResponse = {
 };
 
 function health(assistant: boolean): Health {
-  return { ok: true, feedSource: 'fixture', lastFetchedAt: null, assistant };
+  return { ok: true, feedSource: 'fixture', lastFetchedAt: null, assistant, timetable: false };
 }
 
 type Reply = Response | Promise<Response>;

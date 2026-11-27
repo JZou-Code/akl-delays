@@ -39,3 +39,28 @@ export function parseDelaysQuery(raw: Record<string, unknown>): QueryResult {
   if (result.success) return { ok: true, query: result.data };
   return { ok: false, error: result.error.issues.map((issue) => issue.message).join('; ') };
 }
+
+const stopsQuerySchema = z.object({
+  q: z
+    .string({ error: 'q must be text of 1 to 50 characters' })
+    .trim()
+    .min(1, 'q must be text of 1 to 50 characters')
+    .max(Q_MAX_LENGTH, 'q must be text of 1 to 50 characters'),
+});
+
+export type TextResult = { ok: true; text: string } | { ok: false; error: string };
+
+export function parseStopsQuery(raw: Record<string, unknown>): TextResult {
+  const result = stopsQuerySchema.safeParse(raw);
+  if (result.success) return { ok: true, text: result.data.q };
+  return { ok: false, error: result.error.issues[0]?.message ?? 'q is not valid' };
+}
+
+const departuresQuerySchema = z.object({ route: shortText('route') });
+
+// The text is empty when no route is asked for.
+export function parseDeparturesQuery(raw: Record<string, unknown>): TextResult {
+  const result = departuresQuerySchema.safeParse(raw);
+  if (result.success) return { ok: true, text: result.data.route ?? '' };
+  return { ok: false, error: result.error.issues[0]?.message ?? 'route is not valid' };
+}

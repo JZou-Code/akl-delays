@@ -3,7 +3,7 @@ import { FeedError, parseFeed, type Feed, type FeedSource } from '../feed/index.
 import type { Gtfs } from '../gtfs/index.ts';
 import { createMemoryStore } from '../store/index.ts';
 import { CallBudgetError } from './budget.ts';
-import { createPoller, type Schedule } from './poller.ts';
+import { createPoller, toPositions, type Schedule } from './poller.ts';
 
 const NOW = new Date('2026-11-19T19:00:05.000Z');
 
@@ -27,7 +27,10 @@ function feedWith(timestamp: number, delays: number[], updatedAt?: number[]): Fe
 
 const gtfs: Gtfs = {
   route: (routeId) => (routeId === 'NX1-901' ? { routeId, name: 'NX1', mode: 'bus' } : undefined),
-  stop: (stopId) => (stopId === '4002-901' ? { stopId, name: 'Constellation Station' } : undefined),
+  stop: (stopId) =>
+    stopId === '4002-901' ? { stopId, name: 'Constellation Station', code: '4002' } : undefined,
+  stops: () => [],
+  timetable: null,
 };
 
 function fakeSchedule() {
@@ -88,6 +91,7 @@ describe('createPoller', () => {
           updatedAt: null,
         },
       ],
+      positions: [],
     });
   });
 
@@ -200,5 +204,27 @@ describe('createPoller', () => {
     expect(() => setup(() => Promise.resolve(feedWith(1795114800, [])), 10)).toThrow(
       CallBudgetError,
     );
+  });
+});
+
+describe('toPositions', () => {
+  const trip = {
+    tripId: 't1',
+    routeId: 'r1',
+    delaySeconds: 0,
+    cancelled: false,
+    stopId: 's1',
+    vehicleId: null,
+    updatedAt: null,
+  };
+
+  it('keeps the trips that say where they last reported and when', () => {
+    expect(
+      toPositions([
+        { ...trip, stopSequence: 4, stopScheduledAt: '2026-11-19T19:00:00.000Z' },
+        { ...trip, tripId: 't2', stopSequence: null, stopScheduledAt: '2026-11-19T19:00:00.000Z' },
+        { ...trip, tripId: 't3', stopSequence: 2, stopScheduledAt: null },
+      ]),
+    ).toEqual([{ tripId: 't1', stopSequence: 4, scheduledAt: '2026-11-19T19:00:00.000Z' }]);
   });
 });

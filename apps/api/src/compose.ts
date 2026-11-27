@@ -15,6 +15,7 @@ import {
   type Fetch,
   type ReadText,
 } from './feed/index.ts';
+import { createStopBoard } from './departures/index.ts';
 import { loadGtfs } from './gtfs/index.ts';
 import { createApp } from './http/index.ts';
 import { createPoller, type Poller, type Schedule } from './poller/index.ts';
@@ -70,8 +71,14 @@ export async function composeApi(config: Config, deps: Deps): Promise<Api> {
     schedule: deps.schedule,
     log: deps.log,
   });
+  const stops = createStopBoard({
+    gtfs,
+    now: deps.now,
+    includeScheduled: config.feed.source === 'at',
+  });
   const app = createApp({
     store,
+    stops,
     feedSource: config.feed.source,
     assistant: assistantFor(config, deps, store),
   });

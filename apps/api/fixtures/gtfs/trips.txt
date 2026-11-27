@@ -1,0 +1,22 @@
+route_id,service_id,trip_id,trip_headsign,direction_id
+325-203,Weekday-1,1033-32506-50400-2-d3ee8d66,Manukau Bus Station to Mangere Town Ctr Via Otara & Otahuhu,1
+373-203,Weekday-2,1046-37303-49740-2-a7fba600,Red Hill to Papakura Shops,0
+65-202,Weekday-1,1076-06501-49800-2-177e2ead,Walker Park To Glen Innes,0
+195-203,Weekday-1,1095-19519-51300-2-248b02a1,New Lynn to City Centre via Green Bay,0
+327-203,Daily-1,1118-32706-48300-2-b72495b4,Seaside Park To Otahuhu Station,1
+162-203,Weekday-1,1122-16203-51600-2-8aea46cb,Henderson To New Lynn Via Glendene,0
+14-203,Weekday-1,1124-01409-50700-2-10b5b9b3,Lincoln Rd to New Lynn via Henderson,0
+70-205,Weekday-2,1153-07006-51840-2-e561e04a,Britomart To Botany Via Panmure,1
+22N-202,Weekday-2,1277-02203-50400-2-e82b3f96,New Lynn To City Centre Via New North Rd,0
+WX1-207,Weekday-1,1292-01002-50400-2-6521c482,City Centre To Northwest Via Motorway,1
+95B-203,Weekday-2,1293-09503-48600-2-b96ad3e2,Bayview To Britomart (Lower Albert St),0
+928-203,Weekday-2,1303-92802-51300-2-859283d2,Smales Farm Stn To Northcote Point Via North Shore Hospital,1
+83-203,Weekday-2,1324-08302-51300-2-493b837b,Takapuna To Massey University Via Browns Bay,1
+HUIA-404,Weekday-4,255-800005-50700-1-399-53b7c532,Hamilton To The Strand Auckland Via Pukekohe,0
+S-C-201,Weekday-4,257-870006-50160-2-B116A119200-268ad5a5,"Newmarket 2 Anti Clockwise To Pukekohe 3 Via NKT 4, PPK 1",1
+S-C-201,Weekday-4,257-870007-51660-2-A118B129170-ce5ad954,"Pukekohe 4 Clockwise To Newmarket 2 Via NKT1, PPK 3",0
+E-W-201,Weekday-5,258-880002-49980-2-W117570-8805438f,Swanson 1 To Manukau 1 Via Waitemata 1,1
+O-W-201,Weekday-5,259-860002-52860-2-H111410-780d0571,Henderson 2 To Onehunga Via Newmarket 4,1
+68-202,Weekday-1,68-06804-51600-2-319a9b1e,Onehunga Station To New Lynn,1
+BAYS-240,Weekday-4,369-90011-51900-2-503066830-b7cae923,Bayswater To Downtown,0
+MTIA-209,Daily-1,902-98013-50400-1-e927d41a,Waiheke Island 1 To Downtown Pier 11 Via Devonport 2,0

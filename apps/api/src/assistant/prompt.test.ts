@@ -8,6 +8,7 @@ function board(overrides: Partial<BoardView> = {}): BoardView {
       feedTimestamp: '2026-11-24T01:54:00.000Z',
       fetchedAt: '2026-11-24T01:54:05.000Z',
       services: [],
+      positions: [],
     },
     stale: false,
     feedSource: 'fixture',

@@ -5,23 +5,29 @@ import type {
   FeedSourceName,
   Health,
   RouteDetail,
+  StopDepartures,
+  StopsPage,
   Summary,
 } from '@akl-delays/shared';
 import express, { type ErrorRequestHandler, type Express, type Response } from 'express';
 import { AskError, type AskFailure, type Assistant } from '../assistant/index.ts';
+import type { StopBoard } from '../departures/index.ts';
 import { routeDetail, selectServices, summariseModes } from '../delays/index.ts';
 import type { Store } from '../store/index.ts';
 import { parseAskBody } from './ask-body.ts';
-import { parseDelaysQuery } from './query.ts';
+import { parseDelaysQuery, parseDeparturesQuery, parseStopsQuery } from './query.ts';
 
 export interface AppOptions {
   store: Store;
   feedSource: FeedSourceName;
   // null when no Anthropic key is set.
   assistant: Assistant | null;
+  // null when the GTFS folder has no timetable.
+  stops: StopBoard | null;
 }
 
 const NO_DATA = 'no feed data yet';
+const NO_TIMETABLE = 'the timetable is not loaded';
 
 const ASK_FAILURE_STATUS: Readonly<Record<AskFailure, number>> = {
   no_data: 503,
@@ -49,7 +55,7 @@ function sendError(response: Response, status: number, error: string): void {
   response.status(status).json(body);
 }
 
-export function createApp({ store, feedSource, assistant }: AppOptions): Express {
+export function createApp({ store, feedSource, assistant, stops }: AppOptions): Express {
   const app = express();
   app.disable('x-powered-by');
 
@@ -60,6 +66,7 @@ export function createApp({ store, feedSource, assistant }: AppOptions): Express
       feedSource,
       lastFetchedAt: snapshot?.fetchedAt ?? null,
       assistant: assistant !== null,
+      timetable: stops !== null,
     };
     response.json(body);
   });
@@ -105,6 +112,48 @@ export function createApp({ store, feedSource, assistant }: AppOptions): Express
       sendError(response, 404, 'no running services on this route');
       return;
     }
+    response.json(body);
+  });
+
+  app.get('/api/stops', (request, response) => {
+    const parsed = parseStopsQuery(request.query);
+    if (!parsed.ok) {
+      sendError(response, 400, parsed.error);
+      return;
+    }
+    if (stops === null) {
+      sendError(response, 503, NO_TIMETABLE);
+      return;
+    }
+    const body: StopsPage = { stops: stops.search(parsed.text) };
+    response.json(body);
+  });
+
+  app.get('/api/stops/:stopId/departures', (request, response) => {
+    const parsed = parseDeparturesQuery(request.query);
+    if (!parsed.ok) {
+      sendError(response, 400, parsed.error);
+      return;
+    }
+    if (stops === null) {
+      sendError(response, 503, NO_TIMETABLE);
+      return;
+    }
+    const stop = stops.stop(request.params.stopId);
+    if (stop === undefined) {
+      sendError(response, 404, 'no stop with this id');
+      return;
+    }
+    const snapshot = store.get();
+    if (snapshot === null) {
+      sendError(response, 503, NO_DATA);
+      return;
+    }
+    const body: StopDepartures = {
+      stop,
+      feedTimestamp: snapshot.feedTimestamp,
+      departures: stops.departures(stop.stopId, snapshot, { routePrefix: parsed.text }),
+    };
     response.json(body);
   });
 

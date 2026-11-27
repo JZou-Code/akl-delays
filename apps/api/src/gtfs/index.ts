@@ -6,3 +6,5 @@ export type { Gtfs, ReadText } from './load.ts';
 export { modeFromRouteType } from './routes.ts';
 export type { Route } from './routes.ts';
 export type { Stop } from './stops.ts';
+export { aucklandDate, previousDate, serviceDayStart } from './service-day.ts';
+export type { Timetable, TimetableTrip } from './timetable.ts';

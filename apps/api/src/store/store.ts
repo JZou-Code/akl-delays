@@ -1,9 +1,17 @@
 import type { ServiceDelay } from '@akl-delays/shared';
 
+// Where a running trip last reported: the stop's place in the trip and the time it was due there.
+export interface TripPosition {
+  tripId: string;
+  stopSequence: number;
+  scheduledAt: string;
+}
+
 export interface Snapshot {
   feedTimestamp: string;
   fetchedAt: string;
   services: ServiceDelay[];
+  positions: TripPosition[];
 }
 
 export interface Store {

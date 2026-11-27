@@ -51,6 +51,7 @@ describe('getHealth', () => {
       feedSource: 'fixture',
       lastFetchedAt: null,
       assistant: false,
+      timetable: false,
     };
     const fetch = answering(health);
 

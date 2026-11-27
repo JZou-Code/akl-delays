@@ -1,7 +1,13 @@
 import { toServiceDelay } from '../delays/index.ts';
-import { dropStale, feedTimestamp, toTripDelays, type FeedSource } from '../feed/index.ts';
+import {
+  dropStale,
+  feedTimestamp,
+  toTripDelays,
+  type FeedSource,
+  type TripDelay,
+} from '../feed/index.ts';
 import type { Gtfs } from '../gtfs/index.ts';
-import type { Store } from '../store/index.ts';
+import type { Store, TripPosition } from '../store/index.ts';
 import { checkCallBudget } from './budget.ts';
 
 export type Schedule = (callback: () => Promise<void>, delayMs: number) => () => void;
@@ -22,6 +28,15 @@ export interface Poller {
   stop: () => void;
 }
 
+// The trips that say which stop they last reported at and when.
+export function toPositions(trips: readonly TripDelay[]): TripPosition[] {
+  return trips.flatMap(({ tripId, stopSequence, stopScheduledAt }) =>
+    stopSequence === null || stopScheduledAt === null
+      ? []
+      : [{ tripId, stopSequence, scheduledAt: stopScheduledAt }],
+  );
+}
+
 function oneLine(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   return message.replace(/\s+/g, ' ').trim();
@@ -40,7 +55,12 @@ export function createPoller(options: PollerOptions): Poller {
       const trips = toTripDelays(feed);
       const fresh = dropStale(trips, feedTime, maxUpdateAgeSeconds);
       const services = fresh.map((trip) => toServiceDelay(trip, gtfs));
-      store.set({ feedTimestamp: feedTime, fetchedAt: now().toISOString(), services });
+      store.set({
+        feedTimestamp: feedTime,
+        fetchedAt: now().toISOString(),
+        services,
+        positions: toPositions(fresh),
+      });
       const stale = trips.length - fresh.length;
       log(`poll ok: ${services.length} services, ${stale} stale dropped, feed time ${feedTime}`);
     } catch (error) {
