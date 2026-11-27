@@ -1,5 +1,4 @@
 import {
-  BOARD_TOOLS,
   CHECK_CASES,
   checkOutcome,
   createAnthropicClient,
@@ -22,7 +21,7 @@ async function main(): Promise<void> {
     const outcome = await runAsk(check.question, {
       client,
       model: assistant.model,
-      tools: BOARD_TOOLS,
+      tools: board.tools,
       board,
     });
     const problems = checkOutcome(check, outcome);

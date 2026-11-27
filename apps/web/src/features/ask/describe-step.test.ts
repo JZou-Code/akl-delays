@@ -42,6 +42,15 @@ describe('describeStep', () => {
     expect(describeStep(step('list_delays', { limit: 5 }))).not.toMatch(/5/);
   });
 
+  it('describes a look at a stop, with and without a route', () => {
+    expect(describeStep(step('get_departures', { stop: 'Albany Station' }))).toBe(
+      'Looked up what is due at the stop "Albany Station"',
+    );
+    expect(describeStep(step('get_departures', { stop: '4227', route: 'NX1' }))).toBe(
+      'Looked up routes starting with NX1 at the stop "4227"',
+    );
+  });
+
   it('keeps the name of a tool it does not know', () => {
     expect(describeStep(step('get_history', { route: '70' }))).toBe('get_history');
   });

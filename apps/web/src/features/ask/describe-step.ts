@@ -49,10 +49,18 @@ function listPhrase(input: AskStep['input']): string {
   return `Looked at ${subject}${matching}${sorted === null ? '' : `, ${sorted}`}`;
 }
 
+function departuresPhrase(input: AskStep['input']): string {
+  const stop = text(input.stop);
+  const route = text(input.route);
+  const what = route === null ? 'what is due' : `routes starting with ${route}`;
+  return `Looked up ${what} at the stop "${stop ?? 'with no name'}"`;
+}
+
 // Says what a tool call did in a rider's words. An unknown tool keeps its name.
 export function describeStep({ tool, input }: AskStep): string {
   if (tool === 'get_summary') return 'Counted the services on the board';
   if (tool === 'list_delays') return listPhrase(input);
   if (tool === 'get_route') return `Looked up route ${text(input.route) ?? 'with no name'}`;
+  if (tool === 'get_departures') return departuresPhrase(input);
   return tool;
 }

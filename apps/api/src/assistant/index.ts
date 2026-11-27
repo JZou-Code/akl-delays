@@ -9,5 +9,7 @@ export { createHourlyLimiter } from './limiter.ts';
 export type { HourlyLimiterOptions, Limiter } from './limiter.ts';
 export { AssistantError, CANNOT_ANSWER, runAsk } from './loop.ts';
 export type { AskDeps, AskOutcome, ModelClient, ModelReply, ModelRequest } from './loop.ts';
+export { departuresTool } from './departures-tool.ts';
+export type { DeparturesToolOptions } from './departures-tool.ts';
 export { BOARD_TOOLS } from './tools.ts';
 export type { AssistantTool, BoardView } from './tools.ts';

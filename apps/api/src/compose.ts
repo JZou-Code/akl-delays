@@ -1,6 +1,7 @@
 import type { Express } from 'express';
 import {
   BOARD_TOOLS,
+  departuresTool,
   createAnthropicClient,
   createAssistant,
   createHourlyLimiter,
@@ -15,7 +16,7 @@ import {
   type Fetch,
   type ReadText,
 } from './feed/index.ts';
-import { createStopBoard } from './departures/index.ts';
+import { createStopBoard, type StopBoard } from './departures/index.ts';
 import { loadGtfs } from './gtfs/index.ts';
 import { createApp } from './http/index.ts';
 import { createPoller, type Poller, type Schedule } from './poller/index.ts';
@@ -41,13 +42,19 @@ function feedSourceFor(config: Config, deps: Deps): FeedSource {
   return new FixtureFeedSource({ path: FIXTURE_FEED_PATH, readText: deps.readText, now: deps.now });
 }
 
-function assistantFor(config: Config, deps: Deps, store: Store): Assistant | null {
+function assistantFor(
+  config: Config,
+  deps: Deps,
+  store: Store,
+  stops: StopBoard | null,
+): Assistant | null {
   if (config.assistant === null) return null;
   const { apiKey, model, questionsPerHour } = config.assistant;
   return createAssistant({
     client: createAnthropicClient({ apiKey, fetch: deps.fetch }),
     model,
-    tools: BOARD_TOOLS,
+    tools:
+      stops === null ? BOARD_TOOLS : [...BOARD_TOOLS, departuresTool({ stops, now: deps.now })],
     store,
     feedSource: config.feed.source,
     limiter: createHourlyLimiter({ perHour: questionsPerHour, now: deps.now }),
@@ -80,7 +87,7 @@ export async function composeApi(config: Config, deps: Deps): Promise<Api> {
     store,
     stops,
     feedSource: config.feed.source,
-    assistant: assistantFor(config, deps, store),
+    assistant: assistantFor(config, deps, store, stops),
   });
   return { app, poller };
 }

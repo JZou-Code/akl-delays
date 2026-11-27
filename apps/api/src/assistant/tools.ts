@@ -37,7 +37,7 @@ interface ToolSpec<S extends z.ZodType> {
   run: (input: z.output<S>, board: BoardView) => { result: unknown; summary: string };
 }
 
-function defineTool<S extends z.ZodType>(spec: ToolSpec<S>): AssistantTool {
+export function defineTool<S extends z.ZodType>(spec: ToolSpec<S>): AssistantTool {
   const { properties = {}, required = [] } = z.toJSONSchema(spec.input);
   return {
     definition: {

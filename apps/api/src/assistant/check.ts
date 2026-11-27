@@ -9,6 +9,8 @@ export interface CheckCase {
   answer: readonly RegExp[];
   // No pattern may match the answer.
   absent?: readonly RegExp[];
+  // True when the answer is meant to hold a clock time, as for a departure.
+  times?: boolean;
 }
 
 export const MAX_ANSWER_WORDS = 80;
@@ -67,6 +69,20 @@ export const CHECK_CASES: readonly CheckCase[] = [
     answer: [/S094/, /\b6\b/],
     absent: [RECORDING],
   },
+  {
+    question: 'When is the next 373 at Central Park Reserve?',
+    tools: ['get_departures'],
+    answer: [/\b373\b/, /\b\d{1,2}:\d{2}\b/, /late/i],
+    absent: [RECORDING],
+    times: true,
+  },
+  {
+    question: 'What is due at stop 2582?',
+    tools: ['get_departures'],
+    answer: [/\b373\b/, /Onslow Road|2582/],
+    absent: [RECORDING],
+    times: true,
+  },
   { question: 'Will the 70 be late tomorrow?', tools: [], answer: [CANNOT] },
   { question: 'Was the 83 late yesterday?', tools: [], answer: [CANNOT] },
 ];
@@ -92,6 +108,8 @@ export function checkOutcome(check: CheckCase, outcome: AskOutcome): string[] {
   if (words > MAX_ANSWER_WORDS) problems.push(`answer has ${words} words`);
   if (/[*#`]|^\s*(?:-|\d+[.)])\s/m.test(outcome.answer)) problems.push('answer has markdown');
   // The page shows the feed time under the answer.
-  if (/\bUTC\b|\b\d{1,2}[:.]\d{2}\b/.test(outcome.answer)) problems.push('answer gives a time');
+  if (check.times !== true && /\bUTC\b|\b\d{1,2}[:.]\d{2}\b/.test(outcome.answer)) {
+    problems.push('answer gives a time');
+  }
   return problems;
 }

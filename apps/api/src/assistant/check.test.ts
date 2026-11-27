@@ -78,12 +78,12 @@ describe('checkOutcome', () => {
 });
 
 describe('CHECK_CASES', () => {
-  it('holds ten different questions', () => {
-    expect(new Set(CHECK_CASES.map(({ question }) => question)).size).toBe(10);
+  it('holds twelve different questions', () => {
+    expect(new Set(CHECK_CASES.map(({ question }) => question)).size).toBe(12);
   });
 
   it('expects only tools that exist', () => {
-    const known = ['get_summary', 'list_delays', 'get_route'];
+    const known = ['get_summary', 'list_delays', 'get_route', 'get_departures'];
 
     for (const { tools } of CHECK_CASES) expect(known).toEqual(expect.arrayContaining([...tools]));
   });
