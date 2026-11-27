@@ -4,6 +4,7 @@ import {
   MODES,
   SORT_KEYS,
   SORT_ORDERS,
+  type DelayStatus,
   type FeedSourceName,
   type ServiceDelay,
 } from '@akl-delays/shared';
@@ -79,6 +80,13 @@ function counted(shown: number, total: number): string {
   return shown === total ? `${total} ${noun}` : `${total} ${noun}, read the first ${shown}`;
 }
 
+// Counts over every match, so the model does not count rows that a limit cut off.
+function statusCounts(services: readonly ServiceDelay[]): Partial<Record<DelayStatus, number>> {
+  const counts: Partial<Record<DelayStatus, number>> = {};
+  for (const { status } of services) counts[status] = (counts[status] ?? 0) + 1;
+  return counts;
+}
+
 const getSummary = defineTool({
   name: 'get_summary',
   description:
@@ -97,7 +105,7 @@ const getSummary = defineTool({
 
 const listDelays = defineTool({
   name: 'list_delays',
-  description: `Running services, filtered and sorted. Returns the number that match and at most ${MAX_SERVICES} of them. delayMinutes above 0 is late, below 0 is early, null is unknown. With no input it returns the ${DEFAULT_SERVICES} latest services.`,
+  description: `Running services, filtered and sorted. Returns the number that match, a count of the matches by status in byStatus, and at most ${MAX_SERVICES} of them. Take counts from total and byStatus, not from the list. delayMinutes above 0 is late, below 0 is early, null is unknown. With no input it returns the ${DEFAULT_SERVICES} latest services.`,
   input: z.strictObject({
     mode: z.enum(MODES).optional().describe('Only this mode'),
     status: z.enum(DELAY_STATUSES).optional().describe('Only this status'),
@@ -113,20 +121,23 @@ const listDelays = defineTool({
       .describe(`How many services to return. The default is ${DEFAULT_SERVICES}.`),
   }),
   run: (input, { snapshot }) => {
-    const page = selectServices(snapshot.services, {
-      ...input,
-      limit: input.limit ?? DEFAULT_SERVICES,
-    });
+    const { limit = DEFAULT_SERVICES, ...filters } = input;
+    const matches = selectServices(snapshot.services, filters).services;
+    const shown = matches.slice(0, limit);
     return {
-      result: { total: page.total, services: page.services.map(brief) },
-      summary: counted(page.services.length, page.total),
+      result: {
+        total: matches.length,
+        byStatus: statusCounts(matches),
+        services: shown.map(brief),
+      },
+      summary: counted(shown.length, matches.length),
     };
   },
 });
 
 const getRoute = defineTool({
   name: 'get_route',
-  description: `The running services on one route, latest first, at most ${MAX_SERVICES}. Name the route the way a rider does, such as 70 or NX1.`,
+  description: `The running services on one route, latest first, at most ${MAX_SERVICES}. byStatus counts every running service on the route by status. Take counts from it and not from the list. Name the route the way a rider does, such as 70 or NX1.`,
   input: z.strictObject({
     route: z.string().min(1).max(50).describe('The route name, such as 70, NX1 or EAST'),
   }),
@@ -148,6 +159,7 @@ const getRoute = defineTool({
         route: routeLabel(first),
         mode: first.mode,
         total: page.total,
+        byStatus: statusCounts(onRoute),
         services: page.services.map(brief),
       },
       summary: counted(page.services.length, page.total),

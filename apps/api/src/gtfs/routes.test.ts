@@ -1,7 +1,7 @@
 import type { Mode } from '@akl-delays/shared';
 import { describe, expect, it } from 'vitest';
 import { GtfsError } from './csv.ts';
-import { modeFromRouteType, parseRoutes } from './routes.ts';
+import { modeFromRouteType, parseRoutes, schoolRoute } from './routes.ts';
 
 describe('modeFromRouteType', () => {
   it.each<[number, Mode | null]>([
@@ -79,5 +79,19 @@ describe('parseRoutes', () => {
     expect(() => parseRoutes([header, 'r1,"NX1,,3'].join('\n'))).toThrow(
       /^routes\.txt is not valid CSV/,
     );
+  });
+});
+
+describe('schoolRoute', () => {
+  it.each([
+    ['S050B-203', 'S050B'],
+    ['S813-202', 'S813'],
+    ['S017F-217', 'S017F'],
+  ])('reads %s as the bus %s', (routeId, name) => {
+    expect(schoolRoute(routeId)).toEqual({ routeId, name, mode: 'bus' });
+  });
+
+  it.each(['NX1-203', 'STH-201', 'S-C', 'S050B', '70-221'])('does not guess for %s', (routeId) => {
+    expect(schoolRoute(routeId)).toBeUndefined();
   });
 });

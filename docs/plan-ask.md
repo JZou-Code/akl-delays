@@ -78,8 +78,8 @@ Each tool has a zod schema for its input. The loop parses the model's input with
 | Tool | Input | Returns | Built on |
 |------|-------|---------|----------|
 | `get_summary` | none | Counts per mode and status, whether the data is stale | `summariseModes` |
-| `list_delays` | `mode`, `status`, `q`, `sort`, `order`, `limit` (1 to 20, default 10), all optional | `total` and the matching services, each cut down to route, mode, status, delay in whole minutes, stop name | `selectServices` |
-| `get_route` | `route`, the name a rider uses, such as `70` or `NX1` | The route's running services, at most 20, or a message that none are running | `selectServices` |
+| `list_delays` | `mode`, `status`, `q`, `sort`, `order`, `limit` (1 to 20, default 10), all optional | `total`, `byStatus` and the matching services, each cut down to route, mode, status, delay in whole minutes, stop name | `selectServices` |
+| `get_route` | `route`, the name a rider uses, such as `70` or `NX1` | The route's running services, at most 20, with `byStatus`, or a message that none are running | `selectServices` |
 
 Tool results are JSON text. A result holds at most 20 services, so one question cannot pull the whole snapshot into the prompt.
 
@@ -154,7 +154,7 @@ Commits 1 to 10 need no key to write or to test. Commit 6 is the first that can 
 
 ## The check script
 
-`npm run ask:check -w apps/api` runs about eight fixed questions against the fixture with the real model and prints, for each, the tools called and whether the answer names the expected route. It needs a key and costs a few cents a run, so it is not part of `npm test`. It gives a way to tell whether a change to the prompt or the model made the answers better or worse, and it is how the choice of `claude-haiku-5-5` gets checked.
+`npm run ask:check -w apps/api` runs ten fixed questions against the fixture with the real model and prints, for each, the tools called and whether the answer names the expected route. It needs a key and costs a few cents a run, so it is not part of `npm test`. It gives a way to tell whether a change to the prompt or the model made the answers better or worse, and it is how the choice of `claude-haiku-5-5` gets checked.
 
 ## Done means
 
@@ -174,8 +174,10 @@ Commits 1 to 10 need no key to write or to test. Commit 6 is the first that can 
 - After the prompt was changed to answer first and leave out what was not asked, the script passed 8 of 8 again with 26,333 input tokens and 1,777 output tokens.
 - One question through the page took about 2.5 seconds.
 
+- Two questions were added, one about a ferry named in words and one about school buses. The script passed 10 of 10 with 38,969 input tokens and 2,573 output tokens.
+- Eight questions were asked through the page on the live feed, with about 1,300 services running. The answers matched the board. A question took 3,500 to 4,200 input tokens.
+
 ## Not checked
 
 - The token counts in the example response above are made up.
-- Questions outside the eight in the check script.
-- Answers on live data. The run used the recorded sample.
+- Questions outside the ten in the check script, apart from eight asked by hand on the live feed.

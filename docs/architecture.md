@@ -55,8 +55,8 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | Tool | Returns |
 |------|---------|
 | `get_summary` | counts per mode and status, whether the data is stale |
-| `list_delays` | services filtered and sorted like `GET /api/delays`, at most 20 |
-| `get_route` | the services on one route, found by the name a rider uses, at most 20 |
+| `list_delays` | services filtered and sorted like `GET /api/delays`, at most 20, with a count of every match by status |
+| `get_route` | the services on one route, found by the name a rider uses, at most 20, with a count by status |
 
 The tools only read. A tool result holds route, mode, status, delay in whole minutes and stop name for each service, so the model never sees a trip id, a vehicle id or a route id.
 

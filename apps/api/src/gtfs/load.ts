@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { parseRoutes, type Route } from './routes.ts';
+import { parseRoutes, schoolRoute, type Route } from './routes.ts';
 import { parseStops, type Stop } from './stops.ts';
 
 export type ReadText = (path: string) => Promise<string>;
@@ -17,7 +17,7 @@ export async function loadGtfs(dir: string, readText: ReadText): Promise<Gtfs> {
   const routes = parseRoutes(routesText);
   const stops = parseStops(stopsText);
   return {
-    route: (routeId) => routes.get(routeId),
+    route: (routeId) => routes.get(routeId) ?? schoolRoute(routeId),
     stop: (stopId) => stops.get(stopId),
   };
 }

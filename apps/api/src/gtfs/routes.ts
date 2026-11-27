@@ -37,3 +37,11 @@ export function parseRoutes(text: string): Map<string, Route> {
     ]),
   );
 }
+
+const SCHOOL_ROUTE_ID = /^(S\d+[A-Z]*)-\d+$/;
+
+// AT's routes.txt leaves out school buses. Their ids look like S050B-203 in the realtime feed.
+export function schoolRoute(routeId: string): Route | undefined {
+  const name = SCHOOL_ROUTE_ID.exec(routeId)?.[1];
+  return name === undefined ? undefined : { routeId, name, mode: 'bus' };
+}

@@ -38,7 +38,7 @@ describe('composeApi on the fixture files', () => {
       fetchedAt: NOW.toISOString(),
       stale: false,
       modes: {
-        bus: { early: 3, on_time: 4, late: 3, very_late: 1, cancelled: 2, unknown: 0, total: 13 },
+        bus: { early: 3, on_time: 4, late: 4, very_late: 1, cancelled: 2, unknown: 0, total: 14 },
         train: { ...zero, early: 1, on_time: 3, total: 4 },
         ferry: { ...zero, on_time: 1, late: 1, total: 2 },
       },
@@ -62,13 +62,13 @@ describe('composeApi on the fixture files', () => {
     expect(second).toMatchObject({ routeName: '83', mode: 'bus', status: 'late' });
   });
 
-  it('lists a service whose route is not in the GTFS files without a name or mode', async () => {
+  it('names a school bus route that is not in the GTFS files from its id', async () => {
     const { app, poller } = await composeApi(loadConfig({}), deps());
     await poller.start();
 
     const response = await request(app).get('/api/routes/S094-217');
 
-    expect(response.body).toMatchObject({ routeId: 'S094-217', routeName: null, mode: null });
+    expect(response.body).toMatchObject({ routeId: 'S094-217', routeName: 'S094', mode: 'bus' });
   });
 });
 

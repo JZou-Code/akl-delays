@@ -63,12 +63,12 @@ describe('get_summary', () => {
     expect(result).toMatchObject({
       stale: false,
       modes: {
-        bus: { late: 3, very_late: 1, cancelled: 2, total: 13 },
+        bus: { late: 4, very_late: 1, cancelled: 2, total: 14 },
         train: { on_time: 3, total: 4 },
         ferry: { late: 1, total: 2 },
       },
     });
-    expect(summary).toBe('19 services');
+    expect(summary).toBe('20 services');
   });
 
   it('passes on that the data is stale', () => {
@@ -94,6 +94,7 @@ describe('list_delays', () => {
 
     expect(result).toEqual({
       total: 20,
+      byStatus: { early: 4, on_time: 8, late: 5, very_late: 1, cancelled: 2 },
       services: [
         { route: '373', mode: 'bus', status: 'very_late', delayMinutes: 46, stop: 'Smiths Avenue' },
       ],
@@ -105,6 +106,7 @@ describe('list_delays', () => {
 
     expect(result).toMatchObject({
       total: 2,
+      byStatus: { cancelled: 2 },
       services: [
         { mode: 'bus', status: 'cancelled', delayMinutes: null },
         { mode: 'bus', status: 'cancelled', delayMinutes: null },
@@ -138,6 +140,18 @@ describe('list_delays', () => {
   );
 });
 
+describe('list_delays counts', () => {
+  it('counts every match by status, not only the ones returned', () => {
+    const { result } = call('list_delays', { mode: 'bus', limit: 1 });
+
+    expect(result).toMatchObject({
+      total: 14,
+      byStatus: { early: 3, on_time: 4, late: 4, very_late: 1, cancelled: 2 },
+    });
+    expect((result as { services: unknown[] }).services).toHaveLength(1);
+  });
+});
+
 describe('get_route', () => {
   it('finds a route by the name a rider uses', () => {
     const { result, summary } = call('get_route', { route: '373' });
@@ -149,6 +163,12 @@ describe('get_route', () => {
       services: [{ status: 'very_late', delayMinutes: 46 }],
     });
     expect(summary).toBe('1 service');
+  });
+
+  it('counts the services on the route by status', () => {
+    const { result } = call('get_route', { route: 'S-C' });
+
+    expect(result).toMatchObject({ total: 2, byStatus: { on_time: 1, early: 1 } });
   });
 
   it('ignores case and spaces around the name', () => {

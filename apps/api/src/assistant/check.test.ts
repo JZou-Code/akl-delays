@@ -78,8 +78,8 @@ describe('checkOutcome', () => {
 });
 
 describe('CHECK_CASES', () => {
-  it('holds eight different questions', () => {
-    expect(new Set(CHECK_CASES.map(({ question }) => question)).size).toBe(8);
+  it('holds ten different questions', () => {
+    expect(new Set(CHECK_CASES.map(({ question }) => question)).size).toBe(10);
   });
 
   it('expects only tools that exist', () => {

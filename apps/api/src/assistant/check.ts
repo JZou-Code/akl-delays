@@ -55,6 +55,18 @@ export const CHECK_CASES: readonly CheckCase[] = [
     tools: ['get_route', 'list_delays'],
     answer: [/\b(no|not)\b/i],
   },
+  {
+    question: 'Is the Bayswater ferry late?',
+    tools: ['list_delays', 'get_route'],
+    answer: [/BAYS/, /\b7\b/],
+    absent: [RECORDING],
+  },
+  {
+    question: 'Are any school buses late?',
+    tools: ['list_delays', 'get_route'],
+    answer: [/S094/, /\b6\b/],
+    absent: [RECORDING],
+  },
   { question: 'Will the 70 be late tomorrow?', tools: [], answer: [CANNOT] },
   { question: 'Was the 83 late yesterday?', tools: [], answer: [CANNOT] },
 ];

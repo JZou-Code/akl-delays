@@ -2,11 +2,21 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-27: a school bus gets its name from its route id
+
+AT's `routes.txt` leaves out school buses. On a school afternoon about 250 of 1,300 running services had no route name and no mode, so the board showed them as "Unknown" and the mode counts left them out. Their route ids all look like `S050B-203`. A route id of that shape that is not in `routes.txt` is now read as the bus `S050B`. For every route that is in `routes.txt`, the name is the id without its last part, which is why the same rule is used here. Any other id that is not in the file still has no name and no mode.
+
+Not checked: that every id of this shape is a school bus. It held for the 251 ids seen on 27 November 2026.
+
+## 2026-11-27: the tools count, the model does not
+
+`list_delays` and `get_route` return `byStatus`, a count of every match by status, next to a list of at most 20 services. The first version returned only the list. Asked about a route with 22 running services, the model counted the 20 it was given and said six were late, then named five.
+
 ## 2026-11-27: the cheapest model answers the questions
 
 `claude-haiku-5-5` is the default and `ASSISTANT_MODEL` changes it. The questions are lookups over three tools, not reasoning. At list price a question of a few thousand tokens costs under a tenth of a US cent on this model. `claude-opus-5-5` costs 40 times as much for each token.
 
-Checked on 27 November 2026: `npm run ask:check -w apps/api` sent eight fixed questions on the recorded sample and all eight passed. The run used 24,648 input tokens and 2,052 output tokens. Not checked: questions outside those eight, and live data.
+Checked on 27 November 2026: `npm run ask:check -w apps/api` sent ten fixed questions on the recorded sample and all ten passed. The run used 38,969 input tokens and 2,573 output tokens. Eight other questions were asked by hand on the live feed and read against the board. Not checked: any wider set of questions.
 
 ## 2026-11-27: the tools only read, and questions are limited by the hour
 

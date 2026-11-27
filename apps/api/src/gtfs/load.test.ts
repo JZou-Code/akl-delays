@@ -42,9 +42,10 @@ describe('loadGtfs', () => {
     expect(gtfs.stop('2616-316a3b84')?.name).toBe('Smiths Avenue');
   });
 
-  it('has no route S094-217, a school bus the real routes.txt does not list', async () => {
+  it('names S094-217, a school bus the real routes.txt does not list, from its id', async () => {
     const gtfs = await loadFixture();
 
-    expect(gtfs.route('S094-217')).toBeUndefined();
+    expect(gtfs.route('S094-217')).toEqual({ routeId: 'S094-217', name: 'S094', mode: 'bus' });
+    expect(gtfs.route('NOPE-1')).toBeUndefined();
   });
 });
