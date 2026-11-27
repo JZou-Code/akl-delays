@@ -28,7 +28,8 @@ packages/shared   types shared by the API and the web app (the HTTP contract)
 apps/api          Node.js + Express
   src/config      environment variables, read and checked once
   src/feed        Auckland Transport client, feed schema, fixture source
-  src/gtfs        static timetable lookups (routes, stops)
+  src/gtfs        static timetable lookups (routes, stops, stop times, calendar)
+  src/departures  services due at a stop, stop search
   src/delays      pure functions: status, joins, summaries
   src/store       the latest snapshot
   src/assistant   answers a question from the snapshot with a Claude model and read-only tools

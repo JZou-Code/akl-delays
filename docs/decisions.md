@@ -2,6 +2,22 @@
 
 Newest first. Each entry says what was chosen and why.
 
+## 2026-11-27: departures come from the timetable moved by the live delay
+
+A rider wants to know when the next 70 reaches their stop. The feed cannot say: it gives one stop for each trip, the last one it reported at. So the project loads AT's timetable and works the time out. The scheduled time at the rider's stop is the scheduled time at the reported stop plus the timetable's gap between the two. The expected time adds the trip's current delay.
+
+Checked on a saved feed from 24 November 2026: for 865 of 872 fresh trips, the feed's time at the reported stop minus its delay was the timetable's time for that stop to the second. The other 7 were one second off.
+
+Not checked: how close the expected time is to when the bus really comes. That needs feeds saved over time, which is the history work in the roadmap.
+
+The timetable is kept in memory, not in a database. It is 114 MB as a file and about 90 MB of heap once loaded, and it loads in under a second. The project has no database yet. When history goes into PostgreSQL the timetable can go with it.
+
+A trip that ends at the stop is not listed. A third of the trips in a fresh feed sit at their last stop, already finished, so listing them would fill a terminus with services nobody can board.
+
+## 2026-11-27: the board still counts trips that have finished
+
+Found while building departures and not fixed. A trip stays in the feed for some minutes after it reaches its last stop. On the saved feed, 323 of 872 fresh trips were at their last stop. The board and the summary count them as running. The timetable now says which stop is a trip's last, so they could be left out. That changes every count on the board, so it is left for its own change.
+
 ## 2026-11-27: route and stop are two filters
 
 The board had one box that matched a route name or a stop name. It could not answer "the 70 at Panmure", because one text cannot name both. The board now has a Route box and a Stop box, and `GET /api/delays` takes `route` and `stop`. Every filter that is set has to match.
@@ -26,7 +42,7 @@ Not checked: that every id of this shape is a school bus. It held for the 251 id
 
 `claude-haiku-5-5` is the default and `ASSISTANT_MODEL` changes it. The questions are lookups over three tools, not reasoning. At list price a question of a few thousand tokens costs under a tenth of a US cent on this model. `claude-opus-5-5` costs 40 times as much for each token.
 
-Checked on 27 November 2026: `npm run ask:check -w apps/api` sent ten fixed questions on the recorded sample and all ten passed. The run used 38,969 input tokens and 2,573 output tokens. Eight other questions were asked by hand on the live feed and read against the board. Not checked: any wider set of questions.
+Checked on 27 November 2026: `npm run ask:check -w apps/api` sent twelve fixed questions on the recorded sample and all twelve passed. The run used 59,061 input tokens and 2,736 output tokens. Eight other questions were asked by hand on the live feed and read against the board. Not checked: any wider set of questions.
 
 ## 2026-11-27: the tools only read, and questions are limited by the hour
 

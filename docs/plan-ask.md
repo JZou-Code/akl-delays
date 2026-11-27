@@ -79,6 +79,7 @@ Each tool has a zod schema for its input. The loop parses the model's input with
 |------|-------|---------|----------|
 | `get_summary` | none | Counts per mode and status, whether the data is stale | `summariseModes` |
 | `list_delays` | `mode`, `status`, `q`, `route`, `stop`, `sort`, `order`, `limit` (1 to 20, default 10), all optional | `total`, `byStatus` and the matching services, each cut down to route, mode, status, delay in whole minutes, stop name | `selectServices` |
+| `get_departures` | `stop`, words from the name or the stop number; `route`, optional | The services due at the stop in the next hour, at most 8, or the stops that match when there are several | `departuresAt` |
 | `get_route` | `route`, the name a rider uses, such as `70` or `NX1` | The route's running services, at most 20, with `byStatus`, or a message that none are running | `selectServices` |
 
 Tool results are JSON text. A result holds at most 20 services, so one question cannot pull the whole snapshot into the prompt.
@@ -174,6 +175,7 @@ Commits 1 to 10 need no key to write or to test. Commit 6 is the first that can 
 - After the prompt was changed to answer first and leave out what was not asked, the script passed 8 of 8 again with 26,333 input tokens and 1,777 output tokens.
 - One question through the page took about 2.5 seconds.
 
+- A fourth tool, `get_departures`, was added with the timetable, and two questions about a stop. The script passed 12 of 12 with 59,061 input tokens and 2,736 output tokens. The tool is in the list only when a timetable is loaded.
 - Two questions were added, one about a ferry named in words and one about school buses. The script passed 10 of 10 with 38,969 input tokens and 2,573 output tokens.
 - Eight questions were asked through the page on the live feed, with about 1,300 services running. The answers matched the board. A question took 3,500 to 4,200 input tokens.
 

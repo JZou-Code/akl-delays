@@ -26,12 +26,13 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 |--------|------|------------|
 | `config` | Reads env vars once and checks them | nothing |
 | `feed` | `FeedSource` interface, the AT HTTP source, the fixture source, the feed schema, parsing into `TripDelay`, dropping stale trips | `config` types only |
-| `gtfs` | Loads `routes.txt` and `stops.txt`, answers lookups by id. Downloads both from AT's GTFS zip | `shared` types |
+| `gtfs` | Loads `routes.txt` and `stops.txt`, answers lookups by id. Loads the timetable when the folder has `stop_times.txt`. Downloads the files from AT's GTFS zip | `shared` types |
 | `delays` | Status from seconds, join with route and stop, summary per mode | `shared` types |
+| `departures` | Stop search, and the services due at a stop from the timetable and the snapshot | `gtfs`, `store` types |
 | `store` | Holds the latest snapshot and says whether it is stale: no successful fetch for more than three poll intervals | `shared` types |
 | `poller` | Runs fetch, parse, join, store on a timer. Checks the weekly call budget | `feed`, `gtfs`, `delays`, `store` |
-| `assistant` | Answers a question in plain English from the snapshot: three read-only tools, the loop that lets a Claude model call them, the hourly limit | `store`, `delays`, the Anthropic SDK |
-| `http` | Express app and routes | `store`, `delays`, `assistant` |
+| `assistant` | Answers a question in plain English from the snapshot: read-only tools, the loop that lets a Claude model call them, the hourly limit | `store`, `delays`, `departures`, the Anthropic SDK |
+| `http` | Express app and routes | `store`, `delays`, `departures`, `assistant` |
 
 `compose.ts` builds the pieces from the config and passes them to each other. `main.ts` reads the env vars, calls it with the real `fetch`, clock, timer and file reads, then listens and starts the poller. No module creates its own dependencies, so tests pass in fakes: a fake `fetch`, a fake clock, a fake timer.
 
@@ -48,7 +49,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 
 1. `http` checks the question, 1 to 300 characters.
 2. `assistant` checks that a snapshot exists and that the hour has room for one more question. The default is 20 an hour, counted in memory.
-3. The loop sends the question, a fixed system prompt and the three tools to the model. A note after the question says so when the data is stale. The page, not the model, says whether the data is live or a recording.
+3. The loop sends the question, a fixed system prompt and the tools to the model. A note after the question says so when the data is stale. The page, not the model, says whether the data is live or a recording.
 4. When the model asks for tools, the loop checks each input with zod, runs the tool on the snapshot, and sends every result back in one message. An unknown tool or a bad input goes back as an error, so the model can try again.
 5. The loop stops when the model writes its answer, or after 5 model calls.
 
@@ -57,6 +58,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 | `get_summary` | counts per mode and status, whether the data is stale |
 | `list_delays` | services filtered and sorted like `GET /api/delays`, at most 20, with a count of every match by status |
 | `get_route` | the services on one route, found by the name a rider uses, at most 20, with a count by status |
+| `get_departures` | the services due at one stop in the next hour, at most 8. Only when a timetable is loaded |
 
 The tools only read. A tool result holds route, mode, status, delay in whole minutes and stop name for each service, so the model never sees a trip id, a vehicle id or a route id.
 
@@ -83,10 +85,12 @@ Types are in `packages/shared`. All times are ISO 8601 strings in UTC.
 
 | Route | Returns |
 |-------|---------|
-| `GET /api/health` | `{ ok, feedSource, lastFetchedAt, assistant }` |
+| `GET /api/health` | `{ ok, feedSource, lastFetchedAt, assistant, timetable }` |
 | `GET /api/summary` | counts per mode and status, feed time, `stale` flag |
 | `GET /api/delays?mode=&status=&route=&stop=&q=&sort=&order=&limit=` | `{ total, services }`, worst delay first |
 | `GET /api/routes/:routeId` | one route and its running services |
+| `GET /api/stops?q=` | `{ stops }`, at most 20, each `{ stopId, code, name }` |
+| `GET /api/stops/:stopId/departures?route=` | `{ stop, feedTimestamp, departures }`, soonest first, at most 20 |
 | `POST /api/ask` with `{ question }` | `{ answer, steps, model, usage, feedSource, feedTimestamp }` |
 
 `ok` in the health response is true when a snapshot exists and is not stale. The health route answers 200 even before the first poll.
@@ -99,19 +103,38 @@ Worst delay first means the highest `delaySeconds` first. Services with no delay
 
 `assistant` in the health response is true when the API has an Anthropic key. `POST /api/ask` answers 400 for a question that is missing, empty or over 300 characters, 429 when the hourly limit is reached, 502 when the model call fails or the loop runs out of calls, and 503 when no key is set or there is no snapshot yet. `steps` lists the tool calls the model made, each with its input and a short count of what came back. `usage` is the input and output tokens of all the model calls for the question.
 
+## Departures at a stop
+
+The realtime feed gives one stop for each running trip: the last stop it reported at, with the stop's place in the trip and the real time it was there. It does not say when the trip reaches the stops after that. The timetable does.
+
+`gtfs` reads `trips.txt`, `calendar.txt`, `calendar_dates.txt` and `stop_times.txt` when the GTFS folder has them. `stop_times.txt` has 1.3 million rows, so it is read line by line and kept as three lists for each trip: stop ids, stop sequences and seconds after the start of the service day.
+
+For one stop, `departures` goes through the trips that call there:
+
+1. A trip that ends at the stop is left out. Nobody can board it.
+2. A trip in the snapshot that has reported at this stop or a later one has passed, and is left out.
+3. For a trip in the snapshot that has not reached the stop, the scheduled time is the scheduled time at the stop it reported at, plus the timetable's gap between the two stops. The expected time is that plus the trip's current delay. GTFS Realtime says a delay carries on to later stops until a new one is given.
+4. A trip that is not in the snapshot is listed at its timetable time when its service runs today, from the two calendar files. It is marked as not live. A cancelled trip is listed the same way with its status.
+
+The list holds what is due in the next 60 minutes, soonest first. A live trip whose expected time has passed stays on the list until it reports at the stop.
+
+With the recorded sample, step 4 is off. The recording's clock is moved to now, so the timetable's own times do not fit it. Only the recorded trips are listed.
+
+`q` on the stop search is text of 1 to 50 characters. Every word has to be in the stop's name or start its number. A stop that no trip calls at is left out. Both stop routes answer 503 when no timetable is loaded, and the departures route answers 404 for a stop it does not know.
+
 ## Web app
 
 ```
 src/api         one function per API route, and the context that holds fetch
 src/hooks       usePolling, useNow
-src/features    summary, board, route, ask
+src/features    summary, board, route, stops, ask
 src/components  small shared pieces and the text formatting
 src/theme       the theme select and the saved choice
 ```
 
 Components get data through hooks. They do not call `fetch` directly. The hooks take `fetch` from a React context, so tests pass in a fake one.
 
-The page has two views: the board at `/` and one route at `/routes/:routeId`. Each route name on the board links to its route view. When the API answers 404 for a route, the route view says nothing is running on it and links back to the board.
+The page has four views: the board at `/`, one route at `/routes/:routeId`, the stop search at `/stops` and one stop at `/stops/:stopId`. Each stop name on the board links to its stop view. The stop view lists what is due there, takes a route filter as `?route=`, and asks again every 30 seconds. Each route name on the board links to its route view. When the API answers 404 for a route, the route view says nothing is running on it and links back to the board.
 
 The board keeps its filters in the page URL, as `?mode=`, `?status=` and `?q=` with the same values as the API query. The search box writes `?q=` once typing has stopped for 300 milliseconds. Each column heading of the board is a button that sorts by that column, and a second press turns the order around. The sort is in the URL as `?sort=` and `?order=`, left out when it is worst delay first. The board asks for 50 services, says how many match, and has a button that asks for 50 more. A new filter or sort goes back to 50. While a changed query loads, the board keeps showing the services it had.
 

@@ -69,11 +69,23 @@ The design is in [plan-ask.md](plan-ask.md).
 - [x] Docs: architecture, decisions, README
 - [x] `ask:check`: fixed questions against the fixture with the real model
 
+## 6. Departures at a stop
+
+- [x] `gtfs`: load the timetable from `trips.txt`, `calendar.txt`, `calendar_dates.txt` and `stop_times.txt`; the download script unpacks them
+- [x] `feed`: keep the stop sequence and the scheduled time of the stop a trip last reported at
+- [x] `departures`: the services due at a stop, from the timetable and the snapshot; stop search
+- [x] `http`: `GET /api/stops` and `GET /api/stops/:stopId/departures`; `timetable` on health
+- [x] `web/features/stops`: the stop search and the stop view; stop names on the board link to it
+- [x] `assistant`: `get_departures`, a fourth tool, when a timetable is loaded
+- [x] `GET /api/delays` and the board filter by route and by stop together
+
 ## Later
 
 Not planned in detail.
 
 - Keep history in PostgreSQL and show punctuality by route and hour
+- Leave trips that have reached their last stop out of the board and the summary
+- Check the expected times at a stop against when the service really came
 - Vehicle positions on a map
 - Service alerts next to the routes they affect
 - Deployment
