@@ -54,7 +54,7 @@ Each folder under `apps/api/src` has an `index.ts`. Imports between modules go t
 
 | Tool | Returns |
 |------|---------|
-| `get_summary` | counts per mode and status, the feed time, whether the data is stale |
+| `get_summary` | counts per mode and status, whether the data is stale |
 | `list_delays` | services filtered and sorted like `GET /api/delays`, at most 20 |
 | `get_route` | the services on one route, found by the name a rider uses, at most 20 |
 
@@ -115,7 +115,7 @@ The page has two views: the board at `/` and one route at `/routes/:routeId`. Ea
 
 The board keeps its filters in the page URL, as `?mode=`, `?status=` and `?q=` with the same values as the API query. The search box writes `?q=` once typing has stopped for 300 milliseconds. Each column heading of the board is a button that sorts by that column, and a second press turns the order around. The sort is in the URL as `?sort=` and `?order=`, left out when it is worst delay first. The board asks for 50 services, says how many match, and has a button that asks for 50 more. A new filter or sort goes back to 50. While a changed query loads, the board keeps showing the services it had.
 
-The board asks the health route once. When `assistant` is true it shows a box for a question, with three example questions. Under the answer it lists the tool calls the model made, the model's name and the token counts. A new question replaces the last answer. Nothing is kept.
+The board asks the health route once. When `assistant` is true it shows a box for a question, with three example questions. Under the answer it lists the tool calls the model made, the model's name and the token counts. Each tool call is shown in plain words, such as "Looked at buses, latest first", not as the tool name and its input. A new question replaces the last answer. Nothing is kept.
 
 Each view asks the API again every 30 seconds and keeps the last good data when a request fails. A banner says so when that happens, and when the summary's `stale` flag is set. The 503 the API gives before its first poll is shown as waiting for the first data, not as an error.
 

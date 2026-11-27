@@ -57,12 +57,10 @@ describe('the tool definitions', () => {
 });
 
 describe('get_summary', () => {
-  it('counts the fixture by mode and says where the data is from', () => {
+  it('counts the fixture by mode', () => {
     const { result, summary } = call('get_summary', {});
 
     expect(result).toMatchObject({
-      feedTimestamp: NOW.toISOString(),
-      feedSource: 'fixture',
       stale: false,
       modes: {
         bus: { late: 3, very_late: 1, cancelled: 2, total: 13 },
@@ -76,7 +74,9 @@ describe('get_summary', () => {
   it('passes on that the data is stale', () => {
     const { result } = call('get_summary', {}, { ...board, stale: true, feedSource: 'at' });
 
-    expect(result).toMatchObject({ stale: true, feedSource: 'at' });
+    expect(result).toMatchObject({ stale: true });
+    expect(result).not.toHaveProperty('feedTimestamp');
+    expect(result).not.toHaveProperty('feedSource');
   });
 });
 

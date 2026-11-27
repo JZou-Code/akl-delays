@@ -26,13 +26,13 @@ describe('AskAnswer', () => {
     expect(screen.getByText('Two buses are cancelled.')).toBeInTheDocument();
   });
 
-  it('lists each tool call with its input and what came back', () => {
+  it('lists each tool call in plain words with what came back', () => {
     render(<AskAnswer response={response} />);
 
     const steps = within(screen.getByRole('list')).getAllByRole('listitem');
     expect(steps.map((step) => step.textContent)).toEqual([
-      'get_summary (no input): 19 services',
-      'list_delays (mode: "bus", status: "cancelled", limit: 5): 2 services',
+      'Counted the services on the board: 19 services',
+      'Looked at cancelled buses: 2 services',
     ]);
   });
 

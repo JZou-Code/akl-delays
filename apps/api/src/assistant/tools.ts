@@ -82,13 +82,14 @@ function counted(shown: number, total: number): string {
 const getSummary = defineTool({
   name: 'get_summary',
   description:
-    'Counts of running services for each mode (bus, train, ferry) by status, with the time of the feed and whether the data is stale. Use it for questions about a whole mode or the whole network.',
+    'Counts of running services for each mode (bus, train, ferry) by status, and whether the data is stale. Use it for questions about a whole mode or the whole network.',
   input: z.strictObject({}),
-  run: (_input, { snapshot, stale, feedSource }) => {
+  run: (_input, { snapshot, stale }) => {
     const modes = summariseModes(snapshot.services);
     const total = MODES.reduce((sum, mode) => sum + modes[mode].total, 0);
     return {
-      result: { feedTimestamp: snapshot.feedTimestamp, feedSource, stale, modes },
+      // The page shows the feed time and the data source, so the model is not given them.
+      result: { stale, modes },
       summary: counted(total, total),
     };
   },

@@ -1,12 +1,7 @@
-import type { AskResponse, AskStep } from '@akl-delays/shared';
+import type { AskResponse } from '@akl-delays/shared';
 import type { ReactElement } from 'react';
 import { formatClock } from '../../components/index.ts';
-
-function inputText(input: AskStep['input']): string {
-  const entries = Object.entries(input);
-  if (entries.length === 0) return 'no input';
-  return entries.map(([name, value]) => `${name}: ${JSON.stringify(value)}`).join(', ');
-}
+import { describeStep } from './describe-step.ts';
 
 export function AskAnswer({ response }: { response: AskResponse }): ReactElement {
   const { answer, steps, model, usage, feedSource, feedTimestamp } = response;
@@ -23,7 +18,7 @@ export function AskAnswer({ response }: { response: AskResponse }): ReactElement
           <ol>
             {steps.map((step, index) => (
               <li key={index}>
-                <code>{step.tool}</code> ({inputText(step.input)}): {step.summary}
+                {describeStep(step)}: {step.summary}
               </li>
             ))}
           </ol>

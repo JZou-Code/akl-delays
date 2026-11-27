@@ -87,4 +87,11 @@ describe('CHECK_CASES', () => {
 
     for (const { tools } of CHECK_CASES) expect(known).toEqual(expect.arrayContaining([...tools]));
   });
+
+  it.each(['The 373 is 46 minutes late at 02:11 UTC.', 'At 2:32 pm the 373 is 46 minutes late.'])(
+    'flags a time in %j',
+    (answer) => {
+      expect(checkOutcome(check, outcome(answer))).toEqual(['answer gives a time']);
+    },
+  );
 });

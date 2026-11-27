@@ -79,5 +79,7 @@ export function checkOutcome(check: CheckCase, outcome: AskOutcome): string[] {
   const words = wordCount(outcome.answer);
   if (words > MAX_ANSWER_WORDS) problems.push(`answer has ${words} words`);
   if (/[*#`]|^\s*(?:-|\d+[.)])\s/m.test(outcome.answer)) problems.push('answer has markdown');
+  // The page shows the feed time under the answer.
+  if (/\bUTC\b|\b\d{1,2}[:.]\d{2}\b/.test(outcome.answer)) problems.push('answer gives a time');
   return problems;
 }

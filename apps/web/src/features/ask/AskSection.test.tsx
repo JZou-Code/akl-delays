@@ -76,9 +76,8 @@ describe('AskSection', () => {
     await askQuestion('Is anything cancelled?');
 
     expect(await screen.findByText('Two buses are cancelled.')).toBeInTheDocument();
-    expect(screen.getByText('list_delays').closest('li')).toHaveTextContent(
-      'list_delays (status: "cancelled"): 2 services',
-    );
+    expect(screen.getByText('Looked at cancelled services: 2 services')).toBeInTheDocument();
+
     expect(asked()[0]?.[1]?.body).toBe('{"question":"Is anything cancelled?"}');
   });
 
